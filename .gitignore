@@ -1,7 +1,8 @@
 
 node_modules/
 temp/
-output**
+output/
+*.secret
 
 # Logs
 logs

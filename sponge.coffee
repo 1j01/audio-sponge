@@ -14,12 +14,12 @@ shuffleArray = (array)->
 
 class Sponge
 	constructor: ->
-		@buffers = []
+		# @buffers = []
+		@sources = [] # array of readable streams
 	
 	soak: (audio_glob, callback)->
 		glob audio_glob, (err, files)=>
 			console.log audio_glob
-			# return console.error err if err
 			return callback err if err
 			console.log files
 			for file in files
@@ -28,26 +28,22 @@ class Sponge
 				# for [0..3]
 				length = Math.floor(Math.random() * file_size_in_bytes)
 				length = Math.min(length, 1024 * 24)
-				position = Math.floor(Math.random() * (file_size_in_bytes - length))
-				buffer = Buffer.alloc(length)
-				fd = fs.openSync(file, "r")
-				fs.readSync(fd, buffer, 0, length, position)
-				fs.closeSync(fd)
-				@buffers.push buffer
+				start = Math.floor(Math.random() * (file_size_in_bytes - length))
+				end = start + length
+				@sources.push(fs.createReadStream(file, {start, end}))
 			
 			callback null
 	
 	squeeze: (output_file)->
 		console.log ""
 		console.log "using some shit to create a masterpiece"
-		# output_file = "output.pcm.raw.shit0.wav"
-		# output_file = "output.raw.1024.exe.pcm"
-		output = Buffer.concat(shuffleArray(@buffers))
-		# console.log @buffers
-		# fs.writeFileSync output_file, output
-		fsu.writeFileUnique output_file, output
-		console.log ""
-		console.log "outputed to #{output_file}"
+		ws = fsu.createWriteStreamUnique(output_file)
+		for source in shuffleArray(@sources)
+			source.pipe(ws)
+		ws.on "open", ->
+			console.log ""
+			console.log "output to #{ws.path}"
+		
 		# context = new AudioContext
 		# 
 		# channels = context.format.numberOfChannels
@@ -92,9 +88,9 @@ sponge = new Sponge
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", -> # mp3s don't work well, they're frequency encoded
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
 sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
-	# sponge.squeeze("output.pcm.raw.shit202.wav")
-	# sponge.squeeze("output.au.raw.shit301.wav")
-	sponge.squeeze("output.4{-###}.raw.shit.wav.exe.pcm")
+	# sponge.squeeze("output/output.pcm.raw.shit202.wav")
+	# sponge.squeeze("output/output.au.raw.shit301.wav")
+	sponge.squeeze("output/output.4{-###}.raw.shit.wav.exe.pcm")
 
 # console.log "hey"
 # audioConverter = require "audio-converter"
@@ -108,5 +104,48 @@ sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
 # 	sponge.soak "temp/*.mp3", ->
 # 		sponge.squeeze()
 
-
-
+# SC = require "node-soundcloud"
+# 
+# # Initialize client 
+# console.log "init node-soundcloud"
+# SC.init
+# 	id: "99859bbbc016945344ec5ba5731400b4"
+# 	secret: fs.readFileSync("soundcloud-api.secret", "utf8")
+# 	uri: "http://localhost:3901/okay"
+# 
+# # Connect user to authorize application 
+# initOAuth = (req, res)->
+# 	url = SC.getConnectUrl()
+# 	
+# 	res.writeHead(301, Location: url)
+# 	res.end()
+# 
+# redirectHandler = (req, res)->
+# 	{code} = req.query
+# 	
+# 	SC.authorize code, (err, accessToken)->
+# 		throw err if err
+# 		# Client is now authorized and able to make API calls 
+# 		console.log "access token:", accessToken
+# 		
+# 		# SC.get "/tracks/164497989", (err, track)->
+# 		# 	throw err if err
+# 		# 	console.log track
+# 		
+# 		res.write("access token: #{accessToken}<br><br>")
+# 		
+# 		SC.get "/me", (err, data)->
+# 			throw err if err
+# 			console.log data
+# 			res.end(data)
+# 		
+# 		# http://api.soundcloud.com/tracks/275207096/stream
+# 
+# express = require "express"
+# app = express()
+# 
+# app.get "/", initOAuth
+# app.get "/okay", redirectHandler
+# 
+# app.listen 3901, ->
+# 	console.log "listening on http://localhost:3901"
