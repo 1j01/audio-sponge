@@ -1,0 +1,43 @@
+{
+  "name": "audio-sponge",
+  "description": "soak up some sound and squeeze some out",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/1j01/audio-sponge.git"
+  },
+  "bugs": {
+    "url": "http://github.com/1j01/audio-sponge/issues"
+  },
+  "license": "GPL-3.0",
+  "keywords": [
+    "audio",
+    "sound",
+    "music",
+    "generation",
+    "generator",
+    "procedural",
+    "pcg",
+    "composer",
+    "sampler",
+    "dumb",
+    "sponge",
+    "soak"
+  ],
+  "scripts": {
+    "start": "coffee sponge.coffee"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.10.0"
+  },
+  "dependencies": {
+    "audio-converter": "^1.0.11",
+    "audio-speaker": "^1.2.4",
+    "fsu": "^1.0.0",
+    "glob": "^7.0.5",
+    "lodash": "^4.13.1",
+    "speaker": "^0.3.0",
+    "wav": "^1.0.1",
+    "web-audio-api": "^0.2.2"
+  }
+}
