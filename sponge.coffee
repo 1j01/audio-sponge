@@ -11,10 +11,10 @@ shuffleArray = (array)->
 		[array[i], array[j]] = [array[j], array[i]]
 	array
 
+floorToMultiple = (x, n)-> Math.floor(x / n) * n
 
 class Sponge
 	constructor: ->
-		# @buffers = []
 		@sources = [] # array of readable streams
 	
 	soak: (audio_glob, callback)->
@@ -26,10 +26,10 @@ class Sponge
 				stats = fs.statSync(file)
 				file_size_in_bytes = stats.size
 				# for [0..3]
-				length = Math.floor(Math.random() * file_size_in_bytes)
+				length = floorToMultiple(Math.random() * file_size_in_bytes, 2)
 				length = Math.min(length, 1024 * 24)
-				start = Math.floor(Math.random() * (file_size_in_bytes - length))
-				end = start + length
+				start = floorToMultiple(Math.random() * (file_size_in_bytes - length), 2)
+				end = start + Math.max(0, length - 1)
 				@sources.push(fs.createReadStream(file, {start, end}))
 			
 			callback null
@@ -88,9 +88,9 @@ sponge = new Sponge
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", -> # mp3s don't work well, they're frequency encoded
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
 sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
-	# sponge.squeeze("output/output.pcm.raw.shit202.wav")
-	# sponge.squeeze("output/output.au.raw.shit301.wav")
-	sponge.squeeze("output/output.4{-###}.raw.shit.wav.exe.pcm")
+# sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", ->
+	sponge.squeeze("output/output.0x56{-###}.raw.shit.wav.exe.pcm")
+	# sponge.squeeze("output/output.0x77{-###}.raw.shit.wav.exe.pcm")
 
 # console.log "hey"
 # audioConverter = require "audio-converter"
