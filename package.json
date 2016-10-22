@@ -25,7 +25,8 @@
     "soak"
   ],
   "scripts": {
-    "start": "coffee sponge.coffee"
+    "start": "coffee app.coffee",
+    "sponge": "coffee sponge.coffee"
   },
   "devDependencies": {
     "coffee-script": "^1.10.0"

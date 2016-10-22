@@ -140,5 +140,3 @@ sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", -> # many wav files
 # sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", -> # all kinds of file types, "just whatever"
 	# sponge.squeeze("output/output{-###}.pcm")
 	sponge.squeeze()
-
-# require "./soundcloud"

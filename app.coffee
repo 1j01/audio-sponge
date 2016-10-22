@@ -40,7 +40,7 @@ redirectHandler = (req, res)->
 
 express = require "express"
 app = express()
-app.set('view engine', 'hbs')
+app.set("view engine", "hbs")
 
 app.get "/", (req, res)->
 	if accessToken
