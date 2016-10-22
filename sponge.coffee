@@ -4,8 +4,6 @@ fsu = require "fsu"
 glob = require "glob"
 Speaker = require "speaker"
 {AudioContext} = require "web-audio-api"
-streamToArray = require "stream-to-array"
-decode = require "audio-decode"
 
 shuffleArray = (array)->
 	for i in [array.length-1..0]
@@ -36,63 +34,22 @@ class Source
 		# @headerStream = fs.createReadStream(file, {start: 0, end: 1024})
 		# @readStream = fs.createReadStream(file, {start, end})
 		
-		@headerStream = fs.createReadStream(file, {start: 0, end: 0})
-		@readStream = fs.createReadStream(file)
-		
+		# @headerStream = fs.createReadStream(file, {start: 0, end: 0})
 		# @readStream = fs.createReadStream(file)
+		
+		@readStream = fs.createReadStream(file)
 		
 		# @buffer = fs.readFileSync(file)
 	
 	prepareAudioBuffer: (context, callback)->
-		# # streamToBufferArray @headerStream, (err, buffers)=>
-		# # 	return callback err if err
-		# # 	streamToBufferArray @readStream, (err, more_buffers)=>
-		# # 		return callback err if err
-		# # 		buffer = Buffer.concat(buffers.concat(more_buffers))
-		# 
-		# streamToArray @readStream, (err, array)=>
-		# 		return callback err if err
-		# 		# console.log array
-		# 		# process.exit()
-		# 		buffer = Buffer.concat(array)
-		# 		# do (buffer)->
-		# 		# context.decodeAudioData buffer,
-		# 		# decode array,
-		# 		# decode buffer,
-		# 			# (buffer)->
-		# 			# (err, buffer)->
-		# 			# 	return callback err if err
-		# 			# 	sampleRate = context.sampleRate # TODO: use sampleRate from source somehow
-		# 			# 	channels = 1 #context.format.numberOfChannels
-		# 			# 	
-		# 			# 	frameCount = sampleRate * 2
-		# 			# 	audioBuffer = context.createBuffer(2, frameCount, sampleRate)
-		# 			# 	
-		# 			# 	# console.log "frameCount", frameCount
-		# 			# 	
-		# 			# 	for channel in [0...channels]
-		# 			# 		# console.log "fill channel #{channel}"
-		# 			# 		# audioBuffer.copyToChannel(buffer, channel)
-		# 			# 		nowBuffering = audioBuffer.getChannelData(channel)
-		# 			# 		for i in [0..frameCount]
-		# 			# 			nowBuffering[i] = buffer[i]
-		# 			# 	
-		# 			# 	callback(null, audioBuffer)
-		# 			
-		# 			# (err)->
-		# 			# 	console.error err
-		# 		decode buffer, {context}, callback
-		
-		# decode @buffer, {context}, callback
-		
-		# # THIS ONE ACTUALLY WORKS
+		# this works more or less
 		# context.decodeAudioData @buffer,
 		# 	(audioBuffer)->
 		# 		callback(null, audioBuffer)
 		# 	(err)->
 		# 		callback err
 		
-		# THIS ONE WORKS TOO
+		# as does this
 		streamToBufferArray @readStream, (err, buffers)=>
 			return callback err if err
 			buffer = Buffer.concat(buffers)
@@ -104,6 +61,14 @@ class Source
 		
 		# it can definitely still run into some errors
 		# like Error: the 2 AudioBuffers don't have the same sampleRate
+		
+		# this doesn't work, though:
+		# streamToBufferArray @headerStream, (err, buffers)=>
+		# 	return callback err if err
+		# 	streamToBufferArray @readStream, (err, more_buffers)=>
+		# 		return callback err if err
+		# 		console.log buffers.concat(more_buffers)
+		# 		buffer = Buffer.concat(buffers.concat(more_buffers))
 
 
 class Sponge
@@ -117,17 +82,10 @@ class Sponge
 			console.log files
 			for file in files
 				@sources.push(new Source(file))
+			console.log "soaked up #{@sources.length} sources"
 			callback null
 	
 	squeeze: (output_file)->
-		# console.log ""
-		# console.log "using some shit to create a masterpiece"
-		# ws = fsu.createWriteStreamUnique(output_file)
-		# for source in shuffleArray(@sources)
-		# 	source.pipe(ws)
-		# ws.on "open", ->
-		# 	console.log ""
-		# 	console.log "output to #{ws.path}"
 		
 		context = new AudioContext
 		console.log "created AudioContext"
@@ -140,8 +98,6 @@ class Sponge
 			bitDepth: context.format.bitDepth
 			sampleRate: context.sampleRate
 		console.log "created Speaker"
-		
-		# context.outStream = process.stdout
 		
 		# context.outStream = ws = fsu.createWriteStreamUnique(output_file)
 		# ws = fsu.createWriteStreamUnique(output_file)
@@ -157,7 +113,6 @@ class Sponge
 					source = context.createBufferSource()
 					source.buffer = audioBuffer
 					source.connect(context.destination)
-					# source.start(Math.random() + i * 2)
 					source.start(i * 1.5)
 		
 		console.log "start!"
@@ -165,27 +120,15 @@ class Sponge
 
 sponge = new Sponge
 # sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.m4a", -> # doesn't work well
-# sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.wav", ->
-# sponge.soak "#{process.env.USERPROFILE}/Music/Audacity/**/*.au", ->
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.ogg", ->
 # sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", -> # many wav files
+# sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.wav", ->
 sponge.soak "#{process.env.USERPROFILE}/Music/*.wav", -> # less wav files
 # sponge.soak "#{process.env.USERPROFILE}/Music/audiocheck.*.wav", -> # very few wav files
 # sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", -> # "whatever"
-	sponge.squeeze("output/output{-###}.waviness.waveform.wave.wav.raw.pcm")
+	# sponge.squeeze("output/output{-###}.waviness.waveform.wave.wav.raw.pcm")
 	# sponge.squeeze("output/output.0x77{-###}.raw.shit.wav.exe.pcm")
-
-# console.log "hey"
-# audioConverter = require "audio-converter"
-# console.log "um"
-# audioConverter "#{process.env.USERPROFILE}/Google Drive/Sound/Piano Recordings", "temp",
-# 	progressBar: yes
-# .catch (err)->
-# 	console.error err
-# .then ->
-# 	console.log "Converted!"
-# 	sponge.soak "temp/*.mp3", ->
-# 		sponge.squeeze()
+	sponge.squeeze()
 
 # require "./soundcloud"
