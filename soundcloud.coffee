@@ -14,7 +14,7 @@ SC.init
 
 # Connect user to authorize application 
 initOAuth = (req, res)->
-	res.redirect(301, SC.getConnectUrl())
+	res.redirect(SC.getConnectUrl())
 
 auth = (code, callback)->
 	if accessToken
