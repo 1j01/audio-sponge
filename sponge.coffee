@@ -110,18 +110,20 @@ class Sponge
 		# 	console.log "output to #{ws.path}"
 		
 		using_sources = (source for source, i in shuffleArray(@sources) when i < 30)
-		console.log "using sources:"
-		console.log "  #{source}" for source in using_sources
+		console.log "preparing sources:"
 		for source, i in using_sources
 			do (source, i)=>
 				source.prepareAudioBuffer context, (err, audioBuffer)->
 					return console.error err if err
 					return console.error "audioBuffer is #{audioBuffer}" unless audioBuffer
+					if audioBuffer.sampleRate isnt context.sampleRate
+						return console.log "audioBuffer.sampleRate (#{audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
 					buffer_source = context.createBufferSource()
 					buffer_source.buffer = audioBuffer
 					buffer_source.connect(context.destination)
 					start_time = i * 1.5
 					buffer_source.start(start_time)
+					console.log "  #{source}"
 					setTimeout =>
 						console.log "start time for source #{i}, #{source}"
 					, start_time * 1000
