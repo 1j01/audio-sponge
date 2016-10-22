@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "audio-converter": "^1.0.11",
+    "audio-decode": "^1.2.1",
     "audio-speaker": "^1.2.4",
     "express": "^4.14.0",
     "fsu": "^1.0.0",
@@ -40,6 +41,7 @@
     "lodash": "^4.13.1",
     "node-soundcloud": "0.0.5",
     "speaker": "^0.3.0",
+    "stream-to-array": "^2.3.0",
     "wav": "^1.0.1",
     "web-audio-api": "^0.2.2"
   }

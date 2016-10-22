@@ -4,6 +4,8 @@ fsu = require "fsu"
 glob = require "glob"
 Speaker = require "speaker"
 {AudioContext} = require "web-audio-api"
+streamToArray = require "stream-to-array"
+decode = require "audio-decode"
 
 shuffleArray = (array)->
 	for i in [array.length-1..0]
@@ -13,6 +15,15 @@ shuffleArray = (array)->
 
 floorToMultiple = (x, n)-> Math.floor(x / n) * n
 
+streamToBufferArray = (stream, callback)->
+	buffers = []
+	stream.on "data", (buffer)->
+		buffers.push(buffer)
+	stream.on "end", ->
+		buffer = Buffer.concat(buffers)
+		callback(null, buffers)
+	stream.on "error", callback
+
 class Source
 	constructor: (file)->
 		stats = fs.statSync(file)
@@ -21,31 +32,79 @@ class Source
 		length = Math.min(length, 1024 * 24)
 		start = floorToMultiple(Math.random() * (file_size_in_bytes - length), 2)
 		end = start + Math.max(0, length - 1)
-		@readStream = fs.createReadStream(file, {start, end})
+		
+		# @headerStream = fs.createReadStream(file, {start: 0, end: 1024})
+		# @readStream = fs.createReadStream(file, {start, end})
+		
+		@headerStream = fs.createReadStream(file, {start: 0, end: 0})
+		@readStream = fs.createReadStream(file)
+		
+		# @readStream = fs.createReadStream(file)
+		
+		# @buffer = fs.readFileSync(file)
 	
 	prepareAudioBuffer: (context, callback)->
-		sampleRate = context.sampleRate # TODO: use sampleRate from source somehow
-		channels = 1 #context.format.numberOfChannels
-		buffers = []
-		@readStream.on "data", (buffer)->
-			buffers.push(buffer)
-		@readStream.on "end", ->
+		# # streamToBufferArray @headerStream, (err, buffers)=>
+		# # 	return callback err if err
+		# # 	streamToBufferArray @readStream, (err, more_buffers)=>
+		# # 		return callback err if err
+		# # 		buffer = Buffer.concat(buffers.concat(more_buffers))
+		# 
+		# streamToArray @readStream, (err, array)=>
+		# 		return callback err if err
+		# 		# console.log array
+		# 		# process.exit()
+		# 		buffer = Buffer.concat(array)
+		# 		# do (buffer)->
+		# 		# context.decodeAudioData buffer,
+		# 		# decode array,
+		# 		# decode buffer,
+		# 			# (buffer)->
+		# 			# (err, buffer)->
+		# 			# 	return callback err if err
+		# 			# 	sampleRate = context.sampleRate # TODO: use sampleRate from source somehow
+		# 			# 	channels = 1 #context.format.numberOfChannels
+		# 			# 	
+		# 			# 	frameCount = sampleRate * 2
+		# 			# 	audioBuffer = context.createBuffer(2, frameCount, sampleRate)
+		# 			# 	
+		# 			# 	# console.log "frameCount", frameCount
+		# 			# 	
+		# 			# 	for channel in [0...channels]
+		# 			# 		# console.log "fill channel #{channel}"
+		# 			# 		# audioBuffer.copyToChannel(buffer, channel)
+		# 			# 		nowBuffering = audioBuffer.getChannelData(channel)
+		# 			# 		for i in [0..frameCount]
+		# 			# 			nowBuffering[i] = buffer[i]
+		# 			# 	
+		# 			# 	callback(null, audioBuffer)
+		# 			
+		# 			# (err)->
+		# 			# 	console.error err
+		# 		decode buffer, {context}, callback
+		
+		# decode @buffer, {context}, callback
+		
+		# # THIS ONE ACTUALLY WORKS
+		# context.decodeAudioData @buffer,
+		# 	(audioBuffer)->
+		# 		callback(null, audioBuffer)
+		# 	(err)->
+		# 		callback err
+		
+		# THIS ONE WORKS TOO
+		streamToBufferArray @readStream, (err, buffers)=>
+			return callback err if err
 			buffer = Buffer.concat(buffers)
-			
-			frameCount = sampleRate * 2
-			audioBuffer = context.createBuffer(2, frameCount, sampleRate)
-			
-			# console.log "frameCount", frameCount
-			
-			for channel in [0...channels]
-				# console.log "fill channel #{channel}"
-				# audioBuffer.copyToChannel(buffer, channel)
-				nowBuffering = audioBuffer.getChannelData(channel)
-				for i in [0..frameCount]
-					nowBuffering[i] = buffer[i]
-			
-			callback(audioBuffer)
-	
+			context.decodeAudioData buffer,
+				(audioBuffer)->
+					callback(null, audioBuffer)
+				(err)->
+					callback err
+		
+		# it can definitely still run into some errors
+		# like Error: the 2 AudioBuffers don't have the same sampleRate
+
 
 class Sponge
 	constructor: ->
@@ -92,7 +151,9 @@ class Sponge
 		
 		for source, i in shuffleArray(@sources)
 			do (source, i)=>
-				source.prepareAudioBuffer context, (audioBuffer)->
+				source.prepareAudioBuffer context, (err, audioBuffer)->
+					return console.error err if err
+					return console.error "audioBuffer is #{audioBuffer}" unless audioBuffer
 					source = context.createBufferSource()
 					source.buffer = audioBuffer
 					source.connect(context.destination)
@@ -103,16 +164,15 @@ class Sponge
 
 
 sponge = new Sponge
-# sponge.soak("#{process.env.USERPROFILE}/Music/**/*.wav")
-# sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
 # sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.m4a", -> # doesn't work well
 # sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.wav", ->
 # sponge.soak "#{process.env.USERPROFILE}/Music/Audacity/**/*.au", ->
-# sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", -> # mp3s don't work well, they're frequency encoded
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
-sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
-# sponge.soak "#{process.env.USERPROFILE}/Music/audiocheck.*.wav", ->
-# sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", ->
+# sponge.soak "#{process.env.USERPROFILE}/Music/*.ogg", ->
+# sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", -> # many wav files
+sponge.soak "#{process.env.USERPROFILE}/Music/*.wav", -> # less wav files
+# sponge.soak "#{process.env.USERPROFILE}/Music/audiocheck.*.wav", -> # very few wav files
+# sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", -> # "whatever"
 	sponge.squeeze("output/output{-###}.waviness.waveform.wave.wav.raw.pcm")
 	# sponge.squeeze("output/output.0x77{-###}.raw.shit.wav.exe.pcm")
 
