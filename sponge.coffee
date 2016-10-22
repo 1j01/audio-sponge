@@ -34,6 +34,29 @@ class Sponge
 			
 			callback null
 	
+	setupAudioBuffer: (source, context, callback)->
+		sampleRate = context.sampleRate # TODO: use sampleRate from source somehow
+		channels = 1 #context.format.numberOfChannels
+		buffers = []
+		source.on "data", (buffer)->
+			buffers.push(buffer)
+		source.on "end", ->
+			buffer = Buffer.concat(buffers)
+			
+			frameCount = sampleRate * 2
+			audioBuffer = context.createBuffer(2, frameCount, sampleRate)
+			
+			console.log "frameCount", frameCount
+			
+			for channel in [0...channels]
+				console.log "fill channel #{channel}"
+				# audioBuffer.copyToChannel(buffer, channel)
+				nowBuffering = audioBuffer.getChannelData(channel)
+				for i in [0..frameCount]
+					nowBuffering[i] = buffer[i]
+			
+			callback(audioBuffer)
+	
 	squeeze: (output_file)->
 		# console.log ""
 		# console.log "using some shit to create a masterpiece"
@@ -64,33 +87,14 @@ class Sponge
 		# 	console.log ""
 		# 	console.log "output to #{ws.path}"
 		
-		
-		frameCount = sampleRate * 2
-		myArrayBuffer = context.createBuffer(2, frameCount, sampleRate)
-		
-		console.log "frameCount", frameCount
-		
-		# Fill the buffer with white noise;
-		# just random values between -1.0 and 1.0
-		for channel in [0...channels]
-			console.log "fill channel #{channel}"
-			# This gives us the actual ArrayBuffer that contains the data
-			nowBuffering = myArrayBuffer.getChannelData(channel)
-			for i in [0..frameCount]
-				# Math.random() is in [0; 1.0]
-				# audio needs to be in [-1.0; 1.0]
-				nowBuffering[i] = Math.random() * 2 - 1
-		
-		# Get an AudioBufferSourceNode.
-		# This is the AudioNode to use when we want to play an AudioBuffer
-		source = context.createBufferSource()
-		# set the buffer in the AudioBufferSourceNode
-		source.buffer = myArrayBuffer
-		# connect the AudioBufferSourceNode to the
-		# destination so we can hear the sound
-		source.connect(context.destination)
-		# start the source playing
-		source.start(0)
+		for source, i in shuffleArray(@sources)
+			do (source, i)=>
+				@setupAudioBuffer source, context, (audioBuffer)->
+					source = context.createBufferSource()
+					source.buffer = audioBuffer
+					source.connect(context.destination)
+					# source.start(Math.random() + i * 2)
+					source.start(i * 1.5)
 		
 		console.log "start!"
 
@@ -104,6 +108,7 @@ sponge = new Sponge
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", -> # mp3s don't work well, they're frequency encoded
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
 sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
+# sponge.soak "#{process.env.USERPROFILE}/Music/audiocheck.*.wav", ->
 # sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", ->
 	sponge.squeeze("output/output{-###}.waviness.waveform.wave.wav.raw.pcm")
 	# sponge.squeeze("output/output.0x77{-###}.raw.shit.wav.exe.pcm")
