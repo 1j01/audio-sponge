@@ -87,10 +87,10 @@ sponge = new Sponge
 # sponge.soak "#{process.env.USERPROFILE}/Music/Audacity/**/*.au", ->
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", -> # mp3s don't work well, they're frequency encoded
 # sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
-sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
-# sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", ->
-	sponge.squeeze("output/output.0x56{-###}.raw.shit.wav.exe.pcm")
-	# sponge.squeeze("output/output.0x77{-###}.raw.shit.wav.exe.pcm")
+# sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
+# # sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", ->
+# 	sponge.squeeze("output/output.0x56{-###}.raw.shit.wav.exe.pcm")
+# 	# sponge.squeeze("output/output.0x77{-###}.raw.shit.wav.exe.pcm")
 
 # console.log "hey"
 # audioConverter = require "audio-converter"
@@ -104,4 +104,4 @@ sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
 # 	sponge.soak "temp/*.mp3", ->
 # 		sponge.squeeze()
 
-# require "./soundcloud"
+require "./soundcloud"
