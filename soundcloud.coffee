@@ -2,17 +2,18 @@
 fs = require "fs"
 SC = require "node-soundcloud"
 
+clientID = "99859bbbc016945344ec5ba5731400b4" # fs.readFileSync("soundcloud-client-id", "utf8")
 accessToken = try fs.readFileSync("soundcloud-access-token", "utf8")
 
-# Initialize client 
+# Initialize client
 console.log "init node-soundcloud"
 SC.init
-	id: "99859bbbc016945344ec5ba5731400b4"
+	id: clientID
 	secret: fs.readFileSync("soundcloud-api.secret", "utf8")
 	uri: "http://localhost:3901/okay"
 	accessToken: accessToken
 
-# Connect user to authorize application 
+# Connect user to authorize application
 initOAuth = (req, res)->
 	res.redirect(SC.getConnectUrl())
 
@@ -49,7 +50,7 @@ app.get "/", (req, res)->
 			SC.get "/me/activities/tracks/affiliated", (err, data)->
 				return console.error err if err
 				tracks = (item.origin for item in data.collection)
-				res.render("index", {me, tracks, track_data: JSON.stringify(tracks, null, "\t")})
+				res.render("index", {me, tracks, client_id: clientID})
 		
 	else
 		initOAuth(req, res)

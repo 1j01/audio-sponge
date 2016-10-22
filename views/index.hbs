@@ -23,10 +23,10 @@
 		<!-- <h2>Track Data</h2>
 		<code class="block">{{track_data}}</code> -->
 		{{#each tracks}}
-			<div class="track" data-id="{{this.id}}">
-				<h3>{{this.title}}</h3>
-				<p>{{this.description}}</p>
-				<p><a href="{{this.stream_url}}">Stream Link</a></p>
+			<div class="track" data-id="{{id}}">
+				<h3>{{title}}</h3>
+				<p>{{description}}</p>
+				<p><a href="{{stream_url}}?client_id={{../client_id}}">Stream Link</a></p>
 			</div>
 		{{/each}}
 		<h2>Empty Audio Element</h2>
