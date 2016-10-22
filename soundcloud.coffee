@@ -44,17 +44,13 @@ app.set('view engine', 'hbs')
 app.get "/", (req, res)->
 	if accessToken
 		
-		# SC.get "/tracks/164497989", (err, track)->
-		# 	throw err if err
-		# 	console.log track
-		
 		SC.get "/me", (err, me)->
 			return console.error err if err
-			SC.get "/tracks/13158665", (err, track)->
+			SC.get "/me/activities/tracks/affiliated", (err, data)->
 				return console.error err if err
-				res.render("index", {me, track, track_data: JSON.stringify(track, null, "\t")})
+				tracks = (item.origin for item in data.collection)
+				res.render("index", {me, tracks, track_data: JSON.stringify(tracks, null, "\t")})
 		
-		# http://api.soundcloud.com/tracks/275207096/stream
 	else
 		initOAuth(req, res)
 
