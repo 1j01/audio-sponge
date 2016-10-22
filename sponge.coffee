@@ -13,6 +13,40 @@ shuffleArray = (array)->
 
 floorToMultiple = (x, n)-> Math.floor(x / n) * n
 
+class Source
+	constructor: (file)->
+		stats = fs.statSync(file)
+		file_size_in_bytes = stats.size
+		length = floorToMultiple(Math.random() * file_size_in_bytes, 2)
+		length = Math.min(length, 1024 * 24)
+		start = floorToMultiple(Math.random() * (file_size_in_bytes - length), 2)
+		end = start + Math.max(0, length - 1)
+		@readStream = fs.createReadStream(file, {start, end})
+	
+	prepareAudioBuffer: (context, callback)->
+		sampleRate = context.sampleRate # TODO: use sampleRate from source somehow
+		channels = 1 #context.format.numberOfChannels
+		buffers = []
+		@readStream.on "data", (buffer)->
+			buffers.push(buffer)
+		@readStream.on "end", ->
+			buffer = Buffer.concat(buffers)
+			
+			frameCount = sampleRate * 2
+			audioBuffer = context.createBuffer(2, frameCount, sampleRate)
+			
+			# console.log "frameCount", frameCount
+			
+			for channel in [0...channels]
+				# console.log "fill channel #{channel}"
+				# audioBuffer.copyToChannel(buffer, channel)
+				nowBuffering = audioBuffer.getChannelData(channel)
+				for i in [0..frameCount]
+					nowBuffering[i] = buffer[i]
+			
+			callback(audioBuffer)
+	
+
 class Sponge
 	constructor: ->
 		@sources = [] # array of readable streams
@@ -23,39 +57,8 @@ class Sponge
 			return callback err if err
 			console.log files
 			for file in files
-				stats = fs.statSync(file)
-				file_size_in_bytes = stats.size
-				# for [0..3]
-				length = floorToMultiple(Math.random() * file_size_in_bytes, 2)
-				length = Math.min(length, 1024 * 24)
-				start = floorToMultiple(Math.random() * (file_size_in_bytes - length), 2)
-				end = start + Math.max(0, length - 1)
-				@sources.push(fs.createReadStream(file, {start, end}))
-			
+				@sources.push(new Source(file))
 			callback null
-	
-	setupAudioBuffer: (source, context, callback)->
-		sampleRate = context.sampleRate # TODO: use sampleRate from source somehow
-		channels = 1 #context.format.numberOfChannels
-		buffers = []
-		source.on "data", (buffer)->
-			buffers.push(buffer)
-		source.on "end", ->
-			buffer = Buffer.concat(buffers)
-			
-			frameCount = sampleRate * 2
-			audioBuffer = context.createBuffer(2, frameCount, sampleRate)
-			
-			console.log "frameCount", frameCount
-			
-			for channel in [0...channels]
-				console.log "fill channel #{channel}"
-				# audioBuffer.copyToChannel(buffer, channel)
-				nowBuffering = audioBuffer.getChannelData(channel)
-				for i in [0..frameCount]
-					nowBuffering[i] = buffer[i]
-			
-			callback(audioBuffer)
 	
 	squeeze: (output_file)->
 		# console.log ""
@@ -89,7 +92,7 @@ class Sponge
 		
 		for source, i in shuffleArray(@sources)
 			do (source, i)=>
-				@setupAudioBuffer source, context, (audioBuffer)->
+				source.prepareAudioBuffer context, (audioBuffer)->
 					source = context.createBufferSource()
 					source.buffer = audioBuffer
 					source.connect(context.destination)
