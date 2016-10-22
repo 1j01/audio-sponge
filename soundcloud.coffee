@@ -48,11 +48,38 @@ app.get "/", (req, res)->
 		# 	console.log track
 		
 		console.log "get /me"
-		SC.get "/me", (err, data)->
+		SC.get "/me", (err, me)->
 			return console.error err if err
-			console.log data
-			
-			res.send("<p>Nothin' yet... <i>#{data.username}!</i></p><audio controls></audio>")
+			SC.get "/tracks/13158665", (err, track)->
+				return console.error err if err
+				res.send("""
+					<!doctype html>
+					<html>
+						<head>
+							<title>SoundClowning Around</title>
+							<style>
+								body {
+									font-family: sans-serif;
+								}
+								code.block {
+									display: block;
+									white-space: pre-wrap;
+									background: black;
+									color: white;
+									padding: 1em;
+								}
+							</style>
+						</head>
+						<body>
+							<h1>SoundClowning Around</h1>
+							<p>Authenticated as #{me.username}</p>
+							<h2>Track Data</h2>
+							<code class="block">#{JSON.stringify(track, null, "\t")}</code>
+							<h2>Empty Audio Element</h2>
+							<audio controls <!--src="#{track.stream_url}"-->></audio>
+						</body>
+					</html>
+				""")
 		
 		# http://api.soundcloud.com/tracks/275207096/stream
 	else
