@@ -36,6 +36,7 @@
     "express": "^4.14.0",
     "fsu": "^1.0.0",
     "glob": "^7.0.5",
+    "hbs": "^4.0.1",
     "lodash": "^4.13.1",
     "node-soundcloud": "0.0.5",
     "speaker": "^0.3.0",

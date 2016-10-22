@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+	<head>
+		<title>SoundClowning Around</title>
+		<style>
+			body {
+				font-family: sans-serif;
+			}
+			code.block {
+				display: block;
+				white-space: pre-wrap;
+				background: black;
+				color: white;
+				padding: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>SoundClowning Around</h1>
+		<p>Authenticated as {{me.username}}</p>
+		<h2>Track Data</h2>
+		<code class="block">{{track_data}}</code>
+		<h2>Empty Audio Element</h2>
+		<audio controls></audio> <!-- src="{{track.stream_url}}" -->
+	</body>
+</html>
