@@ -3,9 +3,10 @@
 
 soak up some sound and squeeze some out
 
-take stuff from the file system
+* glob a bunch of files from the file system
 
-choose random byte ranges, output
+* choose random byte ranges
 
-corrupted data crap to disk
+* string them together
 
+* output
