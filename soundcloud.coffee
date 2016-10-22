@@ -14,10 +14,7 @@ SC.init
 
 # Connect user to authorize application 
 initOAuth = (req, res)->
-	url = SC.getConnectUrl()
-	
-	res.writeHead(301, Location: url)
-	res.end()
+	res.redirect(301, SC.getConnectUrl())
 
 auth = (code, callback)->
 	if accessToken
@@ -31,35 +28,41 @@ auth = (code, callback)->
 			callback(err, accessToken)
 
 redirectHandler = (req, res)->
-	{code} = req.query
-	
-	auth code, (err, accessToken)->
+	auth req.query.code, (err, accessToken)->
 		return console.error err if err
-		# Client is now authorized and able to make API calls 
 		console.log "got access token:", accessToken
 		return console.error "accessToken should not be #{accessToken}" unless accessToken
 		
-		fs.writeFileSync("soundcloud-access-token", accessToken, "utf8")
+		fs.writeFile "soundcloud-access-token", accessToken, "utf8",
+		
+		res.redirect("/")
+
+express = require "express"
+app = express()
+
+app.get "/", (req, res)->
+	if accessToken
 		
 		# SC.get "/tracks/164497989", (err, track)->
 		# 	throw err if err
 		# 	console.log track
 		
-		res.write("access token: #{accessToken}<br><br>")
-		
 		console.log "get /me"
 		SC.get "/me", (err, data)->
 			return console.error err if err
 			console.log data
-			res.end(JSON.stringify(data))
+			
+			res.send("<p>Nothin' yet... <i>#{data.username}!</i></p><audio controls></audio>")
 		
 		# http://api.soundcloud.com/tracks/275207096/stream
+	else
+		initOAuth(req, res)
 
-express = require "express"
-app = express()
-
-app.get "/", initOAuth
-app.get "/okay", redirectHandler
+app.get "/okay", (req, res)->
+	if accessToken
+		res.redirect("/")
+	else
+		redirectHandler(req, res)
 
 app.listen 3901, ->
 	console.log "listening on http://localhost:3901"
