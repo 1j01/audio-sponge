@@ -118,6 +118,7 @@
 			/* .cub-1 styles */
 			.cub-1 {
 				transform: translateY(-1.5em); /* this is to center the button *visually* on the surface which is cut off by the container */
+				transform: translateY(calc(1em - 4vh)); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
 				opacity:1;
 				width:25em;
 				height:5em;
@@ -125,6 +126,7 @@
 			}
 			.cub-1:active {
 				transform: translateY(-1.5em) translateZ(-0.5em);
+				transform: translateY(calc(1em - 4vh)) translateZ(-0.5em); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
 			}
 			.cub-1,
 			.cub-1 * {
@@ -204,9 +206,16 @@
 				width: 100%;
 				height: 100%;
 				/*background: rgb(13, 27, 33);*/
-				box-shadow: rgba(0, 0, 0, 1) 0 0 500px 0px inset;
-				background: #ececec;
+				box-shadow: rgba(0, 0, 0, 0.18) 0 0 500px 0px inset;
+				/*background: #ececec;*/
 				transform: translateZ(-2em);
+				background:
+					radial-gradient(black 15%, transparent 16%) 0 0,
+					radial-gradient(black 15%, transparent 16%) 8px 8px,
+					radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+					radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+				/*background-color:#282828;*/
+				background-size:16px 16px;
 			}
 		</style>
 	</head>
