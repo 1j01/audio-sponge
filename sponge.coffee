@@ -4,6 +4,7 @@ fsu = require "fsu"
 glob = require "glob"
 Speaker = require "speaker"
 {AudioContext} = require "web-audio-api"
+# Meyda = require "meyda"
 
 shuffleArray = (array)->
 	for i in [array.length-1..0]
@@ -73,6 +74,10 @@ class Source
 		# 				callback(null, audioBuffer)
 		# 			(err)->
 		# 				callback err
+	
+	# findBeats: ->
+	# 	rms = Meyda.extract "rms", @buffer
+	# 	console.log rms
 
 
 class Sponge
@@ -118,6 +123,7 @@ class Sponge
 					return console.error "audioBuffer is #{audioBuffer}" unless audioBuffer
 					if audioBuffer.sampleRate isnt context.sampleRate
 						return console.log "audioBuffer.sampleRate (#{audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
+					# source.findBeats()
 					buffer_source = context.createBufferSource()
 					buffer_source.buffer = audioBuffer
 					buffer_source.connect(context.destination)

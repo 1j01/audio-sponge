@@ -1,12 +1,15 @@
 <!doctype html>
 <html>
 	<head>
-		<title>SoundClowning Around</title>
+		<title>Audio Sponge</title>
 		<style>
 			body {
+				background: #0d1b21;
+				color: #a4a9c3;
 				font-family: sans-serif;
-				max-width: 60em;
-				margin: 0 auto;
+				/*max-width: 60em;
+				margin: 0 auto;*/
+				text-align: center;
 			}
 			code.block {
 				display: block;
@@ -15,22 +18,243 @@
 				color: white;
 				padding: 1em;
 			}
+			h1 {
+				font-size: 3em;
+			}
+			h2 {
+				font-size: 1.5em;
+			}
+			/* /!\ You may need to add vendor prefixes in order to render the CSS properly (can use autoprefixer) /!\ */
+			#tridiv {
+				perspective: 800px;
+				/*position: absolute;*/
+				overflow: hidden;
+				/*left: 0;*/
+				/*top: 0;*/
+				width: 100%;
+				/*height: 100%;*/
+				height: 100px;
+				background: transparent;
+				font-size: 100%;
+			}
+			.face {
+				box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+			}
+			.scene, .shape, .face, .face-wrapper, .cr {
+				position: absolute;
+				transform-style: preserve-3d;
+			}
+			.scene {
+				width: 80em;
+				height: 80em;
+				top: 50%;
+				left: 50%;
+				margin: -40em 0 0 -40em;
+				pointer-events: none;
+			}
+			.shape {
+				top: 50%;
+				left: 50%;
+				width: 0;
+				height: 0;
+				transform-origin: 50%;
+				pointer-events: all;
+			}
+			.face, .face-wrapper {
+				overflow: hidden;
+				transform-origin: 0 0;
+				backface-visibility: hidden;
+				/* hidden by default, prevent blinking and other weird rendering glitchs */
+			}
+			.face {
+				background-size: 100% 100%!important;
+				background-position: center;
+			}
+			.face-wrapper .face {
+				left: 100%;
+				width: 100%;
+				height: 100%;
+			}
+			.photon-shader {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+			.side {
+				left: 50%;
+			}
+			.cr, .cr .side {
+				height: 100%;
+			}
+			[class*="cuboid"] .ft, [class*="cuboid"] .bk {
+				width: 100%;
+				height: 100%;
+			}
+			[class*="cuboid"] .bk {
+				left: 100%;
+			}
+			[class*="cuboid"] .rt {
+				transform: rotateY(-90deg) translateX(-50%);
+			}
+			[class*="cuboid"] .lt {
+				transform: rotateY(90deg) translateX(-50%);
+			}
+			[class*="cuboid"] .tp {
+				transform: rotateX(90deg) translateY(-50%);
+			}
+			[class*="cuboid"] .bm {
+				transform: rotateX(-90deg) translateY(-50%);
+			}
+			[class*="cuboid"] .lt {
+				left: 100%;
+			}
+			[class*="cuboid"] .bm {
+				top: 100%;
+			}
+			/* .cub-1 styles */
+			.cub-1 {
+				transform:translate3D(0em, 0em, 0em) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+				opacity:1;
+				width:25em;
+				height:5em;
+				margin:-2.5em 0 0 -12.5em;
+			}
+			.cub-1,
+			.cub-1 * {
+				transition: .1s ease-out;
+			}
+			.cub-1 .ft {
+				transform:translateZ(1.5em);
+			}
+			.cub-1 .bk {
+				transform:translateZ(-1.5em) rotateY(180deg);
+			}
+			.cub-1 .rt, .cub-1 .lt {
+				width:3em;
+				height:5em;
+			}
+			.cub-1 .tp, .cub-1 .bm {
+				width:25em;
+				height:3em;
+			}
+			.cub-1 .face {
+				background-color:#383354;
+			}
+			.cub-1:hover .face {
+				background-color:#443a79;
+			}
+			.cub-1:active .face {
+				background-color:#4e409c;
+			}
+			.cub-1:active {
+				transform:translate3D(0em, 0em, -0.5em) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+			}
+			.cub-1:active .rt,
+			.cub-1:active .lt {
+				width:2em;
+			}
+			.cub-1:active .tp,
+			.cub-1:active .bm {
+				height:2em;
+			}
+			.cub-1:active .ft {
+				transform:translateZ(1em);
+			}
+			.cub-1:active .bk {
+				transform:translateZ(-1em) rotateY(180deg);
+			}
+			button.shape {
+				font: inherit;
+			}
+			.listen-label,
+			.status-indicator {
+				pointer-events: none;
+				user-select: none;
+				-o-user-select: none;
+				-ms-user-select: none;
+				-moz-user-select: none;
+				-webkit-user-select: none;
+			}
+			.listen-label {
+				font-size: 2em;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 100%;
+			}
+			.status-indicator {
+				position: absolute;
+				right: 5px;
+				bottom: 5px;
+				transform: translateZ(2.5em);
+				transform-style: preserve-3d;
+				background: rgba(0, 0, 0, 0.13);
+				border: 1px solid rgba(0, 0, 0, 0.32);
+				padding: 0.3em;
+			}
+			.status-indicator.live {
+				color: red;
+			}
 		</style>
 	</head>
 	<body>
-		<h1>SoundClowning Around</h1>
-		<p>Authenticated as {{me.username}}</p>
-		<!-- <h2>Track Data</h2>
-		<code class="block">{{track_data}}</code> -->
+		<h1>Audio Sponge</h1>
+		{{!--
+		<div>Authenticated as {{me.username}}</div>
 		{{#each tracks}}
 			<div class="track" data-id="{{id}}">
 				<h3>{{title}}</h3>
 				<p>{{description}}</p>
-				<!-- <p><a href="{{stream_url}}?client_id={{../client_id}}">Stream Link</a></p> -->
 				<audio controls src="{{stream_url}}?client_id={{../client_id}}" preload="none"></audio>
 			</div>
 		{{/each}}
-		<!-- <h2>Empty Audio Element</h2>
-		<audio controls></audio> -->
+		--}}
+		<h2>The Sponge of Truth and Lies</h2>
+		<p>
+			In equal and oposite measure
+		</p>
+		<p>
+			Cathartic cacophony
+		</p>
+		<p>
+			Retched reverbertations
+		</p>
+		<p>
+			Automated abrasion
+		</p>
+		<div id="tridiv">
+			<div class="scene" style="-webkit-transform:rotateX(21deg) rotateY(0deg); -moz-transform:rotateX(21deg) rotateY(0deg); -ms-transform:rotateX(21deg) rotateY(0deg); transform:rotateX(21deg) rotateY(0deg); ">
+				<div class="shape cuboid-1 cub-1">
+					<div class="face ft">
+						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
+						<div class="listen-label">
+							<!-- <audio controls></audio> -->
+							► Listen
+						</div>
+						<div class="status-indicator not-connecting so-not-live offline">
+							● Offline
+						</div>
+					</div>
+					<div class="face bk">
+						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
+					</div>
+					<div class="face rt">
+						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
+					</div>
+					<div class="face lt">
+						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
+					</div>
+					<div class="face bm">
+						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
+					</div>
+					<div class="face tp">
+						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
