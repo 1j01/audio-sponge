@@ -4,7 +4,7 @@
 		<title>Audio Sponge</title>
 		<style>
 			body {
-				background: #0d1b21;
+				background: /*#0d1b21*/ #1f2733;
 				color: #a4a9c3;
 				font-family: sans-serif;
 				/*max-width: 60em;
@@ -27,20 +27,21 @@
 			/* /!\ You may need to add vendor prefixes in order to render the CSS properly (can use autoprefixer) /!\ */
 			#tridiv {
 				perspective: 800px;
-				/*position: absolute;*/
+				position: absolute;
 				overflow: hidden;
-				/*left: 0;*/
-				/*top: 0;*/
+				left: 0;
+				/* top: 50%; */
 				width: 100%;
-				/*height: 100%;*/
-				height: 100px;
+				height: 50%;
 				background: transparent;
 				font-size: 100%;
+				min-height: 200px;
 			}
 			.face {
 				box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
 			}
-			.scene, .shape, .face, .face-wrapper, .cr {
+			.scene, .shape, .face, .face-wrapper, .cr,
+			.surface-plane {
 				position: absolute;
 				transform-style: preserve-3d;
 			}
@@ -116,11 +117,14 @@
 			}
 			/* .cub-1 styles */
 			.cub-1 {
-				transform:translate3D(0em, 0em, 0em) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+				transform: translateY(-1.5em); /* this is to center the button *visually* on the surface which is cut off by the container */
 				opacity:1;
 				width:25em;
 				height:5em;
 				margin:-2.5em 0 0 -12.5em;
+			}
+			.cub-1:active {
+				transform: translateY(-1.5em) translateZ(-0.5em);
 			}
 			.cub-1,
 			.cub-1 * {
@@ -148,9 +152,6 @@
 			}
 			.cub-1:active .face {
 				background-color:#4e409c;
-			}
-			.cub-1:active {
-				transform:translate3D(0em, 0em, -0.5em) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
 			}
 			.cub-1:active .rt,
 			.cub-1:active .lt {
@@ -198,6 +199,15 @@
 			.status-indicator.live {
 				color: red;
 			}
+			.surface-plane {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				/*background: rgb(13, 27, 33);*/
+				box-shadow: rgba(0, 0, 0, 1) 0 0 500px 0px inset;
+				background: #ececec;
+				transform: translateZ(-2em);
+			}
 		</style>
 	</head>
 	<body>
@@ -214,7 +224,7 @@
 		--}}
 		<h2>The Sponge of Truth and Lies</h2>
 		<p>
-			In equal and oposite measure
+			In equal and opposite measure
 		</p>
 		<p>
 			Cathartic cacophony
@@ -254,6 +264,7 @@
 						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
 					</div>
 				</div>
+				<div class="surface-plane"></div>
 			</div>
 		</div>
 	</body>
