@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 	<head>
+		<meta charset="utf-8" />
 		<title>Audio Sponge</title>
 		<style>
 			body {
@@ -149,7 +150,8 @@
 			.cub-1 .face {
 				background-color:#383354;
 			}
-			.cub-1:hover .face {
+			.cub-1:hover .face,
+			.cub-1:focus .face {
 				background-color:#443a79;
 			}
 			.cub-1:active .face {
@@ -172,16 +174,22 @@
 			button.shape {
 				font: inherit;
 			}
-			.listen-label,
+			.shape:focus {
+				outline: none;
+			}
+			.button-label,
 			.status-indicator {
 				pointer-events: none;
+			}
+			.scene * {
+				cursor: default;
 				user-select: none;
 				-o-user-select: none;
 				-ms-user-select: none;
 				-moz-user-select: none;
 				-webkit-user-select: none;
 			}
-			.listen-label {
+			.button-label {
 				font-size: 2em;
 				display: flex;
 				align-items: center;
@@ -194,12 +202,13 @@
 				bottom: 5px;
 				transform: translateZ(2.5em);
 				transform-style: preserve-3d;
-				background: rgba(0, 0, 0, 0.13);
+				background: rgba(0, 0, 0, 0.13); /* NOTE: should inherit light text color */
+				text-shadow: rgba(8, 8, 8, 0.5) 0px 1px 1px;
 				border: 1px solid rgba(0, 0, 0, 0.32);
 				padding: 0.3em;
 			}
 			.status-indicator.live {
-				color: red;
+				color: #F44336;
 			}
 			.surface-plane {
 				position: absolute;
@@ -246,16 +255,14 @@
 		</p>
 		<div id="tridiv">
 			<div class="scene" style="-webkit-transform:rotateX(21deg) rotateY(0deg); -moz-transform:rotateX(21deg) rotateY(0deg); -ms-transform:rotateX(21deg) rotateY(0deg); transform:rotateX(21deg) rotateY(0deg); ">
-				<div class="shape cuboid-1 cub-1">
+				<div class="listen-button shape cuboid-1 cub-1" role="button" tabIndex="0">
 					<div class="face ft">
 						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
-						<div class="listen-label">
+						<div class="button-label">
 							<!-- <audio controls></audio> -->
-							► Listen
+							&#9654; Listen
 						</div>
-						<div class="status-indicator not-connecting so-not-live offline">
-							● Offline
-						</div>
+						<div class="status-indicator">Hello...</div>
 					</div>
 					<div class="face bk">
 						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
@@ -276,5 +283,32 @@
 				<div class="surface-plane"></div>
 			</div>
 		</div>
+		<script src="lib/coffee-script.js"></script>
+		<script type="text/coffeescript">
+			listen_button = document.querySelector(".listen-button")
+			status_indicator = document.querySelector(".status-indicator")
+			posible_statuses = ["loading", "connecting", "offline", "live"]
+			update_status = (status)->
+				status_indicator.classList.remove(each_status) for each_status in posible_statuses
+				status_indicator.classList.add(status)
+				status_indicator.innerHTML = switch status
+					when "loading"
+						"Loading..."
+					when "connecting"
+						"Connecting..."
+					when "offline"
+						"&#9679; Offline"
+					when "live"
+						"&#9679; Live"
+			update_status "loading"
+			setTimeout ->
+				update_status "offline"
+			, 500
+			listen_button.addEventListener "click", (e)->
+				update_status "connecting"
+				setTimeout ->
+					update_status "live"
+				, 500
+		</script>
 	</body>
 </html>
