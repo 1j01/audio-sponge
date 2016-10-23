@@ -26,10 +26,11 @@
 			<div class="track" data-id="{{id}}">
 				<h3>{{title}}</h3>
 				<p>{{description}}</p>
-				<p><a href="{{stream_url}}?client_id={{../client_id}}">Stream Link</a></p>
+				<!-- <p><a href="{{stream_url}}?client_id={{../client_id}}">Stream Link</a></p> -->
+				<audio controls src="{{stream_url}}?client_id={{../client_id}}" preload="none"></audio>
 			</div>
 		{{/each}}
-		<h2>Empty Audio Element</h2>
-		<audio controls></audio> <!-- src="{{track.stream_url}}" -->
+		<!-- <h2>Empty Audio Element</h2>
+		<audio controls></audio> -->
 	</body>
 </html>
