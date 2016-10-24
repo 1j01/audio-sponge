@@ -55,6 +55,7 @@
 				pointer-events: none;
 			}
 			.shape {
+				display: block;
 				top: 50%;
 				left: 50%;
 				width: 0;
@@ -125,7 +126,8 @@
 				height:5em;
 				margin:-2.5em 0 0 -12.5em;
 			}
-			.cub-1:active {
+			.cub-1:active,
+			.cub-1.pressed {
 				transform: translateY(-1.5em) translateZ(-0.5em);
 				transform: translateY(calc(1em - 4vh)) translateZ(-0.5em); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
 			}
@@ -154,24 +156,32 @@
 			.cub-1:focus .face {
 				background-color:#443a79;
 			}
-			.cub-1:active .face {
+			.cub-1:active .face,
+			.cub-1.pressed .face {
 				background-color:#4e409c;
 			}
 			.cub-1:active .rt,
-			.cub-1:active .lt {
+			.cub-1:active .lt,
+			.cub-1.pressed .rt,
+			.cub-1.pressed .lt {
 				width:2em;
 			}
 			.cub-1:active .tp,
-			.cub-1:active .bm {
+			.cub-1:active .bm,
+			.cub-1.pressed .tp,
+			.cub-1.pressed .bm {
 				height:2em;
 			}
-			.cub-1:active .ft {
+			.cub-1:active .ft,
+			.cub-1.pressed .ft {
 				transform:translateZ(1em);
 			}
-			.cub-1:active .bk {
+			.cub-1:active .bk,
+			.cub-1.pressed .bk {
 				transform:translateZ(-1em) rotateY(180deg);
 			}
 			button.shape {
+				color: inherit;
 				font: inherit;
 			}
 			.shape:focus {
@@ -255,6 +265,7 @@
 		</p>
 		<div id="tridiv">
 			<div class="scene" style="-webkit-transform:rotateX(21deg) rotateY(0deg); -moz-transform:rotateX(21deg) rotateY(0deg); -ms-transform:rotateX(21deg) rotateY(0deg); transform:rotateX(21deg) rotateY(0deg); ">
+				<!-- <button class="listen-button shape cuboid-1 cub-1"> -->
 				<div class="listen-button shape cuboid-1 cub-1" role="button" tabIndex="0">
 					<div class="face ft">
 						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
@@ -278,6 +289,7 @@
 					<div class="face tp">
 						<!-- <div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div> -->
 					</div>
+				<!-- </button> -->
 				</div>
 				<div class="surface-plane"></div>
 			</div>
@@ -314,7 +326,7 @@
 			setTimeout ->
 				update status: "offline", listening: no
 			, 500
-			listen_button.addEventListener "click", (e)->
+			toggle_listen = ->
 				if state.listening
 					update listening: no
 				else
@@ -322,6 +334,17 @@
 					setTimeout ->
 						update status: "live", listening: yes
 					, 500
+			
+			listen_button.addEventListener "click", toggle_listen
+			trigger_keys = [32, 13, 80] # Space, Enter, P
+			window.addEventListener "keydown", (e)->
+				if e.keyCode in trigger_keys
+					listen_button.classList.add("pressed")
+			window.addEventListener "keyup", (e)->
+				return if e.target isnt listen_button and e.target.tagName in ["input", "textarea", "select", "button"]
+				if e.keyCode in trigger_keys
+					listen_button.classList.remove("pressed")
+					toggle_listen()
 		</script>
 	</body>
 </html>
