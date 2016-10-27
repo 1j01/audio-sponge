@@ -25,6 +25,17 @@
 			h2 {
 				font-size: 1.5em;
 			}
+			.columns {
+				-moz-column-count: 2;
+				-webkit-column-count: 2;
+				column-count: 2;
+				max-width: 60em;
+				margin: 1em auto;
+			}
+			.columns p {
+				margin: 0;
+				padding: 0.5em;
+			}
 			/* /!\ You may need to add vendor prefixes in order to render the CSS properly (can use autoprefixer) /!\ */
 			#tridiv {
 				perspective: 800px;
@@ -251,42 +262,22 @@
 		{{/each}}
 		--}}
 		<h2>The Sponge of Truth and Lies</h2>
-		<p>
-			In equal and opposite measure
-		</p>
-		<p>
-			Cathartic cacophony
-		</p>
-		<p>
-			Retched reverbertations
-		</p>
-		<p>
-			Spontanious sound shenanigans
-		</p>
-		<p>
-			Automatic chaotic euphony
-		</p>
-		<p>
-			Synthetic symphonic hodgepodge
-		</p>
-		<p>
-			Percussive pandemonium and rambunctious rhythm
-		</p>
-		<p>
-			Wayward librettist
-		</p>
-		<p>
-			Markov would be so und
-		</p>
-		<p>
-			Select the server other is file not play
-		</p>
-		<p>
-			I seek not knowledge but story
-		</p>
-		<p>
-			Large birds, soft cheese, green fruit
-		</p>
+		<div class="columns">
+			<p>In equal and opposite measure</p>
+			<p>Cathartic cacophony</p>
+			<p>Retched reverbertations</p>
+			<p>Spontanious sound shenanigans</p>
+			<p>Automatic chaotic euphony</p>
+			<p>Synthetic symphonic hodgepodge</p>
+			<p>Percussive pandemonium and rambunctious rhythm</p>
+			<p>Wayward librettist - Markov would be so und</p>
+			<p>Select the server other is file not play</p>
+			<p>I seek not knowledge but story</p>
+			<p>Large birds, soft cheese, green fruit</p>
+			<p>A gathering of empty places</p>
+			<p>I would understand a colorless green idea</p>
+			<p>Blue spots thoughts not meant to let rot</p>
+		</div>
 		<div id="tridiv">
 			<div class="scene" style="-webkit-transform:rotateX(21deg) rotateY(0deg); -moz-transform:rotateX(21deg) rotateY(0deg); -ms-transform:rotateX(21deg) rotateY(0deg); transform:rotateX(21deg) rotateY(0deg); ">
 				<!-- <button class="listen-button shape cuboid-1 cub-1"> -->
