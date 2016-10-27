@@ -2,10 +2,8 @@
 listen_button = document.querySelector(".listen-button")
 button_label = listen_button.querySelector(".button-label")
 status_indicator = listen_button.querySelector(".status-indicator")
-# posible_statuses = ["loading", "connecting", "offline", "live"]
 state = {}
 update = (new_state)->
-	# status_indicator.classList.remove(each_status) for each_status in posible_statuses
 	status_indicator.classList.remove(state.status)
 	state[k] = v for k, v of new_state
 	{status, listening} = state
@@ -22,7 +20,7 @@ update = (new_state)->
 				"&#9679;&#xFE0E; Live"
 	button_label.innerHTML =
 		if listening
-			"&#11035;&#xFE0E; Stop" # The End # You Cannot Pause
+			"&#11035;&#xFE0E; Stop" # You can't pause yet, sorry
 		else
 			"&#9654;&#xFE0E; Listen"
 update status: "loading"

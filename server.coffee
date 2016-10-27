@@ -63,5 +63,14 @@ app.get "/okay", (req, res)->
 	else
 		redirectHandler(req, res)
 
+# Sponge = require "./Sponge"
+
+# app.get "/stream.endless.mp3", (req, res)->
+# app.get "/stream", (req, res)->
+# 	if accessToken
+# 		
+# 	else
+# 		res.redirect("/")
+
 app.listen 3901, ->
 	console.log "listening on http://localhost:3901"

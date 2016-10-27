@@ -2,9 +2,9 @@
 fs = require "fs"
 fsu = require "fsu"
 glob = require "glob"
-Speaker = require "speaker"
 {AudioContext} = require "web-audio-api"
 # Meyda = require "meyda"
+
 
 shuffleArray = (array)->
 	for i in [array.length-1..0]
@@ -80,6 +80,7 @@ class Source
 	# 	console.log rms
 
 
+module.exports =
 class Sponge
 	constructor: ->
 		@sources = []
@@ -102,18 +103,6 @@ class Sponge
 		channels = context.format.numberOfChannels
 		{sampleRate} = context
 		
-		context.outStream = new Speaker
-			channels: context.format.numberOfChannels
-			bitDepth: context.format.bitDepth
-			sampleRate: context.sampleRate
-		console.log "created Speaker"
-		
-		# context.outStream = ws = fsu.createWriteStreamUnique(output_file)
-		# ws = fsu.createWriteStreamUnique(output_file)
-		# ws.on "open", ->
-		# 	console.log ""
-		# 	console.log "output to #{ws.path}"
-		
 		using_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
 		for source, i in using_sources
@@ -135,16 +124,6 @@ class Sponge
 					, start_time * 1000
 		
 		console.log "start!"
+		# context.outStream
+		context
 
-
-sponge = new Sponge
-# sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.m4a", -> # doesn't seem to work
-# sponge.soak "#{process.env.USERPROFILE}/Music/*.mp3", ->
-# sponge.soak "#{process.env.USERPROFILE}/Music/*.ogg", ->
-sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", -> # many wav files
-# sponge.soak "#{process.env.USERPROFILE}/Google Drive/**/*.wav", -> # many wav files, lots of game sound effects here
-# sponge.soak "#{process.env.USERPROFILE}/Music/*.wav", -> # less wav files
-# sponge.soak "#{process.env.USERPROFILE}/Music/audiocheck.*.wav", -> # very few wav files
-# sponge.soak "#{process.env.USERPROFILE}/Google Drive/Sound/**/*.*", -> # all kinds of file types, "just whatever"
-	# sponge.squeeze("output/output{-###}.pcm")
-	sponge.squeeze()
