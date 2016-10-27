@@ -63,14 +63,38 @@ app.get "/okay", (req, res)->
 	else
 		redirectHandler(req, res)
 
-# Sponge = require "./Sponge"
+lame = require "lame"
 
-# app.get "/stream.endless.mp3", (req, res)->
-# app.get "/stream", (req, res)->
-# 	if accessToken
-# 		
-# 	else
-# 		res.redirect("/")
+Sponge = require "./Sponge"
+StreamWrapper = require "./serve-stream"
+
+sponge = null
+stream_wrapper = null
+
+start_stream = ->
+	sponge = new Sponge
+	stream_wrapper = new StreamWrapper
+	sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
+		context = sponge.squeeze()
+		context.outStream =
+			new lame.Encoder
+				# input
+				channels: context.format.numberOfChannels
+				bitDepth: context.format.bitDepth
+				sampleRate: context.sampleRate
+				# output
+				bitRate: 128
+				outSampleRate: 22050
+				mode: lame.STEREO  # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
+		stream_wrapper.setInput(context.outStream)
+
+app.get "/stream.endless.mp3", (req, res)->
+app.get "/stream", (req, res)->
+	if accessToken
+		start_stream() unless stream_wrapper
+		stream_wrapper.stream(req, res)
+	else
+		res.redirect("/")
 
 app.listen 3901, ->
 	console.log "listening on http://localhost:3901"
