@@ -1,0 +1,33 @@
+
+body {
+	background: /*#0d1b21*/ #1f2733;
+	color: #a4a9c3;
+	font-family: sans-serif;
+	/*max-width: 60em;
+	margin: 0 auto;*/
+	text-align: center;
+}
+code.block {
+	display: block;
+	white-space: pre-wrap;
+	background: black;
+	color: white;
+	padding: 1em;
+}
+h1 {
+	font-size: 3em;
+}
+h2 {
+	font-size: 1.5em;
+}
+.columns {
+	-moz-column-count: 2;
+	-webkit-column-count: 2;
+	column-count: 2;
+	max-width: 60em;
+	margin: 1em auto;
+}
+.columns p {
+	margin: 0;
+	padding: 0.5em;
+}

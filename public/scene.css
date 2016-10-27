@@ -1,0 +1,212 @@
+
+/* /!\ You may need to add vendor prefixes in order to render the CSS properly (can use autoprefixer) /!\ */
+#tridiv {
+	perspective: 800px;
+	position: absolute;
+	overflow: hidden;
+	left: 0;
+	/* top: 50%; */
+	width: 100%;
+	height: 50%;
+	background: transparent;
+	font-size: 100%;
+	min-height: 200px;
+}
+.face {
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+.scene, .shape, .face, .face-wrapper, .cr,
+.surface-plane {
+	position: absolute;
+	transform-style: preserve-3d;
+}
+.scene {
+	width: 80em;
+	height: 80em;
+	top: 50%;
+	left: 50%;
+	margin: -40em 0 0 -40em;
+	pointer-events: none;
+}
+.shape {
+	display: block;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	transform-origin: 50%;
+	pointer-events: all;
+}
+.face, .face-wrapper {
+	overflow: hidden;
+	transform-origin: 0 0;
+	backface-visibility: hidden;
+	/* hidden by default, prevent blinking and other weird rendering glitchs */
+}
+.face {
+	background-size: 100% 100%!important;
+	background-position: center;
+}
+.face-wrapper .face {
+	left: 100%;
+	width: 100%;
+	height: 100%;
+}
+.photon-shader {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+.side {
+	left: 50%;
+}
+.cr, .cr .side {
+	height: 100%;
+}
+[class*="cuboid"] .ft, [class*="cuboid"] .bk {
+	width: 100%;
+	height: 100%;
+}
+[class*="cuboid"] .bk {
+	left: 100%;
+}
+[class*="cuboid"] .rt {
+	transform: rotateY(-90deg) translateX(-50%);
+}
+[class*="cuboid"] .lt {
+	transform: rotateY(90deg) translateX(-50%);
+}
+[class*="cuboid"] .tp {
+	transform: rotateX(90deg) translateY(-50%);
+}
+[class*="cuboid"] .bm {
+	transform: rotateX(-90deg) translateY(-50%);
+}
+[class*="cuboid"] .lt {
+	left: 100%;
+}
+[class*="cuboid"] .bm {
+	top: 100%;
+}
+/* .cub-1 styles */
+.cub-1 {
+	transform: translateY(-1.5em); /* this is to center the button *visually* on the surface which is cut off by the container */
+	transform: translateY(calc(1em - 4vh)); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
+	opacity:1;
+	width:25em;
+	height:5em;
+	margin:-2.5em 0 0 -12.5em;
+}
+.cub-1:active,
+.cub-1.pressed {
+	transform: translateY(-1.5em) translateZ(-0.5em);
+	transform: translateY(calc(1em - 4vh)) translateZ(-0.5em); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
+}
+.cub-1,
+.cub-1 * {
+	transition: .1s ease-out;
+}
+.cub-1 .ft {
+	transform:translateZ(1.5em);
+}
+.cub-1 .bk {
+	transform:translateZ(-1.5em) rotateY(180deg);
+}
+.cub-1 .rt, .cub-1 .lt {
+	width:3em;
+	height:5em;
+}
+.cub-1 .tp, .cub-1 .bm {
+	width:25em;
+	height:3em;
+}
+.cub-1 .face {
+	background-color:#383354;
+}
+.cub-1:hover .face,
+.cub-1:focus .face {
+	background-color:#443a79;
+}
+.cub-1:active .face,
+.cub-1.pressed .face {
+	background-color:#4e409c;
+}
+.cub-1:active .rt,
+.cub-1:active .lt,
+.cub-1.pressed .rt,
+.cub-1.pressed .lt {
+	width:2em;
+}
+.cub-1:active .tp,
+.cub-1:active .bm,
+.cub-1.pressed .tp,
+.cub-1.pressed .bm {
+	height:2em;
+}
+.cub-1:active .ft,
+.cub-1.pressed .ft {
+	transform:translateZ(1em);
+}
+.cub-1:active .bk,
+.cub-1.pressed .bk {
+	transform:translateZ(-1em) rotateY(180deg);
+}
+button.shape {
+	color: inherit;
+	font: inherit;
+}
+.shape:focus {
+	outline: none;
+}
+.button-label,
+.status-indicator {
+	pointer-events: none;
+}
+.scene * {
+	cursor: default;
+	user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.button-label {
+	font-size: 2em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+.status-indicator {
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+	transform: translateZ(2.5em);
+	transform-style: preserve-3d;
+	background: rgba(0, 0, 0, 0.13); /* NOTE: should inherit light text color */
+	text-shadow: rgba(8, 8, 8, 0.5) 0px 1px 1px;
+	border: 1px solid rgba(0, 0, 0, 0.32);
+	padding: 0.3em;
+}
+.status-indicator.live {
+	color: #F44336;
+}
+.surface-plane {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	/*background: rgb(13, 27, 33);*/
+	box-shadow: rgba(0, 0, 0, 0.18) 0 0 500px 0px inset;
+	/*background: #ececec;*/
+	transform: translateZ(-2em);
+	background:
+		radial-gradient(black 15%, transparent 16%) 0 0,
+		radial-gradient(black 15%, transparent 16%) 8px 8px,
+		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+	/*background-color:#282828;*/
+	background-size:16px 16px;
+}
