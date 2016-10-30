@@ -40,20 +40,19 @@ redirectHandler = (req, res)->
 
 express = require "express"
 app = express()
-app.set("view engine", "hbs")
 
 app.use(express.static("public"))
 
 app.get "/", (req, res)->
 	if accessToken
+		# SC.get "/me", (err, me)->
+		# 	return console.error err if err
+		# 	SC.get "/me/activities/tracks/affiliated", (err, data)->
+		# 		return console.error err if err
+		# 		tracks = (item.origin for item in data.collection)
+		# 		res.render("index", {me, tracks, client_id: clientID})
 		
-		SC.get "/me", (err, me)->
-			return console.error err if err
-			SC.get "/me/activities/tracks/affiliated", (err, data)->
-				return console.error err if err
-				tracks = (item.origin for item in data.collection)
-				res.render("index", {me, tracks, client_id: clientID})
-		
+		res.sendFile("index.html", root: __dirname)
 	else
 		initOAuth(req, res)
 
