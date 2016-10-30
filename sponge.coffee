@@ -1,6 +1,5 @@
 
 fs = require "fs"
-fsu = require "fsu"
 glob = require "glob"
 {AudioContext} = require "web-audio-api"
 # Meyda = require "meyda"
@@ -42,7 +41,7 @@ class Source
 	toString: -> "file:#{@path}"
 	
 	prepareAudioBuffer: (context, callback)->
-		# this works more or less
+		# this works
 		context.decodeAudioData @buffer,
 			(audioBuffer)->
 				callback(null, audioBuffer)
@@ -58,9 +57,6 @@ class Source
 		# 			callback(null, audioBuffer)
 		# 		(err)->
 		# 			callback err
-		
-		# either way it can definitely still run into some errors
-		# like Error: the 2 AudioBuffers don't have the same sampleRate
 		
 		# this doesn't really work, though:
 		# streamToBufferArray @headerStream, (err, buffers)=>
@@ -125,7 +121,5 @@ class Sponge
 					# 	console.log "theoretical start time for source ##{i}: #{source}"
 					# , start_time * 1000
 		
-		console.log "start!"
-		# context.outStream
 		context
 

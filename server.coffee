@@ -73,7 +73,7 @@ stream_wrapper = null
 start_stream = ->
 	sponge = new Sponge
 	stream_wrapper = new StreamWrapper
-	sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
+	sponge.soak process.env.AUDIO_GLOB, ->
 		context = sponge.squeeze()
 		bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
 		throttle =

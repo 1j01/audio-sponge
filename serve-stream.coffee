@@ -14,7 +14,6 @@ class StreamWrapper extends Writable
 		@burstChunks = []
 	
 	_write: (chunk, encoding, callback)=>
-		# console.log "writing #{chunk.length} bytes to #{@clients.length} clients"
 		for client in @clients
 			client.write(chunk)
 		@burstChunks.push(chunk)
