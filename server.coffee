@@ -104,5 +104,11 @@ app.get "/stream", (req, res)->
 	else
 		res.redirect("/")
 
+app.get "/ping", (req, res)->
+	res.writeHead 200,
+		"Cache-Control": "no-store, must-revalidate"
+		"Expires": "0"
+	res.end("pong")
+
 app.listen 3901, ->
 	console.log "listening on http://localhost:3901"

@@ -13,8 +13,8 @@ update = (new_state)->
 		switch status
 			when "loading"
 				"Loading..."
-			when "connecting"
-				"Connecting..."
+			# when "connecting"
+			# 	"Connecting..."
 			when "offline"
 				"&#9679;&#xFE0E; Offline"
 			when "live"
@@ -24,25 +24,54 @@ update = (new_state)->
 			"&#11035;&#xFE0E; Stop" # You can't pause yet, sorry
 		else
 			"&#9654;&#xFE0E; Listen"
+
 toggle_listen = ->
 	if state.listening
-		update listening: no
 		audio.pause()
+		update listening: no
 	else
-		update status: "connecting"
 		audio.play()
+		# update status: "connecting"
+		check_status()
 
 update status: "loading"
 audio = document.createElement("audio")
-# audio.preload = "none"
-# TODO: actually indicate whether the stream is live
+audio.preload = "none"
 audio.src = "stream"
-audio.addEventListener "canplay", ->
-	update status: "live"
 audio.addEventListener "error", ->
 	update status: "offline", listening: no
-audio.addEventListener "playing", ->
-	update status: "live", listening: yes
+# probably_offline_now = ->
+# 	if state.status is "offline"
+# 		update listening: no
+# audio.addEventListener "stalled", probably_offline_now
+# audio.addEventListener "waiting", probably_offline_now
+# audio.addEventListener "suspend", probably_offline_now
+audio.addEventListener "play", ->
+	update listening: yes
+audio.addEventListener "pause", ->
+	update listening: no
+
+check_status = ->
+	req = new XMLHttpRequest()
+	req.addEventListener "readystatechange", ->
+		# console?.log "readystatechange", req.readyState, req.status
+		if req.readyState is 4
+			if req.status in [0, 200]
+				update status: "live"
+			else
+				update status: "offline", listening: no
+	req.addEventListener "error", ->
+		# console?.log "error", arguments
+		update status: "offline", listening: no
+	req.open("GET", "ping")
+	req.send()
+
+do periodically_check_status = ->
+	check_status()
+	setTimeout ->
+		# wait also until the page is visible
+		requestAnimationFrame periodically_check_status
+	, 5000
 
 listen_button.addEventListener "click", toggle_listen
 trigger_keys = [32, 13, 80] # Space, Enter, P
