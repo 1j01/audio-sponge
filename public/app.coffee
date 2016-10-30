@@ -2,6 +2,7 @@
 listen_button = document.querySelector(".listen-button")
 button_label = listen_button.querySelector(".button-label")
 status_indicator = listen_button.querySelector(".status-indicator")
+
 state = {}
 update = (new_state)->
 	status_indicator.classList.remove(state.status)
@@ -23,18 +24,25 @@ update = (new_state)->
 			"&#11035;&#xFE0E; Stop" # You can't pause yet, sorry
 		else
 			"&#9654;&#xFE0E; Listen"
-update status: "loading"
-setTimeout ->
-	update status: "offline", listening: no
-, 500
 toggle_listen = ->
 	if state.listening
 		update listening: no
+		audio.pause()
 	else
 		update status: "connecting"
-		setTimeout ->
-			update status: "live", listening: yes
-		, 500
+		audio.play()
+
+update status: "loading"
+audio = document.createElement("audio")
+# audio.preload = "none"
+# TODO: actually indicate whether the stream is live
+audio.src = "stream"
+audio.addEventListener "canplay", ->
+	update status: "live"
+audio.addEventListener "error", ->
+	update status: "offline", listening: no
+audio.addEventListener "playing", ->
+	update status: "live", listening: yes
 
 listen_button.addEventListener "click", toggle_listen
 trigger_keys = [32, 13, 80] # Space, Enter, P
