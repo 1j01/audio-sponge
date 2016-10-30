@@ -69,7 +69,6 @@ Sponge = require "./Sponge"
 StreamWrapper = require "./serve-stream"
 Throttle = require "throttle"
 
-sponge = null
 stream_wrapper = null
 
 start_stream = ->
@@ -78,12 +77,11 @@ start_stream = ->
 	sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
 		context = sponge.squeeze()
 		bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
-		context.outStream = new Throttle
-			bps: bytesPerSample * context.sampleRate
-			chunkSize: bytesPerSample * 1024
-		# context.outStream.on "data", (data)->
-		# 	console.log "throttled data", data.length
-		stream = context.outStream.pipe(
+		throttle =
+			new Throttle
+				bps: bytesPerSample * context.sampleRate
+				chunkSize: bytesPerSample * 1024
+		encoder =
 			new lame.Encoder
 				# input
 				channels: context.format.numberOfChannels
@@ -93,9 +91,11 @@ start_stream = ->
 				bitRate: 128
 				outSampleRate: 22050
 				mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
-		)
 		
-		stream_wrapper.setInput(stream)
+		context.outStream = throttle
+		throttle
+			.pipe(encoder)
+			.pipe(stream_wrapper)
 
 app.get "/stream", (req, res)->
 	if accessToken

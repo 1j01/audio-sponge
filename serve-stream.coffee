@@ -1,33 +1,34 @@
 
-class StreamWrapper
-	constructor: ->
-		@maxListeners = 50
-		@maxBurstChunks = 1024 # this could use some fine-tuning
-		@inputStream = null
+{Writable} = require "stream"
+
+class StreamWrapper extends Writable
+	constructor: (options)->
+		unless @ instanceof StreamWrapper
+			return new StreamWrapper(options)
+		
+		super(options)
+		@maxClients = options?.maxClients ? 100
+		@maxBurstChunks = options?.maxBurstChunks ? 1024 # this could probably use some fine-tuning
+		@contentType = options?.contentType ? "audio/mpeg"
 		@clients = []
-		@chunks = []
+		@burstChunks = []
 	
-	setInput: (inputStream)=>
-		@inputStream?.removeListener(@onData)
-		@inputStream = inputStream
-		for response in @clients
-			@inputStream?.addListener("data", @onData)
-	
-	onData: (data)=>
-		# console.log "writing #{data.length} bytes to #{@clients.length} clients"
+	_write: (chunk, encoding, callback)=>
+		# console.log "writing #{chunk.length} bytes to #{@clients.length} clients"
 		for client in @clients
-			client.write(data)
-		@chunks.push(data)
-		if @chunks.length > @maxBurstChunks
-			@chunks.shift()
+			client.write(chunk)
+		@burstChunks.push(chunk)
+		if @burstChunks.length > @maxBurstChunks
+			@burstChunks.shift()
+		callback()
 	
 	stream: (request, response)=>
 		headers =
-			"Content-Type": "audio/mpeg"
+			"Content-Type": @contentType
 			"Connection": "close"
 			"Transfer-Encoding": "identity"
 		
-		if @clients.length > @maxListeners
+		if @clients.length > @maxClients
 			request.connection.emit "close"
 			return
 		
@@ -36,8 +37,8 @@ class StreamWrapper
 		
 		@clients.push(response)
 		
-		console.log "burst #{@chunks.length} chunks to new client (#{@clients.length})"
-		for chunk in @chunks
+		console.log "burst #{@burstChunks.length} chunks to new client (#{@clients.length})"
+		for chunk in @burstChunks
 			response.write(chunk)
 		
 		request.connection.on "close", =>
