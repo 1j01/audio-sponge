@@ -77,35 +77,13 @@ start_stream = ->
 	stream_wrapper = new StreamWrapper
 	sponge.soak "#{process.env.USERPROFILE}/Music/**/*.wav", ->
 		context = sponge.squeeze()
-		# bitRate = 128
-		# outSampleRate = 22050
-		# context.outStream =
-		# 	new lame.Encoder
-		# 		# input
-		# 		channels: context.format.numberOfChannels
-		# 		bitDepth: context.format.bitDepth
-		# 		sampleRate: context.sampleRate
-		# 		# output
-		# 		bitRate: bitRate
-		# 		outSampleRate: outSampleRate
-		# 		# mode: lame.STEREO  # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
-		# 		mode: lame.MONO
-		# 
-		# # stream = context.outStream.pipe(new Throttle(outSampleRate * bitRate))
-		# stream = context.outStream.pipe(new Throttle(outSampleRate * bitRate / 8))
-		# # stream = context.outStream.pipe(new Throttle(bitRate / 8))
-		# # stream = context.outStream.pipe(new Throttle(bitRate))
-		# # stream = context.outStream
-		# stream_wrapper.setInput(stream)
-		#########
 		bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
 		context.outStream = new Throttle
 			bps: bytesPerSample * context.sampleRate
-			chunkSize: 100
-			# chunkSize: bytesPerSample
-			# highWaterMark: bytesPerSample * context.sampleRate / 10
+			chunkSize: bytesPerSample * 1024
+		# context.outStream.on "data", (data)->
+		# 	console.log "throttled data", data.length
 		stream = context.outStream.pipe(
-		# stream = context.outStream = (
 			new lame.Encoder
 				# input
 				channels: context.format.numberOfChannels
@@ -114,10 +92,8 @@ start_stream = ->
 				# output
 				bitRate: 128
 				outSampleRate: 22050
-				mode: lame.STEREO  # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
-				# highWaterMark: 128 * 22050
+				mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
 		)
-		# FIXME: It now takes several seconds (WAY too long) for a client to start recieving audio
 		
 		stream_wrapper.setInput(stream)
 

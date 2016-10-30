@@ -125,7 +125,7 @@ class Sponge
 						delta_context_time = context.currentTime - last_context_time
 						delta_time = Date.now() / 1000 - last_time
 						# console.log "delta context time: #{elapsed_context_time.toFixed(2)}s, delta time: #{elapsed_time.toFixed(2)}"
-						console.log "playing at #{(delta_context_time/delta_time*100).toFixed(2)}% speed"
+						# console.log "playing at #{(delta_context_time/delta_time*100).toFixed(2)}% speed"
 						last_context_time = context.currentTime
 						last_time = Date.now() / 1000
 					buffer_source.start(start_time)

@@ -37,10 +37,12 @@
     "glob": "^7.0.5",
     "hbs": "^4.0.1",
     "lame": "^1.2.4",
+    "limiter": "^1.1.0",
     "meyda": "^3.1.1",
     "node-soundcloud": "0.0.5",
     "speaker": "^0.3.0",
     "throttle": "^1.0.3",
+    "through2": "^2.0.1",
     "wav": "^1.0.1",
     "web-audio-api": "^0.2.2"
   }
