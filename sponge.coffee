@@ -103,6 +103,9 @@ class Sponge
 		channels = context.format.numberOfChannels
 		{sampleRate} = context
 		
+		last_context_time = context.currentTime
+		last_time = Date.now() / 1000
+		
 		using_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
 		for source, i in using_sources
@@ -117,11 +120,19 @@ class Sponge
 					buffer_source.buffer = audioBuffer
 					buffer_source.connect(context.destination)
 					start_time = i * 1.5
+					buffer_source.onended = =>
+						console.log "source ##{i} ended: #{source}"
+						delta_context_time = context.currentTime - last_context_time
+						delta_time = Date.now() / 1000 - last_time
+						# console.log "delta context time: #{elapsed_context_time.toFixed(2)}s, delta time: #{elapsed_time.toFixed(2)}"
+						console.log "playing at #{(delta_context_time/delta_time*100).toFixed(2)}% speed"
+						last_context_time = context.currentTime
+						last_time = Date.now() / 1000
 					buffer_source.start(start_time)
 					console.log "  #{source}"
-					setTimeout =>
-						console.log "start time for source #{i}, #{source}"
-					, start_time * 1000
+					# setTimeout =>
+					# 	console.log "theoretical start time for source ##{i}: #{source}"
+					# , start_time * 1000
 		
 		console.log "start!"
 		# context.outStream
