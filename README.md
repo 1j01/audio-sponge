@@ -1,12 +1,34 @@
 
 # audio-sponge
 
-soak up some sound and squeeze some out
+soak up some sound, and squeeze some out
 
-* glob a bunch of files from the file system
+* globs a bunch of files (TODO: stream from other sources)
 
-* choose random byte ranges
+* chooses random byte ranges (TODO: detect beats and such)
 
-* string them together
+* plays them staggered on top of each other (TODO: rhythm and rhyme)
 
-* output
+* streams to listeners on a webpage (TODO: host stream and site)
+
+------------
+
+* In equal and opposite measure
+* Cathartic cacophony
+* Retched reverbertations
+* Spontanious sound shenanigans
+* Automatic chaotic euphony
+* Synthetic symphonic hodgepodge
+* Percussive pandemonium and rambunctious rhythm
+* Wayward librettist - Markov would be so und
+* Select the server other is file not play
+* I seek not knowledge but story
+* Large birds, soft cheese, green fruit
+* A gathering of empty places
+* I would understand a colorless green idea
+* Blue spots thoughts not meant to let rot
+
+------------
+
+By the board above the books  
+Lies a truth between the crooks
