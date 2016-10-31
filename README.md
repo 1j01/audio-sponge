@@ -7,7 +7,7 @@ soak up some sound, and squeeze some out
 
 * chooses random byte ranges (TODO: detect beats and such)
 
-* plays them staggered on top of each other (TODO: rhythm and rhyme)
+* plays them in a fixed rhythm (TODO: rhyme and reason)
 
 * streams to listeners on a webpage (TODO: host stream and site)
 
