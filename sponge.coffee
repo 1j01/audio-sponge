@@ -158,7 +158,9 @@ class Sponge
 				newAudioBuffer = sliceAudioBuffer audioBuffer, start, end, context
 				callback(null, newAudioBuffer)
 			(err, beats)->
-				rhythm = "a a a bca a a bca a a bca addddd"
+				# rhythm = "a a a bca a a bca a a bca addddd"
+				# rhythm = "acacbcddacacbcddacacbcdddacacded"
+				rhythm = "deadbeatdeadbeatdeadbeatbeatbaah"
 				bpm = 128
 				bps = 60 / bpm
 				add_beat = (beat_type_index, t)->
