@@ -31,10 +31,10 @@ class Source
 		start = floorToMultiple(Math.random() * (file_size_in_bytes - length), 2)
 		end = start + Math.max(0, length - 1)
 		
-		# @headerStream = fs.createReadStream(file, {start: 0, end: 16*2048})
-		# @readStream = fs.createReadStream(file, {start, end})
+		# @headerStream = fs.createReadStream(@path, {start: 0, end: 16*2048})
+		# @readStream = fs.createReadStream(@path, {start, end})
 		
-		# @readStream = fs.createReadStream(file)
+		# @readStream = fs.createReadStream(@path)
 		
 		@buffer = fs.readFileSync(@path)
 	
@@ -63,13 +63,17 @@ class Source
 		# 	return callback err if err
 		# 	streamToBufferArray @readStream, (err, more_buffers)=>
 		# 		return callback err if err
-		# 		console.log buffers.concat(more_buffers)
+		# 		# console.log buffers.concat(more_buffers)
 		# 		buffer = Buffer.concat(buffers.concat(more_buffers))
 		# 		context.decodeAudioData buffer,
 		# 			(audioBuffer)->
 		# 				callback(null, audioBuffer)
 		# 			(err)->
 		# 				callback err
+		# it'd need to align with the frame boundaries
+		# offset by the header which may not always be a multiple of the frame size
+		# I could get this information with node-wav,
+		# but I don't really want to create a dependency on a specific file type
 	
 	# findBeats: ->
 	# 	rms = Meyda.extract "rms", @buffer

@@ -1,6 +1,7 @@
 
 {Writable} = require "stream"
 
+module.exports =
 class StreamWrapper extends Writable
 	constructor: (options)->
 		unless @ instanceof StreamWrapper
@@ -45,5 +46,3 @@ class StreamWrapper extends Writable
 			if index > -1
 				@inputStream?.unpipe(response)
 				@clients.splice(index, 1)
-
-module.exports = -> new StreamWrapper
