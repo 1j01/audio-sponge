@@ -1,5 +1,6 @@
 
 fs = require "fs"
+async = require "async"
 glob = require "glob"
 {AudioContext} = require "web-audio-api"
 # Meyda = require "meyda"
@@ -43,20 +44,20 @@ class Source
 	prepareAudioBuffer: (context, callback)->
 		# this works
 		context.decodeAudioData @buffer,
-			(audioBuffer)->
-				callback(null, audioBuffer)
-			(err)->
-				callback err
+			(@audioBuffer)=>
+				callback(null)
+			(err)=>
+				callback(err)
 		
 		# as does this
 		# streamToBufferArray @readStream, (err, buffers)=>
 		# 	return callback err if err
 		# 	buffer = Buffer.concat(buffers)
 		# 	context.decodeAudioData buffer,
-		# 		(audioBuffer)->
-		# 			callback(null, audioBuffer)
-		# 		(err)->
-		# 			callback err
+		# 		(@audioBuffer)=>
+		# 			callback(null)
+		# 		(err)=>
+		# 			callback(err)
 		
 		# this doesn't really work, though:
 		# streamToBufferArray @headerStream, (err, buffers)=>
@@ -66,10 +67,10 @@ class Source
 		# 		# console.log buffers.concat(more_buffers)
 		# 		buffer = Buffer.concat(buffers.concat(more_buffers))
 		# 		context.decodeAudioData buffer,
-		# 			(audioBuffer)->
-		# 				callback(null, audioBuffer)
-		# 			(err)->
-		# 				callback err
+		# 			(@audioBuffer)=>
+		# 				callback(null)
+		# 			(err)=>
+		# 				callback(err)
 		# it'd need to align with the frame boundaries
 		# offset by the header which may not always be a multiple of the frame size
 		# I could get this information with node-wav,
@@ -95,7 +96,7 @@ class Sponge
 			console.log "soaked up #{@sources.length} sources"
 			callback null
 	
-	squeeze: (output_file)->
+	squeeze: (callback)->
 		
 		context = new AudioContext
 		console.log "created AudioContext"
@@ -103,27 +104,44 @@ class Sponge
 		channels = context.format.numberOfChannels
 		{sampleRate} = context
 		
-		using_sources = (source for source, i in shuffleArray(@sources) when i < 30)
+		some_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
-		for source, i in using_sources
-			do (source, i)=>
-				source.prepareAudioBuffer context, (err, audioBuffer)->
+		async.filter some_sources,
+			(source, callback)=>
+				source.prepareAudioBuffer context, (err)->
+					return callback err if err
+					return callback new Error "source.audioBuffer is #{source.audioBuffer}" unless source.audioBuffer
+					if source.audioBuffer.sampleRate isnt context.sampleRate
+						console.log "source.audioBuffer.sampleRate (#{source.audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
+						callback(null, no)
+					else
+						console.log "  #{source}"
+						callback(null, yes)
+			(err, using_sources)=>
+				return callback err if err
+				
+				callback(null, context)
+				
+				@schedule_sounds using_sources, context, (err)=>
 					return console.error err if err
-					return console.error "audioBuffer is #{audioBuffer}" unless audioBuffer
-					if audioBuffer.sampleRate isnt context.sampleRate
-						return console.log "audioBuffer.sampleRate (#{audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
-					# source.findBeats()
-					buffer_source = context.createBufferSource()
-					buffer_source.buffer = audioBuffer
-					buffer_source.connect(context.destination)
-					start_time = i * 1.5
-					buffer_source.onended = =>
-						console.log "source ##{i} ended: #{source}"
-					buffer_source.start(start_time)
-					console.log "  #{source}"
-					# setTimeout =>
-					# 	console.log "theoretical start time for source ##{i}: #{source}"
-					# , start_time * 1000
-		
-		context
+					console.log "the end? what? this is supposed to be an infinite audio stream!"
+					console.log "alas, that feature isn't exactly implemented yet"
+
+	schedule_sounds: (using_sources, context, callback)->
+		async.eachOf using_sources,
+			(source, i, callback)=>
+				# source.findBeats()
+				buffer_source = context.createBufferSource()
+				buffer_source.buffer = source.audioBuffer
+				buffer_source.connect(context.destination)
+				start_time = i * 1.5
+				buffer_source.onended = =>
+					console.log "source ##{i} ended: #{source}"
+					callback(null)
+				buffer_source.start(start_time)
+				# setTimeout =>
+				# 	console.log "theoretical start time for source ##{i}: #{source}"
+				# , start_time * 1000
+			(err)->
+				callback(err)
 

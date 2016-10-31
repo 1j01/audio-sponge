@@ -32,6 +32,7 @@
     "coffee-script": "^1.10.0"
   },
   "dependencies": {
+    "async": "^2.1.2",
     "express": "^4.14.0",
     "fsu": "^1.0.0",
     "glob": "^7.0.5",

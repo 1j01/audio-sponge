@@ -74,27 +74,29 @@ start_stream = ->
 	sponge = new Sponge
 	stream_wrapper = new StreamWrapper
 	sponge.soak process.env.AUDIO_GLOB, ->
-		context = sponge.squeeze()
-		bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
-		throttle =
-			new Throttle
-				bps: bytesPerSample * context.sampleRate
-				chunkSize: bytesPerSample * 1024
-		encoder =
-			new lame.Encoder
-				# input
-				channels: context.format.numberOfChannels
-				bitDepth: context.format.bitDepth
-				sampleRate: context.sampleRate
-				# output
-				bitRate: 128
-				outSampleRate: 22050
-				mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
-		
-		context.outStream = throttle
-		throttle
-			.pipe(encoder)
-			.pipe(stream_wrapper)
+		sponge.squeeze (err, context)->
+			return console.error err if err
+			
+			bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
+			throttle =
+				new Throttle
+					bps: bytesPerSample * context.sampleRate
+					chunkSize: bytesPerSample * 1024
+			encoder =
+				new lame.Encoder
+					# input
+					channels: context.format.numberOfChannels
+					bitDepth: context.format.bitDepth
+					sampleRate: context.sampleRate
+					# output
+					bitRate: 128
+					outSampleRate: 22050
+					mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
+			
+			context.outStream = throttle
+			throttle
+				.pipe(encoder)
+				.pipe(stream_wrapper)
 
 app.get "/stream", (req, res)->
 	if accessToken
