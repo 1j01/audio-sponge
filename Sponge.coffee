@@ -24,25 +24,25 @@ streamToBufferArray = (stream, callback)->
 	stream.on "error", callback
 
 sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
-		{numberOfChannels, duration, sampleRate, frameCount} = audioBuffer
+	# {numberOfChannels, duration, sampleRate, frameCount} = audioBuffer
+	# 
+	# newAudioBuffer = audioContext.createBuffer(numberOfChannels, endOffset - startOffset, sampleRate)
+	# tempArray = new Float32Array(frameCount)
+	# 
+	# for channel in [0..numberOfChannels]
+	# 	audioBuffer.copyFromChannel(tempArray, channel, startOffset)
+	# 	newAudioBuffer.copyToChannel(tempArray, channel, 0)
+	# 
+	# newAudioBuffer
+	
+	{numberOfChannels, sampleRate} = audioBuffer
+	
+	array =
+		for channel in [0...numberOfChannels]
+			samples = audioBuffer.getChannelData(channel)
+			samples.slice(startOffset * sampleRate, endOffset * sampleRate)
 		
-		# newAudioBuffer = audioContext.createBuffer(numberOfChannels, endOffset - startOffset, sampleRate)
-		# tempArray = new Float32Array(frameCount)
-		# 
-		# for channel in [0..numberOfChannels]
-		# 	audioBuffer.copyFromChannel(tempArray, channel, startOffset)
-		# 	newAudioBuffer.copyToChannel(tempArray, channel, 0)
-		
-		# newAudioBuffer.set(audioBuffer, startOffset)
-		
-		# newAudioBuffer
-		
-		array =
-			for channel in [0...numberOfChannels]
-				samples = audioBuffer.getChannelData(channel)
-				samples.slice(startOffset * sampleRate, endOffset * sampleRate)
-			
-		AudioBuffer.fromArray(array, sampleRate)
+	AudioBuffer.fromArray(array, sampleRate)
 
 
 class Source
@@ -145,7 +145,7 @@ class Sponge
 				callback(null, context)
 				
 				@schedule_sounds using_sources, context
-
+	
 	schedule_sounds: (using_sources, context)->
 		async.map using_sources,
 			(source, callback)=>
