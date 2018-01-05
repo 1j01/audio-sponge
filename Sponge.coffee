@@ -109,6 +109,7 @@ class Sponge
 	constructor: ->
 		@sources = []
 	
+	# TODO: get sounds from online
 	soak: (audio_glob, callback)->
 		glob audio_glob, (err, files)=>
 			console.log "glob", audio_glob
@@ -150,7 +151,12 @@ class Sponge
 				
 				@schedule_sounds using_sources, context
 	
+	# FIXME: horrible lag that manifests as long pauses in the stream
+	# TODO: phase in and out sources
+	# TODO: effects
+
 	schedule_sounds: (using_sources, context)->
+		audio_start_time = context.currentTime
 		async.map using_sources,
 			(source, callback)=>
 				{audioBuffer} = source
@@ -161,19 +167,15 @@ class Sponge
 				end = start + Math.max(0, duration - 0.01)
 				newAudioBuffer = sliceAudioBuffer audioBuffer, start, end, context
 				callback(null, newAudioBuffer)
-			(err, beat_audio_buffers)->
-				# rhythm = "a a a bca a a bca a a bca addddd"
-				# rhythm = "acacbcddacacbcddacacbcdddacacded"
-				# rhythm = "deadbeatdeadbeatdeadbeatbeatbaah"
-				
+			(err, beat_audio_buffers)=>
 				bpm = 128
 				bps = 60 / bpm
-				add_beat = (beat_type_index, t)->
+				add_beat = (beat_type_index, t)=>
 					beat_audio_buffer = beat_audio_buffers[beat_type_index]
 					buffer_source = context.createBufferSource()
 					buffer_source.buffer = beat_audio_buffer
 					buffer_source.connect(context.destination)
-					start_time = t * bps
+					start_time = context.currentTime + t * bps
 					buffer_source.start(start_time)
 				
 				for super_duper_measure_i in [0..4]
@@ -187,6 +189,12 @@ class Sponge
 							# add_beat(beat.type, (beat.time + (super_measure_i + super_duper_measure_i * 4) * 4) / 4)
 							add_beat(beat.type, beat.time / 4 + super_measure_i + super_duper_measure_i * 4)
 							# add_beat(beat.type, beat.time + (super_measure_i + super_duper_measure_i * 4) * 4)
+				
+				scheduled_length = 4 * 4 * bps
+				# TODO: better scheduling
+				setTimeout(=>
+					@schedule_sounds using_sources, context
+				, scheduled_length * 1000)
 		
 		# async.eachOf using_sources,
 		# 	(source, i, callback)=>
