@@ -9,7 +9,7 @@ access_token = process.env["SOUNDCLOUD_ACCESS_TOKEN"] ? try fs.readFileSync("sou
 server_port = process.env["PORT"] ? 3901
 app_hostname = process.env["APP_HOSTNAME"] ? "localhost"
 
-app_origin = "http://#{app_hostname}:server_port" # whoops, FIXME!
+app_origin = "http://#{app_hostname}:#{server_port}"
 soundcloud_auth_callback_path = "/okay"
 soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
 
