@@ -4,6 +4,7 @@ async = require "async"
 glob = require "glob"
 {AudioContext, AudioBuffer} = require "web-audio-api"
 # Meyda = require "meyda"
+Rhythm = require "./Rhythm"
 
 
 shuffleArray = (array)->
@@ -157,24 +158,32 @@ class Sponge
 				end = start + Math.max(0, duration - 0.01)
 				newAudioBuffer = sliceAudioBuffer audioBuffer, start, end, context
 				callback(null, newAudioBuffer)
-			(err, beats)->
+			(err, beat_audio_buffers)->
 				# rhythm = "a a a bca a a bca a a bca addddd"
 				# rhythm = "acacbcddacacbcddacacbcdddacacded"
-				rhythm = "deadbeatdeadbeatdeadbeatbeatbaah"
+				# rhythm = "deadbeatdeadbeatdeadbeatbeatbaah"
+				
 				bpm = 128
 				bps = 60 / bpm
 				add_beat = (beat_type_index, t)->
-					beat_audio_buffer = beats[beat_type_index]
+					beat_audio_buffer = beat_audio_buffers[beat_type_index]
 					buffer_source = context.createBufferSource()
 					buffer_source.buffer = beat_audio_buffer
 					buffer_source.connect(context.destination)
 					start_time = t * bps
 					buffer_source.start(start_time)
-				for super_measure_i in [0..4]
-					shuffleArray(beats)
-					for ch, beat_i in rhythm when ch isnt " "
-						beat_type_index = parseInt(ch, 36) - 9
-						add_beat(beat_type_index, (beat_i + super_measure_i * rhythm.length) / 2)
+				
+				for super_duper_measure_i in [0..4]
+					rhythm = new Rhythm
+					console.log rhythm.toString()
+					beats = rhythm.getBeats()
+					# console.log beats
+					for super_measure_i in [0..4]
+						shuffleArray(beat_audio_buffers)
+						for beat in beats
+							# add_beat(beat.type, (beat.time + (super_measure_i + super_duper_measure_i * 4) * 4) / 4)
+							add_beat(beat.type, beat.time / 4 + super_measure_i + super_duper_measure_i * 4)
+							# add_beat(beat.type, beat.time + (super_measure_i + super_duper_measure_i * 4) * 4)
 		
 		# async.eachOf using_sources,
 		# 	(source, i, callback)=>
