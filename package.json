@@ -34,11 +34,11 @@
     "test-local": "coffee test-local.coffee"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
     "speaker": "^0.4.0"
   },
   "dependencies": {
     "async": "^2.1.2",
+    "coffee-script": "^1.12.7",
     "express": "^4.14.0",
     "fsu": "^1.0.0",
     "glob": "^7.0.5",
