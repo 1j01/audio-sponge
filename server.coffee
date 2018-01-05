@@ -2,23 +2,24 @@
 fs = require "fs"
 SC = require "node-soundcloud"
 
-clientID = process.env["soundcloud-client-id"] ? "99859bbbc016945344ec5ba5731400b4" # fs.readFileSync("soundcloud-client-id", "utf8")
-accessToken = process.env["soundcloud-access-token"] ? try fs.readFileSync("soundcloud-access-token", "utf8")
+client_id = process.env["SOUNDCLOUD_CLIENT_ID"] ? "99859bbbc016945344ec5ba5731400b4" # fs.readFileSync("soundcloud-client-id", "utf8")
+soundcloud_api_secret = process.env["SOUNDCLOUD_API_SECRET"] ? fs.readFileSync("soundcloud-api.secret", "utf8")
+access_token = process.env["SOUNDCLOUD_ACCESS_TOKEN"] ? try fs.readFileSync("soundcloud-access-token", "utf8")
 
 server_port = process.env["PORT"] ? 3901
-app_hostname = process.env["app-hostname"] ? "localhost"
+app_hostname = process.env["APP_HOSTNAME"] ? "localhost"
 
-app_origin = "http://#{app_hostname}:server_port"
-soundcloud_callback_path = "/okay"
-soundcloud_callback_url = "#{app_origin}#{soundcloud_callback_path}"
+app_origin = "http://#{app_hostname}:server_port" # whoops, FIXME!
+soundcloud_auth_callback_path = "/okay"
+soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
 
-# Initialize client
-console.log "init node-soundcloud"
+# Initialize SoundCloud client
+console.log "init node-soundcloud client"
 SC.init
-	id: clientID
-	secret: process.env["soundcloud-api-secret"] ? fs.readFileSync("soundcloud-api.secret", "utf8")
-	uri: soundcloud_callback_url #process.env["return-from-soundcloud-uri"] ? "http://localhost:#{server_port}/okay"
-	accessToken: accessToken
+	id: client_id
+	secret: soundcloud_api_secret
+	uri: soundcloud_auth_callback_url
+	accessToken: access_token
 
 # Connect user to authorize application
 initOAuth = (req, res)->
@@ -87,7 +88,7 @@ app.get "/", (req, res)->
 	else
 		initOAuth(req, res)
 
-app.get soundcloud_callback_path, (req, res)->
+app.get soundcloud_auth_callback_path, (req, res)->
 	if accessToken
 		res.redirect("/")
 	else
