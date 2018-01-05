@@ -30,6 +30,9 @@ toggle_listen = ->
 		audio.pause()
 		update listening: no
 	else
+		# TODO: maybe allow pausing again, but implement other server error handling and reconnecting logic
+		audio.src = null
+		audio.src = "stream"
 		audio.play()
 		# update status: "connecting"
 		check_status()

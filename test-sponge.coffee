@@ -4,7 +4,8 @@ Speaker = require "speaker"
 Sponge = require "./Sponge"
 
 sponge = new Sponge
-sponge.soak process.env.AUDIO_GLOB, ->
+sponge.soak process.env.AUDIO_GLOB, (err)->
+	return console.error err if err
 	sponge.squeeze (err, context)->
 		return console.error err if err
 		

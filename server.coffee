@@ -70,12 +70,14 @@ Throttle = require "throttle"
 
 stream_wrapper = null
 
-start_stream = ->
+start_stream = (error_callback)->
 	sponge = new Sponge
 	stream_wrapper = new StreamWrapper
-	sponge.soak process.env.AUDIO_GLOB, ->
+	# console.log process.env.AUDIO_GLOB, process.env
+	sponge.soak process.env.AUDIO_GLOB, (err)->
+		return error_callback(err) if err
 		sponge.squeeze (err, context)->
-			return console.error err if err
+			return error_callback(err) if err
 			
 			bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
 			throttle =
@@ -99,8 +101,13 @@ start_stream = ->
 				.pipe(stream_wrapper)
 
 app.get "/stream", (req, res)->
+	error_callback = (err)->
+		console.error err
+		res.end("Internal server error: " + err.message)
+		process.exit(1)
+		# app.stop()
 	if accessToken
-		start_stream() unless stream_wrapper
+		start_stream(error_callback) unless stream_wrapper
 		stream_wrapper.stream(req, res)
 	else
 		res.redirect("/")

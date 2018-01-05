@@ -117,7 +117,10 @@ class Sponge
 			for file_path in files
 				@sources.push(new Source(file_path))
 			console.log "soaked up #{@sources.length} sources"
-			callback null
+			if @sources.length > 0
+				callback null
+			else
+				callback new Error("no audio files were added as sources")
 	
 	squeeze: (callback)->
 		
