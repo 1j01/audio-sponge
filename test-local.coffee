@@ -1,5 +1,6 @@
 
 # fsu = require "fsu"
+# NOTE: speaker is not installed because it fails to install on openshift, even if it's a dev dependency
 Speaker = require "speaker"
 Sponge = require "./Sponge"
 

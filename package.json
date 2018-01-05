@@ -33,9 +33,6 @@
     "start": "coffee server.coffee",
     "test-local": "coffee test-local.coffee"
   },
-  "devDependencies": {
-    "speaker": "^0.4.0"
-  },
   "dependencies": {
     "async": "^2.1.2",
     "coffee-script": "^1.12.7",
