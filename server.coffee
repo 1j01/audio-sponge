@@ -2,15 +2,22 @@
 fs = require "fs"
 SC = require "node-soundcloud"
 
-clientID = "99859bbbc016945344ec5ba5731400b4" # fs.readFileSync("soundcloud-client-id", "utf8")
-accessToken = try fs.readFileSync("soundcloud-access-token", "utf8")
+clientID = process.env["soundcloud-client-id"] ? "99859bbbc016945344ec5ba5731400b4" # fs.readFileSync("soundcloud-client-id", "utf8")
+accessToken = process.env["soundcloud-access-token"] ? try fs.readFileSync("soundcloud-access-token", "utf8")
+
+server_port = process.env["PORT"] ? 3901
+app_hostname = process.env["app-hostname"] ? "localhost"
+
+app_origin = "http://#{app_hostname}:server_port"
+soundcloud_callback_path = "/okay"
+soundcloud_callback_url = "#{app_origin}#{soundcloud_callback_path}"
 
 # Initialize client
 console.log "init node-soundcloud"
 SC.init
 	id: clientID
-	secret: fs.readFileSync("soundcloud-api.secret", "utf8")
-	uri: "http://localhost:3901/okay"
+	secret: process.env["soundcloud-api-secret"] ? fs.readFileSync("soundcloud-api.secret", "utf8")
+	uri: soundcloud_callback_url #process.env["return-from-soundcloud-uri"] ? "http://localhost:#{server_port}/okay"
 	accessToken: accessToken
 
 # Connect user to authorize application
@@ -29,10 +36,34 @@ auth = (code, callback)->
 			callback(err, accessToken)
 
 redirectHandler = (req, res)->
+	fail = (message)->
+		console.error "#{message}; querystring parameters:"
+		console.error JSON.stringify req.query, null, 2
+		body = """
+			<!doctype html>
+			<title>Sponge Error</title>
+			<body>
+				<p>#{message.replace(/&/g, "&").replace(/</g, "&lt;")}</p>
+				<p><a href="/">retry?</a></p>
+			</body>
+		"""
+		res.writeHead(500, {
+			"Content-Type": "text/html",
+			"Content-Length": Buffer.byteLength(body)
+		})
+		res.end(body)
+
+	if req.query.error or req.query.error_description
+		return fail "got error from soundcloud"
+	unless req.query.code
+		return fail "did not receive 'code' parameter from soundcloud"
+	
 	auth req.query.code, (err, accessToken)->
-		return console.error err if err
+		return fail err.message if err
+		
 		console.log "got access token:", accessToken
-		return console.error "accessToken should not be #{accessToken}" unless accessToken
+		unless accessToken
+			return fail "accessToken should not be #{accessToken}"
 		
 		fs.writeFile "soundcloud-access-token", accessToken, "utf8",
 		
@@ -56,7 +87,7 @@ app.get "/", (req, res)->
 	else
 		initOAuth(req, res)
 
-app.get "/okay", (req, res)->
+app.get soundcloud_callback_path, (req, res)->
 	if accessToken
 		res.redirect("/")
 	else
@@ -118,5 +149,5 @@ app.get "/ping", (req, res)->
 		"Expires": "0"
 	res.end("pong")
 
-app.listen 3901, ->
-	console.log "listening on http://localhost:3901"
+app.listen server_port, ->
+	console.log "listening on http://localhost:#{server_port}"
