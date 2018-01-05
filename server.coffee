@@ -26,15 +26,15 @@ initOAuth = (req, res)->
 	res.redirect(SC.getConnectUrl())
 
 auth = (code, callback)->
-	if accessToken
-		console.log "reusing access token: #{accessToken}"
+	if access_token
+		console.log "reusing access token: #{access_token}"
 		process.nextTick ->
-			callback(null, accessToken)
+			callback(null, access_token)
 	else
 		console.log "getting new access token for #{code}"
-		SC.authorize code, (err, newAccessToken)->
-			accessToken = newAccessToken
-			callback(err, accessToken)
+		SC.authorize code, (err, new_access_token)->
+			access_token = new_access_token
+			callback(err, access_token)
 
 redirectHandler = (req, res)->
 	fail = (message)->
@@ -59,14 +59,14 @@ redirectHandler = (req, res)->
 	unless req.query.code
 		return fail "did not receive 'code' parameter from soundcloud"
 	
-	auth req.query.code, (err, accessToken)->
+	auth req.query.code, (err, access_token)->
 		return fail err.message if err
 		
-		console.log "got access token:", accessToken
-		unless accessToken
-			return fail "accessToken should not be #{accessToken}"
+		console.log "got access token:", access_token
+		unless access_token
+			return fail "access token should not be #{access_token}"
 		
-		fs.writeFile "soundcloud-access-token", accessToken, "utf8",
+		fs.writeFile "soundcloud-access-token", access_token, "utf8",
 		
 		res.redirect("/")
 
@@ -76,7 +76,7 @@ app = express()
 app.use(express.static("public"))
 
 app.get "/", (req, res)->
-	if accessToken
+	if access_token
 		# SC.get "/me", (err, me)->
 		# 	return console.error err if err
 		# 	SC.get "/me/activities/tracks/affiliated", (err, data)->
@@ -89,7 +89,7 @@ app.get "/", (req, res)->
 		initOAuth(req, res)
 
 app.get soundcloud_auth_callback_path, (req, res)->
-	if accessToken
+	if access_token
 		res.redirect("/")
 	else
 		redirectHandler(req, res)
@@ -138,7 +138,7 @@ app.get "/stream", (req, res)->
 		res.end("Internal server error: " + err.message)
 		process.exit(1)
 		# app.stop()
-	if accessToken
+	if access_token
 		start_stream(error_callback) unless stream_wrapper
 		stream_wrapper.stream(req, res)
 	else
