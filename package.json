@@ -22,14 +22,20 @@
     "sampler",
     "dumb",
     "sponge",
-    "soak"
+    "soak",
+    "stream",
+    "station",
+    "radio",
+    "fm",
+    "am"
   ],
   "scripts": {
     "start": "coffee server.coffee",
-    "sponge": "coffee test-sponge.coffee"
+    "test-local": "coffee test-local.coffee"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0"
+    "coffee-script": "^1.10.0",
+    "speaker": "^0.4.0"
   },
   "dependencies": {
     "async": "^2.1.2",
@@ -39,7 +45,6 @@
     "lame": "^1.2.4",
     "meyda": "^3.1.1",
     "node-soundcloud": "0.0.5",
-    "speaker": "^0.3.0",
     "throttle": "^1.0.3",
     "wav": "^1.0.1",
     "web-audio-api": "^0.2.2"
