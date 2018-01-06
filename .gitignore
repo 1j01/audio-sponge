@@ -2,8 +2,7 @@
 node_modules/
 temp/
 output/
-*.secret
-soundcloud-access-token
+.env
 
 # Logs
 logs

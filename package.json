@@ -20,9 +20,15 @@
     "pcg",
     "composer",
     "sampler",
+    "beat",
+    "beats",
+    "rhythm",
     "dumb",
     "sponge",
     "soak",
+    "squeeze",
+    "drip",
+    "drop",
     "stream",
     "station",
     "radio",
@@ -30,7 +36,7 @@
     "am"
   ],
   "scripts": {
-    "start": "coffee server.coffee",
+    "start": "zoo coffee server.coffee",
     "test-local": "coffee test-local.coffee"
   },
   "dependencies": {
@@ -44,6 +50,7 @@
     "node-soundcloud": "0.0.5",
     "throttle": "^1.0.3",
     "wav": "^1.0.1",
-    "web-audio-api": "^0.2.2"
+    "web-audio-api": "^0.2.2",
+    "zoo": "^0.1.9"
   }
 }
