@@ -10,6 +10,9 @@ class StreamWrapper extends Writable
 		@clients = []
 		@burstChunks = []
 	
+	# TODO: kick clients when they pause for too long / when running out of memory
+	# right now it probably keeps buffers of audio in memory indefinitely, and separately for each client 
+
 	_write: (chunk, encoding, callback)=>
 		for client in @clients
 			client.write(chunk)
