@@ -42,16 +42,14 @@ audio = document.createElement("audio")
 audio.preload = "none"
 audio.src = "stream"
 audio.addEventListener "error", ->
-	update status: "offline", listening: no
-# probably_offline_now = ->
-# 	if state.status is "offline"
-# 		update listening: no
-# audio.addEventListener "stalled", probably_offline_now
-# audio.addEventListener "waiting", probably_offline_now
-# audio.addEventListener "suspend", probably_offline_now
+	update status: "offline"
+audio.addEventListener "stalled", ->
+	audio.src = null
 audio.addEventListener "play", ->
 	update listening: yes
 audio.addEventListener "pause", ->
+	update listening: no
+audio.addEventListener "emptied", ->
 	update listening: no
 
 check_status = ->
