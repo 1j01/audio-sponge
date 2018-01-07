@@ -127,7 +127,7 @@ class Sponge
 				
 				setTimeout =>
 					diff = context.currentTime - the_before_fore_time
-					console.log "setTimeout, wanted: something less than #{scheduled_length}, got (context.currentTime difference): #{diff}"
+					# console.log "after setTimeout, context time difference of #{diff} (which should be less than #{scheduled_length})"
 					iid = setInterval =>
 						if context.currentTime < next_schedule_time_minimum
 							# console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
