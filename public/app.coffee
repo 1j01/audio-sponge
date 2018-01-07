@@ -62,10 +62,10 @@ check_status = ->
 			if req.status in [0, 200]
 				update status: "live"
 			else
-				update status: "offline", listening: no
+				update status: "offline"
 	req.addEventListener "error", ->
 		# console?.log "error", arguments
-		update status: "offline", listening: no
+		update status: "offline"
 	req.open("GET", "ping")
 	req.send()
 
