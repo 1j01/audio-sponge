@@ -4,9 +4,6 @@
 module.exports =
 class StreamWrapper extends Writable
 	constructor: (options)->
-		unless @ instanceof StreamWrapper
-			return new StreamWrapper(options)
-		
 		super(options)
 		@maxClients = options?.maxClients ? 100
 		@maxBurstChunks = options?.maxBurstChunks ? 1024 # this could probably use some fine-tuning
