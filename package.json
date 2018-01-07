@@ -36,8 +36,8 @@
     "am"
   ],
   "scripts": {
-    "start": "zoo coffee server.coffee",
-    "test-local": "coffee test-local.coffee"
+    "start": "zoo coffee src/server.coffee",
+    "test-local": "coffee src/test-local.coffee"
   },
   "dependencies": {
     "async": "^2.1.2",

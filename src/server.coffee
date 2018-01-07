@@ -90,7 +90,7 @@ app.get "/", (req, res)->
 		# 		tracks = (item.origin for item in data.collection)
 		# 		res.render("index", {me, tracks, soundcloud_client_id: clientID})
 		
-		res.sendFile("index.html", root: __dirname)
+		res.sendFile("../public/index.html", root: __dirname)
 	else
 		initOAuth(req, res)
 
