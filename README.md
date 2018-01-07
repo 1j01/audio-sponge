@@ -37,10 +37,7 @@ no they just names:
 * I would understand a colorless green idea
 * Cozy paranoia
 * Primary reality beta
-<!-- * Every day route and patch -->
-<!-- * Waiting for the egg to hatch -->
 <!-- * Warning: abstraction required -->
-<!-- * I hope Windows doesn't update -->
 
 \*It would be ["Nonsensical"](https://github.com/1j01/nonsensical) to use plain old Markov text chains in this project
 
@@ -53,7 +50,7 @@ no they just names:
 * ERROR ABOUT ERRORS BEING ERRORS
 * ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS
 * INSERT ERROR MESSAGE HERE
-* AN ARROR HAS SPELLING GRAMMAR OCCURD
+* AN ARROR HAS SPELLING-GRAMMAR OCCURD
 * OCCULT ERROR
 * WARNING
 * VAGUE FEELING OF UNEASE

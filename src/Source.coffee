@@ -1,8 +1,5 @@
-
 fs = require "fs"
 # Meyda = require "meyda"
-
-# floorToMultiple = (x, n)-> Math.floor(x / n) * n
 
 ###
 streamToBufferArray = (stream, callback)->
@@ -18,18 +15,6 @@ streamToBufferArray = (stream, callback)->
 module.exports =
 class Source
 	constructor: (@path)->
-		# stats = fs.statSync(@path)
-		# file_size_in_bytes = stats.size
-		# length = floorToMultiple(Math.random() * file_size_in_bytes, 2)
-		# length = Math.min(length, 1024 * 24)
-		# start = floorToMultiple(Math.random() * (file_size_in_bytes - length), 2)
-		# end = start + Math.max(0, length - 1)
-		
-		# @headerStream = fs.createReadStream(@path, {start: 0, end: 16*2048})
-		# @readStream = fs.createReadStream(@path, {start, end})
-		
-		# @readStream = fs.createReadStream(@path)
-		
 		@buffer = fs.readFileSync(@path)
 	
 	toString: -> "file:#{@path}"

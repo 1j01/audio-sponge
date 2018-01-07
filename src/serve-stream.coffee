@@ -1,4 +1,3 @@
-
 {Writable} = require "stream"
 
 module.exports =

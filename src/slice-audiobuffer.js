@@ -1,11 +1,7 @@
-
-module.exports = sliceAudioBuffer;
-
 function sliceAudioBuffer(buffer, begin, end, audioContext) {
 	var duration = buffer.duration;
 	var channels = buffer.numberOfChannels;
 	var rate = buffer.sampleRate;
-	// console.log({duration, channels, rate});
 
 	if (begin < 0) {
 		throw new RangeError('begin time must be greater than 0');
@@ -20,37 +16,27 @@ function sliceAudioBuffer(buffer, begin, end, audioContext) {
 	var newArrayBuffer;
 
 	newArrayBuffer = audioContext.createBuffer(channels, endOffset - startOffset, rate);
-	var anotherArray = new Float32Array(frameCount);
-	var offset = 0;
+	var tempArray = new Float32Array(frameCount);
 
 	for (var channel = 0; channel < channels; channel++) {
-		buffer.copyFromChannel(anotherArray, channel, startOffset);
-		newArrayBuffer.copyToChannel(anotherArray, channel, offset);
+		buffer.copyFromChannel(tempArray, channel, startOffset);
+		newArrayBuffer.copyToChannel(tempArray, channel, 0);
 	}
 
 	return newArrayBuffer;
 }
 
-/*
-# sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
-# 	{numberOfChannels, duration, sampleRate, frameCount} = audioBuffer
-# 	console.log audioBuffer
+module.exports = sliceAudioBuffer;
 
-# 	newAudioBuffer = audioContext.createBuffer(numberOfChannels, endOffset - startOffset, sampleRate)
-# 	tempArray = new Float32Array(frameCount)
+/* for web-audio-api instead of web-audio-engine:
+
+sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
+	{numberOfChannels, sampleRate} = audioBuffer
 	
-# 	for channel in [0...numberOfChannels]
-# 		audioBuffer.copyFromChannel(tempArray, channel, startOffset)
-# 		newAudioBuffer.copyToChannel(tempArray, channel, 0)
-	
-# 	newAudioBuffer
-	
-# 	# {numberOfChannels, sampleRate} = audioBuffer
-	
-# 	# array =
-# 	# 	for channel in [0...numberOfChannels]
-# 	# 		samples = audioBuffer.getChannelData(channel)
-# 	# 		samples.slice(startOffset * sampleRate, endOffset * sampleRate)
+	array =
+		for channel in [0...numberOfChannels]
+			samples = audioBuffer.getChannelData(channel)
+			samples.slice(startOffset * sampleRate, endOffset * sampleRate)
 		
-# 	# AudioBuffer.fromArray(array, sampleRate)
+	AudioBuffer.fromArray(array, sampleRate)
 */

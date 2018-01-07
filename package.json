@@ -37,7 +37,7 @@
   ],
   "scripts": {
     "start": "zoo coffee src/server.coffee",
-    "test-local": "coffee src/test-local.coffee"
+    "test-local": "zoo coffee src/test-local.coffee"
   },
   "dependencies": {
     "async": "^2.6.0",
@@ -46,10 +46,8 @@
     "fsu": "^1.0.4",
     "glob": "^7.1.2",
     "lame": "^1.2.4",
-    "meyda": "^4.1.3",
     "node-soundcloud": "0.0.6",
     "throttle": "^1.0.3",
-    "wav": "^1.0.1",
     "web-audio-engine": "^0.13.3",
     "zoo": "^0.1.9"
   }

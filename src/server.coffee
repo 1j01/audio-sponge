@@ -27,6 +27,10 @@ SC.init
 	uri: soundcloud_auth_callback_url
 	accessToken: soundcloud_access_token
 
+# TODO: maybe remove all the oauth stuff
+# and use https://www.npmjs.com/package/simple-soundcloud
+# or whatever
+
 # Connect user to authorize application
 initOAuth = (req, res)->
 	res.redirect(SC.getConnectUrl())
@@ -116,8 +120,8 @@ start_stream = (error_callback)->
 		sponge.squeeze (err, context)->
 			return error_callback(err) if err
 			
-			# console.log context.format
-			numberOfChannels = context.format.channels # context.format.numberOfChannels
+			# Note: inconsistent naming between web-audio-api and web-audio-engine
+			numberOfChannels = context.format.channels
 			bytesPerSample = numberOfChannels * context.format.bitDepth / 8
 			throttle =
 				new Throttle
@@ -125,16 +129,15 @@ start_stream = (error_callback)->
 					chunkSize: bytesPerSample * 1024
 			encoder =
 				new lame.Encoder
-					# input
+					# input options
 					channels: numberOfChannels
 					bitDepth: context.format.bitDepth
 					sampleRate: context.sampleRate
-					# output
+					# output options
 					bitRate: 128
 					outSampleRate: 22050
 					mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
 			
-			# throttle.addListener "data", (data)-> console.log data
 			context.pipe(throttle)
 			context.resume() # TODO: init stuff earlier and only resume() when a first client appears
 			# and pause when there are no clients
@@ -148,7 +151,7 @@ app.get "/stream", (req, res)->
 		console.error err
 		res.end("Internal server error: " + err.message)
 		process.exit(1)
-		# app.stop()
+		# TODO: exit cleanly
 	if soundcloud_access_token
 		start_stream(error_callback) unless stream_wrapper
 		stream_wrapper.stream(req, res)

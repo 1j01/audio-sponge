@@ -1,13 +1,9 @@
-
 async = require "async"
 glob = require "glob"
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
 sliceAudioBuffer = require "./slice-audiobuffer.js"
-
-# process.on "unhandledRejection", (reason, p)->
-# 	console.error("Unhandled Rejection:", p)
 
 shuffleArray = (array)->
 	for i in [array.length-1..0]
@@ -44,6 +40,19 @@ class Sponge
 		
 		some_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
+
+		# FIXME: out of memory error that wasn't a problem with web-audio-api
+		# I'm avoiding it temporarily by globbing for audio files that are generally short
+		# I'll probably fix/avoid it by making source stuff async
+
+		# ==== JS stack trace =========================================
+		#
+		# Security context: 0000023CF4CCFB61 <JS Object>
+		# 	1: IterableToArrayLike(aka IterableToArrayLike) [native typedarray.js:1804] [pc=0000039C9F2C61C2] (this=0000023CF4C04381 <undefined>,bw=000002C0D7506A41 <an Uint8Array with map 0000005450E06569>)
+		# 	2: from [native typedarray.js:1822] [pc=0000039C9F2C5BD2] (this=0000023CF4CB91F1 <JS Function Uint8Array (SharedFunctionInfo 0000023CF4C69E91)>,aK=000002C0D7506A41 <an Uint8Array with map 000...
+		# 
+		# FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+
 		async.filter some_sources,
 			(source, callback)=>
 				source.prepareAudioBuffer context, (err)->
@@ -62,10 +71,6 @@ class Sponge
 				
 				@schedule_sounds using_sources, context
 	
-	# FIXME: horrible lag that manifests as long pauses in the stream
-	# TODO: phase in and out sources
-	# TODO: effects
-
 	schedule_sounds: (using_sources, context)->
 		audio_start_time = context.currentTime
 		async.map using_sources,
@@ -92,23 +97,23 @@ class Sponge
 					# buffer_source.stop(start_time + 0.05)
 
 					oscillator = context.createOscillator()
-					# oscillator.type = 
-					# console.log beat_type_index
-					oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12) #Math.random() * 440 + 100
+					oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12)
 					oscillator.detune.value = Math.random() * 10
 					oscillator.connect(context.destination)
 					oscillator.start(start_time)
 					oscillator.stop(start_time + 0.05)
 				
+				# TODO: visualize the rhythm, possibly by sending it in time to the client
+				# TODO: layers of sound, with potentially different or similar rhythms
+				# phase in and out layers and their sources
+				# TODO: apply effects to layers (layers = tracks)
 				for super_duper_measure_i in [0...4]
 					rhythm = new Rhythm
 					console.log rhythm.toString()
 					beats = rhythm.getBeats()
-					# console.log beats
 					for super_measure_i in [0...4]
 						shuffleArray(beat_audio_buffers)
 						for beat in beats
-							# add_beat(beat.type, (beat.time + (super_measure_i + super_duper_measure_i * 4) * 4) / bps)
 							start_time = audio_start_time + (beat.time + super_measure_i + super_duper_measure_i * 4) / bps
 							add_beat(beat.type, start_time)
 				
@@ -116,26 +121,8 @@ class Sponge
 				the_before_fore_time = context.currentTime
 				# TODO: better scheduling
 				setTimeout(=>
-					# the_after_wafter_mathter_matter_latter = context.currentTime
 					diff = context.currentTime - the_before_fore_time
 					console.log "setTimeout, wanted: #{scheduled_length}, actual: #{diff}"
 					@schedule_sounds using_sources, context
 				, scheduled_length * 1000)
-		
-		# async.eachOf using_sources,
-		# 	(source, i, callback)=>
-		# 		# source.findBeats()
-		# 		buffer_source = context.createBufferSource()
-		# 		buffer_source.buffer = source.audioBuffer
-		# 		buffer_source.connect(context.destination)
-		# 		start_time = i * 1.5
-		# 		buffer_source.onended = =>
-		# 			console.log "source ##{i} ended: #{source}"
-		# 			callback(null)
-		# 		buffer_source.start(start_time)
-		# 		# setTimeout =>
-		# 		# 	console.log "theoretical start time for source ##{i}: #{source}"
-		# 		# , start_time * 1000
-		# 	(err)->
-		# 		callback(err)
 

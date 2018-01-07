@@ -1,23 +1,15 @@
-
-# fsu = require "fsu"
-# NOTE: speaker is not installed because it fails to install on openshift, even if it's a dev dependency
-Speaker = require "speaker"
+fsu = require "fsu"
 Sponge = require "./Sponge"
 
 sponge = new Sponge
-sponge.soak process.env.AUDIO_GLOB, (err)->
+sponge.soak process.env.AUDIO_SOURCE_FILES_GLOB, (err)->
 	return console.error err if err
 	sponge.squeeze (err, context)->
 		return console.error err if err
 		
-		context.outStream = new Speaker
-			channels: context.format.numberOfChannels
-			bitDepth: context.format.bitDepth
-			sampleRate: context.sampleRate
-		console.log "created Speaker"
-		
-		# context.outStream = ws = fsu.createWriteStreamUnique(output_file)
-		# ws = fsu.createWriteStreamUnique(output_file)
-		# ws.on "open", ->
-		# 	console.log "writing to #{ws.path}"
-	
+		output_file_path_pattern = "output/output{-###}.pcm"
+		ws = fsu.createWriteStreamUnique(output_file_path_pattern)
+		ws.on "open", ->
+			console.log "writing to #{ws.path}"
+		context.pipe(ws)
+		context.resume()
