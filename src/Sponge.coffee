@@ -41,6 +41,7 @@ class Sponge
 		some_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
 
+		# FIXME: blocking the web server while "preparing sources"
 		# FIXME: out of memory error that wasn't a problem with web-audio-api
 		# I'm avoiding it temporarily by globbing for audio files that are generally short
 		# I'll probably fix/avoid it by making source stuff async
@@ -72,7 +73,7 @@ class Sponge
 				@schedule_sounds using_sources, context, context.currentTime
 	
 	schedule_sounds: (using_sources, context, schedule_start_time)->
-		console.log "schedule sounds for #{schedule_start_time}"
+		console.log "schedule sounds for context time #{schedule_start_time}"
 		async.map using_sources,
 			(source, callback)=>
 				{audioBuffer} = source
