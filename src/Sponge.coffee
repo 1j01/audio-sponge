@@ -23,6 +23,7 @@ class Sponge
 			return callback err if err
 			console.log "files:", files
 			for file_path in files #shuffleArray(files).slice(0, 20)
+				# FIXME: blocking while loading audio files into memory
 				@sources.push(new Source(file_path))
 			console.log "soaked up #{@sources.length} sources"
 			if @sources.length > 0
@@ -41,7 +42,7 @@ class Sponge
 		some_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
 
-		# FIXME: blocking the web server while "preparing sources"
+		# FIXME: blocking while decoding audio data
 		# FIXME: out of memory error that wasn't a problem with web-audio-api
 		# I'm avoiding it temporarily by globbing for audio files that are generally short
 		# I'll probably fix/avoid it by making source stuff async
@@ -54,17 +55,19 @@ class Sponge
 		# 
 		# FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
 
-		async.filter some_sources,
+		async.filterLimit some_sources, 1,
 			(source, callback)=>
 				source.prepareAudioBuffer context, (err)->
-					return callback err if err
-					return callback new Error "source.audioBuffer is #{source.audioBuffer}" unless source.audioBuffer
-					if source.audioBuffer.sampleRate isnt context.sampleRate
-						console.log "source.audioBuffer.sampleRate (#{source.audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
-						callback(null, no)
-					else
-						console.log "  #{source}"
-						callback(null, yes)
+					setTimeout =>
+						return callback err if err
+						return callback new Error "source.audioBuffer is #{source.audioBuffer}" unless source.audioBuffer
+						if source.audioBuffer.sampleRate isnt context.sampleRate
+							console.log "source.audioBuffer.sampleRate (#{source.audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
+							callback(null, no)
+						else
+							console.log "  #{source}"
+							callback(null, yes)
+					, 20 # enough to server a web request :)
 			(err, using_sources)=>
 				return callback err if err
 				

@@ -36,7 +36,7 @@ class StreamWrapper extends Writable
 		
 		@clients.push(response)
 		
-		console.log "burst #{@burstChunks.length} chunks to new client (#{@clients.length})"
+		console.log "burst #{@burstChunks.length} chunks to new client (now #{@clients.length} client(s))"
 		for chunk in @burstChunks
 			response.write(chunk)
 		
