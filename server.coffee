@@ -116,7 +116,9 @@ start_stream = (error_callback)->
 		sponge.squeeze (err, context)->
 			return error_callback(err) if err
 			
-			bytesPerSample = context.format.numberOfChannels * context.format.bitDepth / 8
+			# console.log context.format
+			numberOfChannels = context.format.channels # context.format.numberOfChannels
+			bytesPerSample = numberOfChannels * context.format.bitDepth / 8
 			throttle =
 				new Throttle
 					bps: bytesPerSample * context.sampleRate
@@ -124,7 +126,7 @@ start_stream = (error_callback)->
 			encoder =
 				new lame.Encoder
 					# input
-					channels: context.format.numberOfChannels
+					channels: numberOfChannels
 					bitDepth: context.format.bitDepth
 					sampleRate: context.sampleRate
 					# output
@@ -132,7 +134,11 @@ start_stream = (error_callback)->
 					outSampleRate: 22050
 					mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
 			
-			context.outStream = throttle
+			# throttle.addListener "data", (data)-> console.log data
+			context.pipe(throttle)
+			context.resume() # TODO: init stuff earlier and only resume() when a first client appears
+			# and pause when there are no clients
+
 			throttle
 				.pipe(encoder)
 				.pipe(stream_wrapper)
@@ -156,4 +162,4 @@ app.get "/ping", (req, res)->
 	res.end("pong")
 
 app.listen server_port, ->
-	console.log "listening on http://localhost:#{server_port}"
+	console.log "listening on #{app_origin}"

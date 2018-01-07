@@ -2,10 +2,13 @@
 fs = require "fs"
 async = require "async"
 glob = require "glob"
-{AudioContext, AudioBuffer} = require "web-audio-api"
+{StreamAudioContext, AudioBuffer} = require "web-audio-engine"
 # Meyda = require "meyda"
 Rhythm = require "./Rhythm"
+sliceAudioBuffer = require "./slice-audiobuffer.js"
 
+# process.on "unhandledRejection", (reason, p)->
+# 	console.error("Unhandled Rejection:", p)
 
 shuffleArray = (array)->
 	for i in [array.length-1..0]
@@ -13,38 +16,18 @@ shuffleArray = (array)->
 		[array[i], array[j]] = [array[j], array[i]]
 	array
 
-floorToMultiple = (x, n)-> Math.floor(x / n) * n
+# floorToMultiple = (x, n)-> Math.floor(x / n) * n
 
+###
 streamToBufferArray = (stream, callback)->
 	buffers = []
 	stream.on "data", (buffer)->
 		buffers.push(buffer)
 	stream.on "end", ->
-		buffer = Buffer.concat(buffers)
+		# buffer = Buffer.concat(buffers)
 		callback(null, buffers)
 	stream.on "error", callback
-
-sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
-	# {numberOfChannels, duration, sampleRate, frameCount} = audioBuffer
-	# 
-	# newAudioBuffer = audioContext.createBuffer(numberOfChannels, endOffset - startOffset, sampleRate)
-	# tempArray = new Float32Array(frameCount)
-	# 
-	# for channel in [0..numberOfChannels]
-	# 	audioBuffer.copyFromChannel(tempArray, channel, startOffset)
-	# 	newAudioBuffer.copyToChannel(tempArray, channel, 0)
-	# 
-	# newAudioBuffer
-	
-	{numberOfChannels, sampleRate} = audioBuffer
-	
-	array =
-		for channel in [0...numberOfChannels]
-			samples = audioBuffer.getChannelData(channel)
-			samples.slice(startOffset * sampleRate, endOffset * sampleRate)
-		
-	AudioBuffer.fromArray(array, sampleRate)
-
+###
 
 class Source
 	constructor: (@path)->
@@ -115,7 +98,7 @@ class Sponge
 			console.log "glob", audio_glob
 			return callback err if err
 			console.log "files:", files
-			for file_path in files
+			for file_path in files #shuffleArray(files).slice(0, 20)
 				@sources.push(new Source(file_path))
 			console.log "soaked up #{@sources.length} sources"
 			if @sources.length > 0
@@ -125,8 +108,8 @@ class Sponge
 	
 	squeeze: (callback)->
 		
-		context = new AudioContext
-		console.log "created AudioContext"
+		context = new StreamAudioContext()
+		console.log "created StreamAudioContext"
 		
 		channels = context.format.numberOfChannels
 		{sampleRate} = context
@@ -160,39 +143,54 @@ class Sponge
 		async.map using_sources,
 			(source, callback)=>
 				{audioBuffer} = source
-				# duration = floorToMultiple(Math.random() * audioBuffer.duration, 2)
 				duration = Math.random() / 2 + 0.1
 				duration = Math.min(duration, audioBuffer.duration)
 				start = Math.random() * (audioBuffer.duration - duration)
 				end = start + Math.max(0, duration - 0.01)
-				newAudioBuffer = sliceAudioBuffer audioBuffer, start, end, context
-				callback(null, newAudioBuffer)
+				new_audio_buffer = sliceAudioBuffer audioBuffer, start, end, context
+				callback(null, new_audio_buffer)
 			(err, beat_audio_buffers)=>
-				bpm = 128
-				bps = 60 / bpm
-				add_beat = (beat_type_index, t)=>
+				bpm = 128 / 4
+				bps = bpm / 60
+				add_beat = (beat_type_index, start_time)=>
 					beat_audio_buffer = beat_audio_buffers[beat_type_index]
+					if not beat_audio_buffer
+						console.error "Not enough sources, or beat types rather! Wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
+						return
 					buffer_source = context.createBufferSource()
 					buffer_source.buffer = beat_audio_buffer
 					buffer_source.connect(context.destination)
-					start_time = context.currentTime + t * bps
 					buffer_source.start(start_time)
+					# buffer_source.stop(start_time + 0.05)
+
+					oscillator = context.createOscillator()
+					# oscillator.type = 
+					# console.log beat_type_index
+					oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12) #Math.random() * 440 + 100
+					oscillator.detune.value = Math.random() * 10
+					oscillator.connect(context.destination)
+					oscillator.start(start_time)
+					oscillator.stop(start_time + 0.05)
 				
-				for super_duper_measure_i in [0..4]
+				for super_duper_measure_i in [0...4]
 					rhythm = new Rhythm
 					console.log rhythm.toString()
 					beats = rhythm.getBeats()
 					# console.log beats
-					for super_measure_i in [0..4]
+					for super_measure_i in [0...4]
 						shuffleArray(beat_audio_buffers)
 						for beat in beats
-							# add_beat(beat.type, (beat.time + (super_measure_i + super_duper_measure_i * 4) * 4) / 4)
-							add_beat(beat.type, beat.time / 4 + super_measure_i + super_duper_measure_i * 4)
-							# add_beat(beat.type, beat.time + (super_measure_i + super_duper_measure_i * 4) * 4)
+							# add_beat(beat.type, (beat.time + (super_measure_i + super_duper_measure_i * 4) * 4) / bps)
+							start_time = audio_start_time + (beat.time + super_measure_i + super_duper_measure_i * 4) / bps
+							add_beat(beat.type, start_time)
 				
-				scheduled_length = 4 * 4 * bps
+				scheduled_length = 4 * 4 / bps
+				the_before_fore_time = context.currentTime
 				# TODO: better scheduling
 				setTimeout(=>
+					# the_after_wafter_mathter_matter_latter = context.currentTime
+					diff = context.currentTime - the_before_fore_time
+					console.log "setTimeout, wanted: #{scheduled_length}, actual: #{diff}"
 					@schedule_sounds using_sources, context
 				, scheduled_length * 1000)
 		

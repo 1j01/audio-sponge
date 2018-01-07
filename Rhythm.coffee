@@ -7,6 +7,7 @@ class Rhythm
 	generate: ->
 		gen = (depth)->
 			if depth > 1 + Math.random() * 2
+				# NOTE: an arbitrary number of beat types is assumed here!
 				~~(Math.random() * 20)
 			else if Math.random() < 0.1
 				a = gen(depth + 1)

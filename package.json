@@ -50,7 +50,7 @@
     "node-soundcloud": "0.0.5",
     "throttle": "^1.0.3",
     "wav": "^1.0.1",
-    "web-audio-api": "^0.2.2",
+    "web-audio-engine": "^0.13.3",
     "zoo": "^0.1.9"
   }
 }
