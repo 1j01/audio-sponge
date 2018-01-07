@@ -69,10 +69,10 @@ class Sponge
 				
 				callback(null, context)
 				
-				@schedule_sounds using_sources, context
+				@schedule_sounds using_sources, context, context.currentTime
 	
-	schedule_sounds: (using_sources, context)->
-		audio_start_time = context.currentTime
+	schedule_sounds: (using_sources, context, schedule_start_time)->
+		console.log "schedule sounds for #{schedule_start_time}"
 		async.map using_sources,
 			(source, callback)=>
 				{audioBuffer} = source
@@ -114,15 +114,24 @@ class Sponge
 					for super_measure_i in [0...4]
 						shuffleArray(beat_audio_buffers)
 						for beat in beats
-							start_time = audio_start_time + (beat.time + super_measure_i + super_duper_measure_i * 4) / bps
+							start_time = schedule_start_time + (beat.time + super_measure_i + super_duper_measure_i * 4) / bps
 							add_beat(beat.type, start_time)
 				
 				scheduled_length = 4 * 4 / bps
 				the_before_fore_time = context.currentTime
-				# TODO: better scheduling
-				setTimeout(=>
+				next_start_time = context.currentTime + scheduled_length
+				scheduling_window = 0.2 # or scheduled_length / 2
+				next_schedule_time_minimum = next_start_time - scheduling_window
+				wait_before_trying_to_schedule_next = scheduled_length - scheduling_window
+				
+				setTimeout =>
 					diff = context.currentTime - the_before_fore_time
-					console.log "setTimeout, wanted: #{scheduled_length}, actual: #{diff}"
-					@schedule_sounds using_sources, context
-				, scheduled_length * 1000)
-
+					console.log "setTimeout, wanted: something less than #{scheduled_length}, got (context.currentTime difference): #{diff}"
+					iid = setInterval =>
+						if context.currentTime < next_start_time
+							console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_start_time}"
+						else
+							clearInterval iid
+							@schedule_sounds using_sources, context, next_start_time
+					, 50
+				, wait_before_trying_to_schedule_next * 1000

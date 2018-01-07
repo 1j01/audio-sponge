@@ -126,7 +126,7 @@ start_stream = (error_callback)->
 			throttle =
 				new Throttle
 					bps: bytesPerSample * context.sampleRate
-					chunkSize: bytesPerSample * 1024
+					chunkSize: bytesPerSample * 1024 # TODO: use blockSize from context?
 			encoder =
 				new lame.Encoder
 					# input options
@@ -139,21 +139,32 @@ start_stream = (error_callback)->
 					mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
 			
 			context.pipe(throttle)
-			context.resume() # TODO: init stuff earlier and only resume() when a first client appears
-			# and pause when there are no clients
 
 			throttle
 				.pipe(encoder)
 				.pipe(stream_wrapper)
+			
+			setInterval =>
+				if stream_wrapper.clients.length > 0
+					unless context._isPlaying
+						console.log "#{stream_wrapper.clients.length} client(s), resume"
+						context.resume()
+				else
+					if context._isPlaying
+						console.log "no clients, pausing"
+						context.suspend()
+			, 200
+
+start_stream (err)->
+	console.error err
+	console.log "The server will exit shortly."
+	setTimeout ->
+		process.exit(1)
+	, 200
+	# TODO: exit more cleanly? like end the server and such
 
 app.get "/stream", (req, res)->
-	error_callback = (err)->
-		console.error err
-		res.end("Internal server error: " + err.message)
-		process.exit(1)
-		# TODO: exit cleanly
 	if soundcloud_access_token
-		start_stream(error_callback) unless stream_wrapper
 		stream_wrapper.stream(req, res)
 	else
 		res.redirect("/")
