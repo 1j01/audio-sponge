@@ -15,32 +15,36 @@ module.exports =
 class Sponge
 	constructor: ->
 		@sources = []
+		@using_sources = []
 	
 	# TODO: get sounds from online
-	soak: (audio_glob, callback)->
-		glob audio_glob, (err, files)=>
-			console.log "glob", audio_glob
-			return callback err if err
-			console.log "files:", files
-			for file_path in files #shuffleArray(files).slice(0, 20)
-				# FIXME: blocking while loading audio files into memory
-				@sources.push(new Source(file_path))
-			console.log "soaked up #{@sources.length} sources"
-			if @sources.length > 0
-				callback null
-			else
-				callback new Error("no audio files were added as sources")
+	# soak: (audio_glob, callback)->
+	# 	glob audio_glob, (err, files)=>
+	# 		console.log "glob", audio_glob
+	# 		return callback err if err
+	# 		console.log "files:", files
+	# 		for file_path in files #shuffleArray(files).slice(0, 20)
+	# 			# FIXME: blocking while loading audio files into memory
+	# 			@sources.push(new Source(file_path))
+	# 		console.log "soaked up #{@sources.length} sources"
+	# 		if @sources.length > 0
+	# 			callback null
+	# 		else
+	# 			callback new Error("no audio files were added as sources")
 	
-	squeeze: (callback)->
+	start: (callback)->
 		
 		context = new StreamAudioContext()
 		console.log "created StreamAudioContext"
 		
 		channels = context.format.numberOfChannels
 		{sampleRate} = context
+
+		@schedule_sounds context, context.currentTime
 		
 		some_sources = (source for source, i in shuffleArray(@sources) when i < 30)
 		console.log "preparing sources:"
+		callback(null, context)
 
 		# FIXME: blocking while decoding audio data
 		# FIXME: out of memory error that wasn't a problem with web-audio-api
@@ -55,29 +59,30 @@ class Sponge
 		# 
 		# FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
 
-		async.filterLimit some_sources, 1,
-			(source, callback)=>
-				source.prepareAudioBuffer context, (err)->
-					setTimeout =>
-						return callback err if err
-						return callback new Error "source.audioBuffer is #{source.audioBuffer}" unless source.audioBuffer
-						if source.audioBuffer.sampleRate isnt context.sampleRate
-							console.log "source.audioBuffer.sampleRate (#{source.audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
-							callback(null, no)
-						else
-							console.log "  #{source}"
-							callback(null, yes)
-					, 20 # enough to server a web request :)
-			(err, using_sources)=>
-				return callback err if err
+		# async.filterLimit some_sources, 1,
+		# 	(source, callback)=>
+		# 		source.prepareAudioBuffer context, (err)->
+		# 			setTimeout =>
+		# 				return callback err if err
+		# 				return callback new Error "source.audioBuffer is #{source.audioBuffer}" unless source.audioBuffer
+		# 				if source.audioBuffer.sampleRate isnt context.sampleRate
+		# 					console.log "source.audioBuffer.sampleRate (#{source.audioBuffer.sampleRate}) doesn't match context.sampleRate (#{context.sampleRate}); preemptively rejecting #{source}"
+		# 					callback(null, no)
+		# 				else
+		# 					console.log "  #{source}"
+		# 					callback(null, yes)
+		# 			, 20 # enough to server a web request :)
+		# 	(err, using_sources)=>
+		# 		return callback err if err
 				
-				callback(null, context)
+		# 		callback(null, context)
+
+				# @using_sources = using_sources
 				
-				@schedule_sounds using_sources, context, context.currentTime
 	
-	schedule_sounds: (using_sources, context, schedule_start_time)->
+	schedule_sounds: (context, schedule_start_time)->
 		console.log "schedule sounds for context time #{schedule_start_time}"
-		async.map using_sources,
+		async.map @using_sources,
 			(source, callback)=>
 				{audioBuffer} = source
 				duration = Math.random() / 2 + 0.1
@@ -92,13 +97,13 @@ class Sponge
 				add_beat = (beat_type_index, start_time)=>
 					beat_audio_buffer = beat_audio_buffers[beat_type_index]
 					if not beat_audio_buffer
-						console.error "Not enough sources, or beat types rather! Wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
-						return
-					buffer_source = context.createBufferSource()
-					buffer_source.buffer = beat_audio_buffer
-					buffer_source.connect(context.destination)
-					buffer_source.start(start_time)
-					# buffer_source.stop(start_time + 0.05)
+						# console.error "Not enough sources, or beat types rather! Wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
+					else
+						buffer_source = context.createBufferSource()
+						buffer_source.buffer = beat_audio_buffer
+						buffer_source.connect(context.destination)
+						buffer_source.start(start_time)
+						# buffer_source.stop(start_time + 0.05)
 
 					oscillator = context.createOscillator()
 					oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12)
@@ -136,6 +141,6 @@ class Sponge
 							# console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
 						else
 							clearInterval iid
-							@schedule_sounds using_sources, context, next_start_time
+							@schedule_sounds context, next_start_time
 					, 50
 				, wait_before_trying_to_schedule_next * 1000

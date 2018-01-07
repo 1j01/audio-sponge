@@ -1,4 +1,5 @@
 fs = require "fs"
+lame = require "lame"
 # Meyda = require "meyda"
 
 ###
@@ -14,45 +15,32 @@ streamToBufferArray = (stream, callback)->
 
 module.exports =
 class Source
-	constructor: (@path)->
-		@buffer = fs.readFileSync(@path)
+	constructor: (uri)->
+		# const stream = require('youtube-audio-stream')
+		# const url = 'http://youtube.com/watch?v=34aQNMvGEZQ'
+		# const decoder = require('lame').Decoder()
+		# const speaker = require('speaker')
+		
+		# stream(url)
+		# .pipe(decoder)
+		# .pipe(...)
+
+		# if uri.match(/http[s]:/
+		# 	request(uri)
+		# else
+		# 	fs.createReadStream(uri)
+
+		decoder = new lame.Decoder
+
 	
 	toString: -> "file:#{@path}"
 	
 	prepareAudioBuffer: (context, callback)->
-		# this works
 		context.decodeAudioData @buffer,
 			(@audioBuffer)=>
 				callback(null)
 			(err)=>
 				callback(err)
-		
-		# as does this
-		# streamToBufferArray @readStream, (err, buffers)=>
-		# 	return callback err if err
-		# 	buffer = Buffer.concat(buffers)
-		# 	context.decodeAudioData buffer,
-		# 		(@audioBuffer)=>
-		# 			callback(null)
-		# 		(err)=>
-		# 			callback(err)
-		
-		# this doesn't really work, though:
-		# streamToBufferArray @headerStream, (err, buffers)=>
-		# 	return callback err if err
-		# 	streamToBufferArray @readStream, (err, more_buffers)=>
-		# 		return callback err if err
-		# 		# console.log buffers.concat(more_buffers)
-		# 		buffer = Buffer.concat(buffers.concat(more_buffers))
-		# 		context.decodeAudioData buffer,
-		# 			(@audioBuffer)=>
-		# 				callback(null)
-		# 			(err)=>
-		# 				callback(err)
-		# it'd need to align with the frame boundaries
-		# offset by the header which may not always be a multiple of the frame size
-		# I could get this information with node-wav,
-		# but I don't really want to create a dependency on a specific file type
 	
 	# findBeats: ->
 	# 	rms = Meyda.extract "rms", @buffer

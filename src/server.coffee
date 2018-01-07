@@ -1,6 +1,7 @@
 
 fs = require "fs"
 SC = require "node-soundcloud"
+# sc_searcher = require "soundcloud-searcher"
 
 get_required_env_var = (var_name)->
 	return process.env[var_name] if process.env[var_name]?
@@ -9,8 +10,6 @@ get_required_env_var = (var_name)->
 soundcloud_client_id = get_required_env_var "SOUNDCLOUD_CLIENT_ID"
 soundcloud_api_secret = get_required_env_var "SOUNDCLOUD_API_SECRET"
 soundcloud_access_token = get_required_env_var "SOUNDCLOUD_ACCESS_TOKEN"
-
-audio_glob = get_required_env_var "AUDIO_SOURCE_FILES_GLOB"
 
 server_port = process.env.PORT ? 3901
 app_hostname = process.env.APP_HOSTNAME ? "localhost"
@@ -110,61 +109,55 @@ Sponge = require "./Sponge"
 StreamWrapper = require "./serve-stream"
 Throttle = require "throttle"
 
-stream_wrapper = null
+sponge = new Sponge
+stream_wrapper = new StreamWrapper
 
-start_stream = (error_callback)->
-	sponge = new Sponge
-	stream_wrapper = new StreamWrapper
-	sponge.soak audio_glob, (err)->
-		return error_callback(err) if err
-		sponge.squeeze (err, context)->
-			return error_callback(err) if err
-			
-			# Note: inconsistent naming between web-audio-api and web-audio-engine
-			numberOfChannels = context.format.channels
-			bytesPerSample = numberOfChannels * context.format.bitDepth / 8
-			throttle =
-				new Throttle
-					bps: bytesPerSample * context.sampleRate
-					chunkSize: bytesPerSample * 1024 # TODO: use blockSize from context?
-			encoder =
-				new lame.Encoder
-					# input options
-					channels: numberOfChannels
-					bitDepth: context.format.bitDepth
-					sampleRate: context.sampleRate
-					# output options
-					bitRate: 128
-					outSampleRate: 22050
-					mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
-			
-			context.pipe(throttle)
+sponge.start (err, context)->
+	if err
+		console.error err
+		console.log "The server will exit shortly."
+		setTimeout ->
+			process.exit(1)
+		, 200
+		# TODO: exit more cleanly? like end the server and such
+	
+	# Note: inconsistent naming between web-audio-api and web-audio-engine
+	numberOfChannels = context.format.channels
+	bytesPerSample = numberOfChannels * context.format.bitDepth / 8
+	throttle =
+		new Throttle
+			bps: bytesPerSample * context.sampleRate
+			chunkSize: bytesPerSample * 1024 # TODO: use blockSize from context?
+	encoder =
+		new lame.Encoder
+			# input options
+			channels: numberOfChannels
+			bitDepth: context.format.bitDepth
+			sampleRate: context.sampleRate
+			# output options
+			bitRate: 128
+			outSampleRate: 22050
+			mode: lame.STEREO # STEREO (default), JOINTSTEREO, DUALCHANNEL or MONO
+	
+	context.pipe(throttle)
 
-			throttle
-				.pipe(encoder)
-				.pipe(stream_wrapper)
-			
-			# TODO: buffer a bit of audio to burst / to the first client.. to quench their thirst
-			# (having to wait is like the wooorst / it makes you feel.. like ur cursed)
-			# TODO: log when clients leave
-			setInterval =>
-				if stream_wrapper.clients.length > 0
-					unless context._isPlaying
-						console.log "#{stream_wrapper.clients.length} client(s), resume"
-						context.resume()
-				else
-					if context._isPlaying
-						console.log "no clients, pausing"
-						context.suspend()
-			, 200
-
-start_stream (err)->
-	console.error err
-	console.log "The server will exit shortly."
-	setTimeout ->
-		process.exit(1)
+	throttle
+		.pipe(encoder)
+		.pipe(stream_wrapper)
+	
+	# TODO: buffer a bit of audio to burst / to the first client.. to quench their thirst
+	# (having to wait is like the wooorst / it makes you feel.. like ur cursed)
+	# TODO: log when clients leave
+	setInterval =>
+		if stream_wrapper.clients.length > 0
+			unless context._isPlaying
+				console.log "#{stream_wrapper.clients.length} client(s), resume"
+				context.resume()
+		else
+			if context._isPlaying
+				console.log "no clients, pausing"
+				context.suspend()
 	, 200
-	# TODO: exit more cleanly? like end the server and such
 
 app.get "/stream", (req, res)->
 	if soundcloud_access_token
