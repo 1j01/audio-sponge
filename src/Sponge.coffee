@@ -129,8 +129,8 @@ class Sponge
 					diff = context.currentTime - the_before_fore_time
 					console.log "setTimeout, wanted: something less than #{scheduled_length}, got (context.currentTime difference): #{diff}"
 					iid = setInterval =>
-						if context.currentTime < next_start_time
-							console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_start_time}"
+						if context.currentTime < next_schedule_time_minimum
+							# console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
 						else
 							clearInterval iid
 							@schedule_sounds using_sources, context, next_start_time
