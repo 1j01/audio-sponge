@@ -1,17 +1,19 @@
 
-# audio-sponge
+# Audio Sponge (working title)
 
-soak up some sound, and squeeze some out
+soak up some sound, and squeeze some sound out
 
-maybe it music
+maybe it music!
 
-### what it do tho:
+------------
+
+### What it do tho?
 
 * globs a bunch of audio files (TODO: stream from other sources)
 
-* chooses random ranges in the sources (TODO: detect beats and such)
+* chooses random slices from the sources (TODO: detect beats and such)
 
-* plays sounds back with random rhythms (TODO: rhyme and reason)
+* plays the sounds in random rhythms (TODO: rhyme and reason - and effects!)
 
 * streams to listeners on a webpage (TODO: host stream and site)
 
@@ -28,7 +30,7 @@ no they just names:
 * Automatic chaotic euphony
 * Synthetic symphonic hodgepodge
 * Percussive pandemonium & rambunctious rhythm
-* Wayward librettist - ~~Markov~~ would be so und
+* Wayward librettist - ~~Markov~~ would be so und\*
 * Select the server other is file not play
 * Large birds, soft cheese, green fruit
 * A gathering of empty places
@@ -37,8 +39,28 @@ no they just names:
 * Primary reality beta
 <!-- * Every day route and patch -->
 <!-- * Waiting for the egg to hatch -->
+<!-- * Warning: abstraction required -->
+<!-- * I hope Windows doesn't update -->
+
+\*It would be ["Nonsensical"](https://github.com/1j01/nonsensical) to use plain old Markov text chains in this project
+
+<!--
+* ERROR
+* ERROR ABOUT THERE BEING AN ERROR
+* ERRORS
+* ERROR ABOUT THERE BEING ERRORS	
+* ERROR ABOUT ERRORS
+* ERROR ABOUT ERRORS BEING ERRORS
+* ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS
+* INSERT ERROR MESSAGE HERE
+* AN ARROR HAS SPELLING GRAMMAR OCCURD
+* OCCULT ERROR
+* WARNING
+* VAGUE FEELING OF UNEASE
+-->
 
 ------------
 
 By the board above the books  
-Lies a truth between the crooks
+Lies a truth between the crooks  
+[cont. ? one possibru -uation](https://www.reddit.com/r/LibraryofBabel/comments/7ophaq/ode_to_being_filthy_rich/?ref=share&ref_source=link)
