@@ -11,7 +11,9 @@ shuffleArray = (array) ->
         temp = array[j]
         array[j] = array[i]
         array[i] = temp
-    # array
+    # Note: not returning an array because the fact that it modifies the array in-place
+	# is not signalled by the function name
+	# so it had better be signalled by the return value
 
 module.exports =
 class Sponge
@@ -25,17 +27,14 @@ class Sponge
 		console.log "created StreamAudioContext"
 		
 		@gather_sources()
-		# TODO: acutally gather from/like schedule_sounds (so it pauses along with the stream)
-		# or for now the TODO is: gather more sources after a while (or when run out?)
-		# or when near running out / as a continous process
-		# setInterval =>
-		# 	@gather_sources()
-		# , 5000
+		# TODO: gather sources as a continuous process
+		# either
+			# after a while, pausing along with the stream like schedule_sounds
+		# or
+			# when run out / near running out
 
 		@schedule_sounds context.currentTime
 
-		# some_sources = (source for source, i in shuffleArray(@sources) when i < 30)
-		# console.log "preparing sources:"
 		callback(null, context)
 	
 	gather_sources: ->
@@ -64,15 +63,13 @@ class Sponge
 								@source_samples.push(new_sample)
 							(err, source)=>
 								return callback err if err
-								# console.log "source #{source} basically done finding samples"
-								# console.log "  soaked up samples from #{source}" # well not necessarily
 								console.log "  done with #{source}"
 								console.log "    currently #{@source_samples.length} samples"
 								setTimeout =>
 									callback null
 								, 500 # does this actually help?
 					(err)=>
-						console.log "all files 'used up' (or sampled from or whatever)"
+						console.log "done with all sources"
 
 				console.log "soaking up sample slices from #{@sources.length} sources..."
 
@@ -80,9 +77,6 @@ class Sponge
 		{context} = @
 		console.log "schedule sounds for context time #{schedule_start_time}"
 		console.log "#{@source_samples.length} samples to work with >:)"
-		# console.log "  their lengths:", (sample.length for sample in @source_samples).join(", ")
-		# for sample in @source_samples
-		# 	console.log sample.getChannelData(0)
 		beat_audio_buffers = @source_samples
 
 		bpm = 128 / 4
@@ -92,10 +86,8 @@ class Sponge
 			if not beat_audio_buffer
 				console.error "not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
 				
-				# the oscillators thing here previously kind of gave it a melody
-				# but it just used the rhythm generation which was never intended for melody
-				# but anyways,
-				# I'm using the oscillators as placeholders for sampled beats right now
+				# use an oscillator as a placeholder for sampled beats
+
 				gain = context.createGain()
 				gain.gain.value = 0.3
 				gain.connect(context.destination)

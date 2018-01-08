@@ -114,7 +114,7 @@ sponge.start (err, context)->
 		, 200
 		# TODO: exit more cleanly? like end the server and such
 	
-	# Note: inconsistent naming between web-audio-api and web-audio-engine
+	# Note: inconsistent naming between web-audio-api and web-audio-engine for numberOfChannels/channels
 	numberOfChannels = context.format.channels
 	bytesPerSample = numberOfChannels * context.format.bitDepth / 8
 	throttle =

@@ -1,36 +1,9 @@
 fs = require "fs"
 request = require "request"
 lame = require "lame"
-# pcmUtils = require "pcm-utils"
 pcm = require "pcm-util"
-# PCMTransform = require "pcm-transform"
 # Meyda = require "meyda"
 sliceAudioBuffer = require "./slice-audiobuffer.js"
-
-# pcm_buffer_to_channels = (pcm_buffer, callback)->
-# 	channels = []
-# 	# unzipper = new pcmUtils.Unzipper channels, pcmUtils.FMT_U16LE
-# 	# unzipper.write(pcm_buffer)
-# 	# unzipper.on "end", ->
-# 	# 	console.log "end"
-# 	# unzipper.on "error", (err)->
-# 	# 	callback err
-# 	# unzipper.on "finish", ->
-# 	# 	console.log "finish"
-# 	# 	callback null, channels
-	
-# 	# pcm_transform = new PCMTransform batchSize: 20000
-# 	# pcm_transform.write(pcm_buffer)
-# 	# pcm_transform.on "end", ->
-# 	# 	console.log "end"
-# 	# pcm_transform.on "error", (err)->
-# 	# 	callback err
-# 	# pcm_transform.on "data", (data)->
-# 	# 	console.log "data", data # just one argument? no separate channels?
-# 	# 	channels[].push/concat(data.slice())??
-# 	# pcm_transform.on "finish", ->
-# 	# 	console.log "finish"
-# 	# 	callback null, channels
 
 max_buffers = parseInt(process.env.MAX_BUFFERS)
 if not isFinite(max_buffers) then max_buffers = 50 # TODO: figure out how much this is and if it's reasonable
@@ -82,17 +55,9 @@ class Source
 			if buffers.length >= max_buffers
 				look_at_buffers_and_find_samples(buffers)
 				buffers = []
-				# console.log "      pause decoder"
-				# decoder.pause()
-				# setTimeout =>
-				# 	console.log "      resume decoder"
-				# 	decoder.resume()
-				# , Math.random() * 300 + 100
 			
-			# console.log "      pause decoder"
 			decoder.pause()
 			setTimeout =>
-				# console.log "      resume decoder"
 				decoder.resume()
 			, 10
 		decoder.on "end", =>
@@ -108,31 +73,13 @@ class Source
 		return if Math.random() < take_sample_chance
 		# TODO: find beats with Meyda or another module
 		
-		# pcm_buffer_to_channels buffer, (err, channels)->
-		# 	return console.error err if err
-		
-		# 	{sampleRate, format} = @context
-		# 	numberOfChannels = format.numberOfChannels ? format.channels
-		# 	max_duration = buffer.length / sampleRate
-		# 	slice_duration = Math.random() / 2 + 0.1
-		# 	slice_duration = Math.min(slice_duration, max_duration)
-		# 	# TODO: start offset
-			
-		# 	length = sampleRate * slice_duration
-		# 	new_audio_buffer = @context.createBuffer numberOfChannels, length, sampleRate
-		# 	for channelIndex, channelData in channels
-		# 		# buffer.copyFromChannel(tempArray, channel, startOffset)
-		# 		# newArrayBuffer.copyToChannel(tempArray, channel, 0)
-		# 		newArrayBuffer.copyToChannel(channelData, channelIndex, 0)
-			
-		# 	sample_callback(null, new_audio_buffer)
-
 		audiojs_audio_buffer = pcm.toAudioBuffer(buffer, pcm_format)
 		
 		duration = Math.random() / 2 + 0.1
 		duration = Math.min(duration, audiojs_audio_buffer.duration)
 		start = Math.random() * (audiojs_audio_buffer.duration - duration)
-		end = start + Math.max(0, duration - 0.01) # TODO: move duration modifier out to a statement?
+		duration = Math.max(0, duration - 0.01)
+		end = start + duration
 		new_audio_buffer = sliceAudioBuffer audiojs_audio_buffer, start, end, @context
 
 		sample_callback(new_audio_buffer)
