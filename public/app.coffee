@@ -44,6 +44,11 @@ audio.src = "stream"
 audio.addEventListener "error", ->
 	update status: "offline"
 audio.addEventListener "stalled", ->
+	# FIXME: this is annoying
+	# I want it to only end the stream if the server is offline
+	# but it generally only realizes its offline (when the ping fails) *after* the stalled event
+	# so I'd need to wait for it to go offline and then, I guess if there's been a stalled with no
+	# play/resume/unstalled/timeupdate or whatever after it, then end the stream (like the following:)
 	audio.src = null
 audio.addEventListener "play", ->
 	update listening: yes

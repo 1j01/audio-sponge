@@ -47,6 +47,8 @@
     "glob": "^7.1.2",
     "lame": "^1.2.4",
     "node-soundcloud": "0.0.6",
+    "pcm-util": "^3.0.0",
+    "request": "^2.83.0",
     "throttle": "^1.0.3",
     "web-audio-engine": "^0.13.3",
     "zoo": "^0.1.9"

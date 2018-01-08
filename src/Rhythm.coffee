@@ -4,6 +4,11 @@ class Rhythm
 		@generate()
 	
 	generate: ->
+		# TODO: we want multiple beats on top of each other
+		# this could be achieved here or outside by layering things on the same Rhythms (or both)
+		# but TODO: maybe a parameter for how complex the rhythm should be
+		# TODO: make it so the set of beat types returned is contiguous from zero,
+		# i.e. 0..N and not 1,2,5 (Monty Python reference there)
 		gen = (depth)->
 			if depth > 1 + Math.random() * 2
 				# NOTE: an arbitrary number of beat types is assumed here!

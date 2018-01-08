@@ -86,13 +86,6 @@ app.use(express.static("public"))
 
 app.get "/", (req, res)->
 	if soundcloud_access_token
-		# # SC.get "/me", (err, me)->
-		# # 	return console.error err if err
-		# 	SC.get "/me/activities/tracks/affiliated", (err, data)->
-		# 		return console.error err if err
-		# 		tracks = (item.origin for item in data.collection)
-		# 		console.log tracks
-		
 		res.sendFile("public/app.html", root: __dirname + "/..")
 	else
 		initOAuth(req, res)
@@ -145,7 +138,7 @@ sponge.start (err, context)->
 		.pipe(encoder)
 		.pipe(stream_wrapper)
 	
-	# TODO: buffer a bit of audio to burst / to the first client.. to quench their thirst
+	# TODO: buffer a bit of audio to burst / to the client that's first.. to quench their thirst
 	# (having to wait is like the wooorst / it makes you feel.. like ur cursed)
 	# TODO: log when clients leave
 	setInterval =>

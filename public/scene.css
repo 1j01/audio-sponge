@@ -194,6 +194,8 @@ button.shape {
 .status-indicator.live {
 	color: #F44336;
 }
+/* TODO: make it so the button isn't resting on what is supposed to be a speaker grill,
+probably just make it into two speaker grills either side of the button */
 .surface-plane {
 	position: absolute;
 	width: 100%;
