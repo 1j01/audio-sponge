@@ -142,8 +142,9 @@ class Sponge
 
 			if diff >= scheduled_length
 				console.warn "WARNING: after setTimeout, context time difference was #{diff}; should be less than #{scheduled_length}"
-			# console.log "after setTimeout, context time difference of #{diff} (which should be less than #{scheduled_length})"
-			do wait_until_near_schedule_time = ->
+			# else
+			# 	console.log "after setTimeout, context time difference of #{diff} (which should be less than #{scheduled_length})"
+			do wait_until_near_schedule_time = =>
 				if context.currentTime < next_schedule_time_minimum
 					# console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
 					setTimeout wait_until_near_schedule_time, 50
