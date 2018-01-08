@@ -128,6 +128,9 @@ class Sponge
 		# TODO: make it so this doesn't need to be updated, i.e. by incrementing it in the loop above
 		scheduled_length = 4 * 1 / bps
 
+		# TODO: simplify the following to use a single setTimeout loop
+		# maybe look at other peoples code for scheduling to see how to do it better
+		# currently it does a kind of silly thing of waiting until the last second (or 0.2 seconds) to schedule
 		the_before_fore_time = context.currentTime
 		next_start_time = context.currentTime + scheduled_length
 		scheduling_window = 0.2 # or scheduled_length / 2
@@ -137,15 +140,13 @@ class Sponge
 		setTimeout =>
 			diff = context.currentTime - the_before_fore_time
 
-			# TODO: it should actually be less than scheduled_length - 50ms, right?
-			# or I should make the setInterval run immediately once
-			# probably best to switch to another setTimeout
+			if diff >= scheduled_length
+				console.warn "WARNING: after setTimeout, context time difference was #{diff}; should be less than #{scheduled_length}"
 			# console.log "after setTimeout, context time difference of #{diff} (which should be less than #{scheduled_length})"
-			iid = setInterval =>
+			do wait_until_near_schedule_time = ->
 				if context.currentTime < next_schedule_time_minimum
 					# console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
+					setTimeout wait_until_near_schedule_time, 50
 				else
-					clearInterval iid
 					@schedule_sounds next_start_time
-			, 50
 		, wait_before_trying_to_schedule_next * 1000
