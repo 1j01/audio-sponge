@@ -1,4 +1,3 @@
-
 fs = require "fs"
 SC = require "node-soundcloud"
 # sc_searcher = require "soundcloud-searcher"
@@ -26,9 +25,9 @@ SC.init
 	uri: soundcloud_auth_callback_url
 	accessToken: soundcloud_access_token
 
-# TODO: maybe remove all the oauth stuff
+# TODO: probably remove ALL THE OAUTH STUFF
 # and use https://www.npmjs.com/package/simple-soundcloud
-# or whatever
+# or similar
 
 # Connect user to authorize application
 initOAuth = (req, res)->
@@ -157,6 +156,19 @@ app.get "/stream", (req, res)->
 		stream_wrapper.stream(req, res)
 	else
 		res.redirect("/")
+
+app.get "/attribution", (req, res)->
+	# TODO: are these setHeaders needed?
+	res.setHeader "Cache-Control", "no-store, must-revalidate"
+	res.setHeader "Expires", "0"
+	# TODO: eventually drop sources, so that this list doesn't get ridiculous
+	res.json({
+		sources:
+			for source in sponge.sources
+				# {link, name} = source.metadata
+				# {link, name}
+				source.metadata
+	})
 
 app.get "/ping", (req, res)->
 	res.writeHead 200,

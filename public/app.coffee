@@ -1,6 +1,7 @@
 listen_button = document.querySelector(".listen-button")
 button_label = listen_button.querySelector(".button-label")
 status_indicator = listen_button.querySelector(".status-indicator")
+attribution_links_ul = document.querySelector(".attribution-links")
 
 state = {}
 update = (new_state)->
@@ -56,7 +57,44 @@ audio.addEventListener "pause", ->
 audio.addEventListener "emptied", ->
 	update listening: no
 
+
+update_attribution = (attribution)->
+	# TODO: diff-based updates
+	attribution_links_ul.innerHTML = ""
+	for source in attribution.sources
+		li = document.createElement("li")
+		track_link = document.createElement("a")
+		track_link.href = source.link
+		track_link.textContent = source.name
+		track_link.setAttribute("target", "_blank")
+		author_link = document.createElement("a")
+		author_link.href = source.author.link
+		author_link.textContent = source.author.name
+		author_link.setAttribute("target", "_blank")
+		li.appendChild(track_link)
+		li.appendChild(document.createTextNode(" by "))
+		li.appendChild(author_link)
+		li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
+		attribution_links_ul.appendChild(li)
+
+check_attribution = ->
+	req = new XMLHttpRequest()
+	req.addEventListener "readystatechange", ->
+		# console?.log "readystatechange", req.readyState, req.status
+		if req.readyState is 4
+			if req.status in [0, 200]
+				# update status: "live"
+				update_attribution(JSON.parse(req.responseText))
+			else
+				# update status: "offline"
+	req.addEventListener "error", ->
+		# console?.log "error", arguments
+		# update status: "offline"
+	req.open("GET", "attribution")
+	req.send()
+
 check_status = ->
+	# TODO: check status via attribution checking?
 	req = new XMLHttpRequest()
 	req.addEventListener "readystatechange", ->
 		# console?.log "readystatechange", req.readyState, req.status
@@ -71,11 +109,12 @@ check_status = ->
 	req.open("GET", "ping")
 	req.send()
 
-do periodically_check_status = ->
+do periodically_check_status_and_attribution = ->
 	check_status()
+	check_attribution()
 	setTimeout ->
 		# wait also until the page is visible
-		requestAnimationFrame periodically_check_status
+		requestAnimationFrame periodically_check_status_and_attribution
 	, 5000
 
 listen_button.addEventListener "click", toggle_listen

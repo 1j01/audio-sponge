@@ -19,14 +19,33 @@ h1 {
 h2 {
 	font-size: 1.5em;
 }
+h3 {
+	font-size: 1.1em;
+}
+a {
+	color: #19b7ff;
+	text-decoration: none;
+}
+.attribution-links,
+.columns {
+	max-width: 60em;
+	margin: 1em auto;
+}
 .columns {
 	-moz-column-count: 2;
 	-webkit-column-count: 2;
 	column-count: 2;
-	max-width: 60em;
-	margin: 1em auto;
 }
 .columns p {
 	margin: 0;
 	padding: 0.5em;
+}
+.attribution-links {
+	list-style-type: none;
+	/* text-align: left; */
+	max-height: 6em;
+	overflow: auto;
+}
+.attribution-links li {
+	padding: 0.2em;
 }

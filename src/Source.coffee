@@ -12,7 +12,7 @@ if not isFinite(max_buffers) then max_buffers = 50 # TODO: figure out how much t
 # which are sourced via Source (that's why it's called Source)... and then played via BufferSource nodes
 # I should probably call samples slices or beats, and Source could just be a function or functions
 
-# NOTE: you want this to be higher if there are less sources (or very short sources)
+# NOTE: you want this chance to be higher if there are less sources (or very short sources)
 # and it also depends on MAX_BUFFERS (max_buffers)
 # for very short sources it should probably take the whole thing as a sample
 # or increase the probability in proportion to the length (although the length isn't necessarily known)
@@ -25,8 +25,10 @@ if not isFinite(take_sample_chance) then take_sample_chance = 0.05
 # if it is a class, maybe it should be an EventEmitter
 module.exports =
 class Source
-	constructor: (uri, @context, sample_callback, callback)->
-		# could use node-get-uri or go the other direction and just accept a stream (and maybe an id for inspection)
+	constructor: (uri, @metadata, @context, sample_callback, callback)->
+	# constructor: (@metadata, @stream, @context, sample_callback, callback)->
+		@metadata.number_of_samples = 0
+		# should just accept a stream (pcm and format?)
 		if uri.match(/http[s]:/)
 			@uri = uri
 			@readStream = request(uri, qs: client_id: process.env.SOUNDCLOUD_CLIENT_ID)
@@ -89,6 +91,7 @@ class Source
 		new_audio_buffer = sliceAudioBuffer audiojs_audio_buffer, start, end, @context
 
 		sample_callback(new_audio_buffer)
+		@metadata.number_of_samples += 1
 		
 
 	# findBeats: ->

@@ -1,6 +1,7 @@
 async = require "async"
 glob = require "glob"
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
+SC = require "node-soundcloud"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
 
@@ -38,40 +39,67 @@ class Sponge
 		callback(null, context)
 	
 	gather_sources: ->
-		# SC = require "node-soundcloud"
-		# SC.get "/me/activities/tracks/affiliated", (err, data)=>
-		# 	return console.error err if err
-		# 	tracks = (item.origin for item in data.collection)
-		# 	for track in tracks when track.streamable
-		# 		@sources.push new Source track.stream_url, (err, source)->
-		# 			return console.error err if err
-		# 			console.log "source #{source} basically done finding samples"
-		# 	# console.log tracks
-		
-		audio_glob = process.env.AUDIO_SOURCE_FILES_GLOB
-		
-		console.log "AUDIO_SOURCE_FILES_GLOB", audio_glob
-		if audio_glob?
-			glob audio_glob, (err, files)=>
-				return console.error err if err
-				shuffleArray(files)
-				console.log "files:", files
-				async.eachLimit files, 1,
-					(file_path, callback)=>
-						@sources.push new Source file_path, @context,
-							(new_sample)=>
-								@source_samples.push(new_sample)
-							(err, source)=>
-								return callback err if err
-								console.log "  done with #{source}"
-								console.log "    currently #{@source_samples.length} samples"
-								setTimeout =>
-									callback null
-								, 500 # does this actually help?
-					(err)=>
-						console.log "done with all sources"
+		# TODO: search for random search terms
+		# or at least use something more random
+		# my feed is mostly Best Acquaintences...
+		SC.get "/me/activities/tracks/affiliated", (err, data)=>
+			return console.error err if err
+			tracks = (item.origin for item in data.collection)
+			tracks = tracks.filter((track)-> track.streamable)
 
-				console.log "soaking up sample slices from #{@sources.length} sources..."
+			shuffleArray(tracks)
+			async.eachLimit tracks, 2,
+				(track, callback)=>
+					metadata = {
+						link: track.permalink_url
+						name: track.title
+						author: {
+							name: track.user.username
+							link: track.user.permalink_url
+						}
+						# soundcloud_data: track
+					}
+					@sources.push new Source track.stream_url, metadata, @context,
+						(new_sample)=>
+							@source_samples.push(new_sample)
+						(err, source)=>
+							return callback err if err
+							console.log "  done with #{source}"
+							console.log "    currently #{@source_samples.length} samples"
+							setTimeout =>
+								callback null
+							, 500 # does this actually help?
+				(err)=>
+					console.log "done with all sources"
+
+			console.log "soaking up sample slices from #{@sources.length} sources..."
+
+		# TODO: DRY and reenable FS support
+		# maybe read metadata from files
+		# audio_glob = process.env.AUDIO_SOURCE_FILES_GLOB
+		
+		# console.log "AUDIO_SOURCE_FILES_GLOB", audio_glob
+		# if audio_glob?
+		# 	glob audio_glob, (err, files)=>
+		# 		return console.error err if err
+		# 		shuffleArray(files)
+		# 		console.log "files:", files
+		# 		async.eachLimit files, 1,
+		# 			(file_path, callback)=>
+		# 				@sources.push new Source file_path, @context,
+		# 					(new_sample)=>
+		# 						@source_samples.push(new_sample)
+		# 					(err, source)=>
+		# 						return callback err if err
+		# 						console.log "  done with #{source}"
+		# 						console.log "    currently #{@source_samples.length} samples"
+		# 						setTimeout =>
+		# 							callback null
+		# 						, 500 # does this actually help?
+		# 			(err)=>
+		# 				console.log "done with all sources"
+
+		# 		console.log "soaking up sample slices from #{@sources.length} sources..."
 
 	schedule_sounds: (schedule_start_time)->
 		{context} = @

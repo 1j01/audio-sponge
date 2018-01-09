@@ -1,4 +1,3 @@
-
 # Audio Sponge (working title)
 
 soak up some sound, and squeeze some sound out
@@ -9,13 +8,13 @@ maybe it music!
 
 ### What it do tho?
 
-* globs a bunch of audio files (TODO: stream from other sources)
+* globs a bunch of audio files or streams from SoundCloud
 
 * chooses random slices from the sources (TODO: detect beats and such)
 
 * plays the sounds in random rhythms (TODO: rhyme and reason - and effects!)
 
-* streams to listeners on a webpage (TODO: host stream and site)
+* streams to listeners on a webpage (TODO: linky linky... 😃)
 
 ------------
 
