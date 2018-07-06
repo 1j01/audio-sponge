@@ -2,13 +2,18 @@ fs = require "fs"
 SC = require "node-soundcloud"
 # sc_searcher = require "soundcloud-searcher"
 
+abort = false
 get_required_env_var = (var_name)->
 	return process.env[var_name] if process.env[var_name]?
 	console.error("Environment variable #{var_name} required")
+	abort = true
 
 soundcloud_client_id = get_required_env_var "SOUNDCLOUD_CLIENT_ID"
 soundcloud_api_secret = get_required_env_var "SOUNDCLOUD_API_SECRET"
 soundcloud_access_token = get_required_env_var "SOUNDCLOUD_ACCESS_TOKEN"
+if abort
+	console.error("Aborting due to missing configuration")
+	process.exit(1)
 
 server_port = process.env.PORT ? 3901
 app_hostname = process.env.APP_HOSTNAME ? "localhost"
