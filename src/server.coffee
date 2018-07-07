@@ -1,17 +1,16 @@
 fs = require "fs"
 SC = require "node-soundcloud"
 # sc_searcher = require "soundcloud-searcher"
+get_env_var = require "./get-env-var"
 
-get_required_env_var = (var_name)->
-	return process.env[var_name] if process.env[var_name]?
-	console.error("Environment variable #{var_name} required")
+# TODO: uppercase these (constant but not const) variable names
+soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID", required: yes
+soundcloud_api_secret = get_env_var "SOUNDCLOUD_API_SECRET", required: yes
+soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: yes
 
-soundcloud_client_id = get_required_env_var "SOUNDCLOUD_CLIENT_ID"
-soundcloud_api_secret = get_required_env_var "SOUNDCLOUD_API_SECRET"
-soundcloud_access_token = get_required_env_var "SOUNDCLOUD_ACCESS_TOKEN"
+server_port = get_env_var "PORT", default: 3901, number: yes
+app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
 
-server_port = process.env.PORT ? 3901
-app_hostname = process.env.APP_HOSTNAME ? "localhost"
 
 app_origin = "http://#{app_hostname}:#{server_port}"
 soundcloud_auth_callback_path = "/okay"
