@@ -110,12 +110,10 @@ check_status = ->
 	req.send()
 
 do periodically_check_status_and_attribution = ->
-	check_status()
-	check_attribution()
-	setTimeout ->
-		# wait also until the page is visible
-		requestAnimationFrame periodically_check_status_and_attribution
-	, 5000
+	unless document.hidden
+		check_status()
+		check_attribution()
+	setTimeout periodically_check_status_and_attribution, 5000
 
 listen_button.addEventListener "click", toggle_listen
 trigger_keys = [32, 13, 80] # Space, Enter, P
