@@ -2,7 +2,11 @@
 
 soak up some sound, and squeeze some sound out
 
-maybe it music!
+maybe it music! (not yet, not really, unless you're into anti-good anti-music type stuff)
+
+------------
+
+### Where is it?
 
 this URL will change: https://audio-sponge.glitch.me/
 
@@ -31,7 +35,7 @@ no they just names:
 * Automatic chaotic euphony
 * Synthetic symphonic hodgepodge
 * Percussive pandemonium & rambunctious rhythm
-* Wayward librettist - ~~Markov~~ would be so und\*
+* Wayward librettist - ~~Markov~~\* would be so ...-und (sound)
 * Select the server other is file not play
 * Large birds, soft cheese, green fruit
 * A gathering of empty places
@@ -40,9 +44,12 @@ no they just names:
 * Primary reality beta
 <!-- * Warning: abstraction required -->
 
-\*It would be ["Nonsensical"](https://github.com/1j01/nonsensical) to use plain old Markov text chains in this project
+\*It would be ["nonsensical"](https://github.com/1j01/nonsensical) for me to use plain old Markov text chains in this project (considering I've made a sentence generator of my own (and could adapt that more easily))
 
-<!--
+------------
+
+### What if it doens't work?
+
 * ERROR
 * ERROR ABOUT THERE BEING AN ERROR
 * MULTIPLE ERROR(S) NOW
@@ -55,10 +62,11 @@ no they just names:
 * AN ARROR HAS SPELLING-GRAMMAR OCCURD; PLEASE Contact LENSES
 * OCCULT ERROR
 * WARNING
-* VAGUE FEELING OF UNEASE
--->
+* VAGU[**E**](https://www.reddit.com/r/EmboldenTheE/) FEELING OF [UNEASE](https://youtu.be/8d3SMxK40YQ)
 
 ------------
+
+### What was that, like some avant-garde poetry?
 
 By the board above the books  
 Lies a truth between the crooks  
