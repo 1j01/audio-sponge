@@ -140,18 +140,14 @@ class Sponge
 		# TODO: phase in and out layers and their sources
 		# TODO: apply effects to tracks, especially reverb, but also random, crazy DSP
 
-		# NOTE: super_duper_measure_i is obselete now that schedule_sounds recursively loops
-		# and enabling it (i.e. with a 4 instead of a 1) just means it won't use any newly gathered beat samples
-		# (at that point / until later) (unnecessarily)
-		for super_duper_measure_i in [0...1]
-			rhythm = new Rhythm
-			console.log rhythm.toString()
-			beats = rhythm.getBeats()
-			for super_measure_i in [0...4]
-				shuffleArray(beat_audio_buffers)
-				for beat in beats
-					start_time = schedule_start_time + (beat.time + super_measure_i + super_duper_measure_i * 4) / bps
-					add_beat(beat.type, start_time)
+		rhythm = new Rhythm
+		console.log rhythm.toString()
+		beats = rhythm.getBeats()
+		for super_measure_i in [0...4]
+			shuffleArray(beat_audio_buffers)
+			for beat in beats
+				start_time = schedule_start_time + (beat.time + super_measure_i) / bps
+				add_beat(beat.type, start_time)
 		
 		# TODO: make it so this doesn't need to be updated, i.e. by incrementing it in the loop above
 		scheduled_length = 4 * 1 / bps
