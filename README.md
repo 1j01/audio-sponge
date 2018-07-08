@@ -4,17 +4,19 @@ soak up some sound, and squeeze some sound out
 
 maybe it music!
 
+this URL will change: https://audio-sponge.glitch.me/
+
 ------------
 
 ### What it do tho?
 
-* globs a bunch of audio files or streams from SoundCloud
+* globs a bunch of audio files or streams from SoundCloud (TODO: more sources)
 
 * chooses random slices from the sources (TODO: detect beats and such)
 
 * plays the sounds in random rhythms (TODO: rhyme and reason - and effects!)
 
-* streams to listeners on a webpage (TODO: linky linky... 😃)
+* streams to listeners on a [webpage](https://audio-sponge.glitch.me/) (TODO: make this more robust)
 
 ------------
 
@@ -43,13 +45,14 @@ no they just names:
 <!--
 * ERROR
 * ERROR ABOUT THERE BEING AN ERROR
-* ERRORS
-* ERROR ABOUT THERE BEING ERRORS	
-* ERROR ABOUT ERRORS
-* ERROR ABOUT ERRORS BEING ERRORS
+* MULTIPLE ERROR(S) NOW
+* ERROR ABOUT THERE BEING ERRORS
+* ERROR ABOUT ERRORS IN GENERAL
+* ERROR ABOUT ERRORS BEING ERRORS GENERALLY
 * ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS
+* HOW ERRONEOUS OF THEM
 * INSERT ERROR MESSAGE HERE
-* AN ARROR HAS SPELLING-GRAMMAR OCCURD
+* AN ARROR HAS SPELLING-GRAMMAR OCCURD; PLEASE Contact LENSES
 * OCCULT ERROR
 * WARNING
 * VAGUE FEELING OF UNEASE
