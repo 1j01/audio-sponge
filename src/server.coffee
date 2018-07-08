@@ -10,9 +10,8 @@ soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: yes
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
+app_origin = get_env_var "APP_ORIGIN", default: "http://#{app_hostname}:#{server_port}"
 
-
-app_origin = "http://#{app_hostname}:#{server_port}"
 soundcloud_auth_callback_path = "/okay"
 soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
 
