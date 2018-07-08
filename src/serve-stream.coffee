@@ -45,3 +45,4 @@ class StreamWrapper extends Writable
 			if index > -1
 				@inputStream?.unpipe(response)
 				@clients.splice(index, 1)
+				console.log "connection closed (now #{@clients.length} client(s))"

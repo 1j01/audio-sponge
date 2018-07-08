@@ -136,8 +136,6 @@ sponge.start (err, context)->
 		.pipe(encoder)
 		.pipe(stream_wrapper)
 	
-	# TODO: log when clients leave
-	
 	# buffer a bit of audio to burst / to the client that's first / to quench their thirst
 	# (having to wait is like the wooorst / it makes you feel.. like... ur cursed... or something)
 	console.log "buffer a bit of audio for the first client(s)"
