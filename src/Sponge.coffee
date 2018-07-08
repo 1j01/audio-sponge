@@ -112,7 +112,7 @@ class Sponge
 		add_beat = (beat_type_index, start_time)=>
 			beat_audio_buffer = beat_audio_buffers[beat_type_index]
 			if not beat_audio_buffer
-				console.error "not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
+				# console.error "not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
 				
 				# use an oscillator as a placeholder for sampled beats
 

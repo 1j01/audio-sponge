@@ -176,4 +176,8 @@ app.get "/ping", (req, res)->
 	res.end("pong")
 
 app.listen server_port, ->
-	console.log "listening on #{app_origin}"
+	console.log ""
+	console.log ".--------------------------------------------------- - - -"
+	console.log "| listening on #{app_origin}"
+	console.log "'--------------------------------------------------- - - -"
+	console.log ""
