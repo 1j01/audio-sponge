@@ -136,19 +136,25 @@ sponge.start (err, context)->
 		.pipe(encoder)
 		.pipe(stream_wrapper)
 	
-	# TODO: buffer a bit of audio to burst / to the client that's first.. to quench their thirst
-	# (having to wait is like the wooorst / it makes you feel.. like ur cursed)
 	# TODO: log when clients leave
-	setInterval =>
-		if stream_wrapper.clients.length > 0
-			unless context._isPlaying
-				console.log "#{stream_wrapper.clients.length} client(s), resume"
-				context.resume()
-		else
-			if context._isPlaying
-				console.log "no clients, pausing"
-				context.suspend()
-	, 200
+	
+	# buffer a bit of audio to burst / to the client that's first / to quench their thirst
+	# (having to wait is like the wooorst / it makes you feel.. like... ur cursed... or something)
+	console.log "buffer a bit of audio for the first client(s)"
+	context.resume()
+	setTimeout =>
+		console.log "buffered some audio for the first client(s)"
+		setInterval =>
+			if stream_wrapper.clients.length > 0
+				unless context._isPlaying
+					console.log "#{stream_wrapper.clients.length} client(s), resume"
+					context.resume()
+			else
+				if context._isPlaying
+					console.log "no clients, pausing"
+					context.suspend()
+		, 200
+	, 12000
 
 app.get "/stream", (req, res)->
 	if soundcloud_access_token
