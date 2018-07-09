@@ -4,8 +4,9 @@ SC = require "node-soundcloud"
 get_env_var = require "./get-env-var"
 
 soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
-soundcloud_api_secret = get_env_var "SOUNDCLOUD_API_SECRET", required: soundcloud_client_id?
-soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: soundcloud_client_id? # NOTE: not constant
+soundcloud_enabled = soundcloud_client_id?
+soundcloud_api_secret = get_env_var "SOUNDCLOUD_API_SECRET", required: soundcloud_enabled
+soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: soundcloud_enabled # NOTE: not constant
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
@@ -15,7 +16,7 @@ soundcloud_auth_callback_path = "/okay"
 soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
 
 # Initialize SoundCloud client
-if soundcloud_client_id
+if soundcloud_enabled
 	console.log "init node-soundcloud client"
 	SC.init
 		id: soundcloud_client_id
@@ -82,7 +83,7 @@ app = express()
 app.use(express.static("public"))
 
 app.get "/", (req, res)->
-	if soundcloud_access_token or not (soundcloud_client_id?)
+	if soundcloud_access_token or not soundcloud_enabled
 		res.sendFile("public/app.html", root: __dirname + "/..")
 	else
 		initOAuth(req, res)

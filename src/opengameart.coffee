@@ -26,14 +26,6 @@ module.exports = (query, callback)->
 			return
 		$ = cheerio.load(body)
 
-		# tracks =
-		# 	for element in $("[data-mp3-url]")
-		# 		stream_url: $(element).attr("data-mp3-url")
-		# 		title: $(element).closest(".node").find("[property='dc:title']").text()
-		# 		permalink_url: $(element).closest(".node").find("[property='dc:title'] a, a").first().attr("href")
-		# 
-		# callback(null, tracks)
-
 		# TODO: handle errors gracefully and basically ignore (but report) errors for individual track metadata-fetching
 		# TODO: limit fetching to a max number of tracks (possibly 1) and space out requests over time, stream / call back with individual track metadatas
 		async.map(
@@ -53,12 +45,6 @@ module.exports = (query, callback)->
 					user_page_link_href = track_page_$(".field-name-author-submitter a").attr("href")
 					user_page_url = new URL(user_page_link_href, url).href
 
-					# track.user =
-					# 	username: track_page_$(".field-name-author-submitter").text()
-					# 	permalink_url: user_page_url
-					
-					# callback(null, track)
-					
 					request(user_page_url, (error, response, body)->
 						if error
 							callback(error)

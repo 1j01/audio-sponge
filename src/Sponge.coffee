@@ -3,7 +3,7 @@ glob = require "glob"
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
 SC = require "node-soundcloud"
 get_env_var = require "./get-env-var" # TODO: remove me
-SC_enabled = not not (get_env_var "SOUNDCLOUD_CLIENT_ID")
+soundcloud_enabled = (get_env_var "SOUNDCLOUD_CLIENT_ID")?
 OGA = require "./opengameart"
 OGA_enabled = true
 Rhythm = require "./Rhythm"
@@ -49,10 +49,10 @@ class Sponge
 		callback(null, @context)
 	
 	gather_sources: ->
-		# TODO: search for random search terms
-		# or at least use something more random
-		# my feed is mostly Best Acquaintences...
-		if SC_enabled
+		if soundcloud_enabled
+			# TODO: search for random search terms
+			# or at least use something more random
+			# my feed is mostly Best Acquaintences...
 			SC.get "/me/activities/tracks/affiliated", (err, data)=>
 				return console.error err if err
 				tracks = (item.origin for item in data.collection)
@@ -68,7 +68,6 @@ class Sponge
 								name: track.user.username
 								link: track.user.permalink_url
 							}
-							# soundcloud_data: track
 						}
 						@sources.push new Source track.stream_url, metadata, @context,
 							(new_sample)=>
