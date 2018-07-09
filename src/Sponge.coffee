@@ -4,6 +4,7 @@ glob = require "glob"
 SC = require "node-soundcloud"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
+Chorus = require "../lib/chorus"
 
 shuffleArray = (array) ->
     i = array.length
@@ -24,9 +25,14 @@ class Sponge
 	
 	start: (callback)->
 		
-		@context = context = new StreamAudioContext()
+		@context = new StreamAudioContext()
 		console.log "created StreamAudioContext"
 		
+		@chorus = new Chorus(@context)
+		@chorus.output.connect(@context.destination)
+
+		@predestination = @chorus # heheh "predestination" (it'd funnier if it was a reverse reverb)
+
 		@gather_sources()
 		# TODO: gather sources as a continuous process
 		# either
@@ -34,9 +40,9 @@ class Sponge
 		# or
 			# when run out / near running out
 
-		@schedule_sounds context.currentTime
+		@schedule_sounds @context.currentTime
 
-		callback(null, context)
+		callback(null, @context)
 	
 	gather_sources: ->
 		# TODO: search for random search terms
@@ -118,7 +124,7 @@ class Sponge
 
 				gain = context.createGain()
 				gain.gain.value = 0.3
-				gain.connect(context.destination)
+				gain.connect(@predestination.input)
 
 				oscillator = context.createOscillator()
 				oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12)
@@ -131,7 +137,7 @@ class Sponge
 				# TODO: envelopes
 				buffer_source = context.createBufferSource()
 				buffer_source.buffer = beat_audio_buffer
-				buffer_source.connect(context.destination)
+				buffer_source.connect(@predestination.input)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
 
