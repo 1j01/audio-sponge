@@ -2,7 +2,7 @@
 
 soak up some sound, and squeeze some sound out
 
-maybe it music! (not yet, not really, unless you're into anti-good anti-music type stuff)
+maybe it music! (not yet, not really, unless you're into anti-music/postmusic type stuff)
 
 ------------
 
@@ -21,6 +21,26 @@ this URL will change: https://audio-sponge.glitch.me/
 * plays the sounds in random rhythms (TODO: rhyme and reason - and effects!)
 
 * streams to listeners on a [webpage](https://audio-sponge.glitch.me/) (TODO: make this more robust)
+
+------------
+
+### Can I, uh..?
+
+Licensed under the MIT license, see [LICENSE](LICENSE).
+
+### Deploy
+
+[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/audio-sponge)
+
+### Setup
+
+Fill out a `.env` file, with... hm, the SoundCloud "Register a new app" form is "Currently unavailable"...
+So I guess you can't really do this unless you already have a client ID, at least not properly.
+(You could get some other client ID like some people are suggesting.)
+
+Once you fill in the `SOUNDCLOUD_CLIENT_ID` you can go to the application and it should redirect to SoundCloud and you can connect with your account, whose feed of audio tracks will be used (TODO: use search instead), and then paste in token(s) from the address bar.
+
+TODO: more source providers, possibly a SoundCloud source that doesn't require a client ID?
 
 ------------
 
@@ -52,11 +72,11 @@ no they just names:
 
 * ERROR
 * ERROR ABOUT THERE BEING AN ERROR
-* MULTIPLE ERROR(S) NOW
+* MULTIPLE ERROR(S)
 * ERROR ABOUT THERE BEING ERRORS
 * ERROR ABOUT ERRORS IN GENERAL
-* ERROR ABOUT ERRORS BEING ERRORS GENERALLY
-* ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS
+* ERROR ABOUT ERRORS BEING ERRORS IN GENERAL
+* ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS <!-- * AREN'T THEY (ERRN'T THEY?) -->
 * HOW ERRONEOUS OF THEM
 * INSERT ERROR MESSAGE HERE
 * AN ARROR HAS SPELLING-GRAMMAR OCCURD; PLEASE Contact LENSES
