@@ -7,15 +7,14 @@ Source = require "./Source"
 Chorus = require "../lib/chorus"
 
 shuffleArray = (array) ->
+	# modifies the array in-place
     i = array.length
     while --i > 0
         j = ~~(Math.random() * (i + 1))
         temp = array[j]
         array[j] = array[i]
         array[i] = temp
-    # Note: not returning an array because the fact that it modifies the array in-place
-	# is not signalled by the function name
-	# so it had better be signalled by the return value
+	return
 
 module.exports =
 class Sponge
