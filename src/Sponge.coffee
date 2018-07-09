@@ -8,12 +8,12 @@ Chorus = require "../lib/chorus"
 
 shuffleArray = (array) ->
 	# modifies the array in-place
-    i = array.length
-    while --i > 0
-        j = ~~(Math.random() * (i + 1))
-        temp = array[j]
-        array[j] = array[i]
-        array[i] = temp
+	i = array.length
+	while --i > 0
+		j = ~~(Math.random() * (i + 1))
+		temp = array[j]
+		array[j] = array[i]
+		array[i] = temp
 	return
 
 module.exports =
