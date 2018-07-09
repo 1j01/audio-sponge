@@ -2,9 +2,14 @@ async = require "async"
 glob = require "glob"
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
 SC = require "node-soundcloud"
+get_env_var = require "./get-env-var" # TODO: remove me
+SC_enabled = not not (get_env_var "SOUNDCLOUD_CLIENT_ID")
+OGA = require "./opengameart"
+OGA_enabled = true
 Rhythm = require "./Rhythm"
 Source = require "./Source"
 Chorus = require "../lib/chorus"
+randomWords = require "random-words"
 
 shuffleArray = (array) ->
 	# modifies the array in-place
@@ -47,38 +52,73 @@ class Sponge
 		# TODO: search for random search terms
 		# or at least use something more random
 		# my feed is mostly Best Acquaintences...
-		SC.get "/me/activities/tracks/affiliated", (err, data)=>
-			return console.error err if err
-			tracks = (item.origin for item in data.collection)
-			tracks = tracks.filter((track)-> track.streamable)
+		if SC_enabled
+			SC.get "/me/activities/tracks/affiliated", (err, data)=>
+				return console.error err if err
+				tracks = (item.origin for item in data.collection)
+				tracks = tracks.filter((track)-> track.streamable)
 
-			shuffleArray(tracks)
-			async.eachLimit tracks, 2,
-				(track, callback)=>
-					metadata = {
-						link: track.permalink_url
-						name: track.title
-						author: {
-							name: track.user.username
-							link: track.user.permalink_url
+				shuffleArray(tracks)
+				async.eachLimit tracks, 2,
+					(track, callback)=>
+						metadata = {
+							link: track.permalink_url
+							name: track.title
+							author: {
+								name: track.user.username
+								link: track.user.permalink_url
+							}
+							# soundcloud_data: track
 						}
-						# soundcloud_data: track
-					}
-					@sources.push new Source track.stream_url, metadata, @context,
-						(new_sample)=>
-							@source_samples.push(new_sample)
-						(err, source)=>
-							return callback err if err
-							console.log "  done with #{source}"
-							console.log "    currently #{@source_samples.length} samples"
-							setTimeout =>
-								callback null
-							, 500 # does this actually help?
-				(err)=>
-					console.log "done with all sources"
+						@sources.push new Source track.stream_url, metadata, @context,
+							(new_sample)=>
+								@source_samples.push(new_sample)
+							(err, source)=>
+								return callback err if err
+								console.log "[SC]   done with #{source}"
+								console.log "[SC]     currently #{@source_samples.length} samples"
+								setTimeout =>
+									callback null
+								, 500 # does this actually help?
+					(err)=>
+						console.log "[SC] done with all sources"
 
-			console.log "soaking up sample slices from #{@sources.length} sources..."
+				console.log "[SC] soaking up sample slices from #{@sources.length} sources..."
 
+		# TODO: DRY!
+		if OGA_enabled
+			query = randomWords(5).join(" OR ")
+			console.log "Searching OpenGameArt for \"#{query}\""
+			# TODO: handle errors gracefully and try again
+			OGA query, (err, tracks)=>
+				return console.error err if err
+
+				shuffleArray(tracks)
+				async.eachLimit tracks, 2,
+					(track, callback)=>
+						metadata = {
+							link: track.permalink_url
+							name: track.title
+							author: {
+								name: track.user.username
+								link: track.user.permalink_url
+							}
+						}
+						@sources.push new Source track.stream_url, metadata, @context,
+							(new_sample)=>
+								@source_samples.push(new_sample)
+							(err, source)=>
+								return callback err if err
+								console.log "[OGA]   done with #{source}"
+								console.log "[OGA]     currently #{@source_samples.length} samples"
+								setTimeout =>
+									callback null
+								, 500 # does this actually help?
+					(err)=>
+						console.log "[OGA] done with all sources"
+
+				console.log "[OGA] soaking up sample slices from #{@sources.length} sources..."
+		
 		# TODO: DRY and reenable FS support
 		# maybe read metadata from files
 		# audio_glob = process.env.AUDIO_SOURCE_FILES_GLOB

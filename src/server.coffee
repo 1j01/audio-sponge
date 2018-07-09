@@ -3,9 +3,9 @@ SC = require "node-soundcloud"
 # sc_searcher = require "soundcloud-searcher"
 get_env_var = require "./get-env-var"
 
-soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID", required: yes
-soundcloud_api_secret = get_env_var "SOUNDCLOUD_API_SECRET", required: yes
-soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: yes # NOTE: not constant
+soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
+soundcloud_api_secret = get_env_var "SOUNDCLOUD_API_SECRET", required: soundcloud_client_id?
+soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: soundcloud_client_id? # NOTE: not constant
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
@@ -15,12 +15,13 @@ soundcloud_auth_callback_path = "/okay"
 soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
 
 # Initialize SoundCloud client
-console.log "init node-soundcloud client"
-SC.init
-	id: soundcloud_client_id
-	secret: soundcloud_api_secret
-	uri: soundcloud_auth_callback_url
-	accessToken: soundcloud_access_token
+if soundcloud_client_id
+	console.log "init node-soundcloud client"
+	SC.init
+		id: soundcloud_client_id
+		secret: soundcloud_api_secret
+		uri: soundcloud_auth_callback_url
+		accessToken: soundcloud_access_token
 
 # TODO: probably remove ALL THE OAUTH STUFF
 # and use https://www.npmjs.com/package/simple-soundcloud
@@ -81,7 +82,7 @@ app = express()
 app.use(express.static("public"))
 
 app.get "/", (req, res)->
-	if soundcloud_access_token
+	if soundcloud_access_token or not (soundcloud_client_id?)
 		res.sendFile("public/app.html", root: __dirname + "/..")
 	else
 		initOAuth(req, res)

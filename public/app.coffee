@@ -65,11 +65,11 @@ update_attribution = (attribution)->
 		li = document.createElement("li")
 		track_link = document.createElement("a")
 		track_link.href = source.link
-		track_link.textContent = source.name
+		track_link.textContent = source.name or "track"
 		track_link.setAttribute("target", "_blank")
 		author_link = document.createElement("a")
 		author_link.href = source.author.link
-		author_link.textContent = source.author.name
+		author_link.textContent = source.author.name or "someone"
 		author_link.setAttribute("target", "_blank")
 		li.appendChild(track_link)
 		li.appendChild(document.createTextNode(" by "))
