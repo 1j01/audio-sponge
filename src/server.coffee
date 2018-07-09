@@ -172,10 +172,13 @@ app.get "/attribution", (req, res)->
 	})
 
 app.get "/ping", (req, res)->
+	body = "pong"
 	res.writeHead 200,
 		"Cache-Control": "no-store, must-revalidate"
 		"Expires": "0"
-	res.end("pong")
+		"Content-Type": "text/plain"
+		"Content-Length": Buffer.byteLength(body)
+	res.end(body)
 
 app.listen server_port, ->
 	console.log """
