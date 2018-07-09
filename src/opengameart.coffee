@@ -4,7 +4,7 @@ cheerio = require "cheerio"
 request = require "request"
 async = require "async"
 
-module.exports = (query, callback)->
+module.exports = (query, callback, track_callback)->
 
 	url = "https://opengameart.org/art-search-advanced?" + qs.stringify({
 		keys: query,
@@ -28,8 +28,9 @@ module.exports = (query, callback)->
 
 		# TODO: handle errors gracefully and basically ignore (but report) errors for individual track metadata-fetching
 		# TODO: limit fetching to a max number of tracks (possibly 1) and space out requests over time, stream / call back with individual track metadatas
-		async.map(
+		async.eachLimit(
 			$("[data-mp3-url]")
+			2 # at a time
 			(element, callback)->
 				track_page_link_href = $(element).closest(".node").find(".art-preview-title a, div[property='dc:title'] a, a").first().attr("href")
 				track_page_url = new URL(track_page_link_href, url).href
@@ -39,7 +40,7 @@ module.exports = (query, callback)->
 					permalink_url: track_page_url
 				request(track.permalink_url, (error, response, body)->
 					if error
-						callback(error)
+						track_callback(error)
 						return
 					track_page_$ = cheerio.load(body)
 					user_page_link_href = track_page_$(".field-name-author-submitter a").attr("href")
@@ -47,7 +48,7 @@ module.exports = (query, callback)->
 
 					request(user_page_url, (error, response, body)->
 						if error
-							callback(error)
+							track_callback(error)
 							return
 						user_page_$ = cheerio.load(body)
 					
@@ -55,9 +56,8 @@ module.exports = (query, callback)->
 							username: user_page_$(".field-name-field-real-name, div[property='foaf:name']").first().text()
 							permalink_url: user_page_url
 						
-						callback(null, track)
+						track_callback(null, track)
 					)
 				)
-			callback
 		)
 	)

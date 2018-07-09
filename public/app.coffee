@@ -60,6 +60,7 @@ audio.addEventListener "emptied", ->
 
 update_attribution = (attribution)->
 	# TODO: diff-based updates
+	# not for performance, just so selection can work better; currently the selection gets cleared unnecessarily
 	attribution_links_ul.innerHTML = ""
 	for source in attribution.sources
 		li = document.createElement("li")

@@ -89,34 +89,31 @@ class Sponge
 			query = randomWords(5).join(" OR ")
 			console.log "Searching OpenGameArt for \"#{query}\""
 			# TODO: handle errors gracefully and try again
-			OGA query, (err, tracks)=>
-				return console.error err if err
+			# maybe with exponential backoff, esp. if we have other providers
+			# Note: no shuffling of tracks
+			# and no console.log "[OGA] soaking up sample slices from #{@sources.length} sources..."
+			OGA query,
+				(err)=>
+					return console.error "Error searching OpenGameArt:", err if err
+					console.log "[OGA] done with all sources"
+				(err, track)=>
+					return console.error "Error fetching track metadata:", err if err
 
-				shuffleArray(tracks)
-				async.eachLimit tracks, 2,
-					(track, callback)=>
-						metadata = {
-							link: track.permalink_url
-							name: track.title
-							author: {
-								name: track.user.username
-								link: track.user.permalink_url
-							}
+					metadata = {
+						link: track.permalink_url
+						name: track.title
+						author: {
+							name: track.user.username
+							link: track.user.permalink_url
 						}
-						@sources.push new Source track.stream_url, metadata, @context,
-							(new_sample)=>
-								@source_samples.push(new_sample)
-							(err, source)=>
-								return callback err if err
-								console.log "[OGA]   done with #{source}"
-								console.log "[OGA]     currently #{@source_samples.length} samples"
-								setTimeout =>
-									callback null
-								, 500 # does this actually help?
-					(err)=>
-						console.log "[OGA] done with all sources"
-
-				console.log "[OGA] soaking up sample slices from #{@sources.length} sources..."
+					}
+					@sources.push new Source track.stream_url, metadata, @context,
+						(new_sample)=>
+							@source_samples.push(new_sample)
+						(err, source)=>
+							return console.error err if err
+							console.log "[OGA]   done with #{source}"
+							console.log "[OGA]     currently #{@source_samples.length} samples"
 		
 		# TODO: DRY and reenable FS support
 		# maybe read metadata from files
