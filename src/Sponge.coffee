@@ -38,7 +38,7 @@ class Sponge
 		@predestination = @chorus # heheh "predestination" (it'd funnier if it was a reverse reverb)
 
 		@gather_sources()
-		# TODO: gather sources as a continuous process
+		# TODO: gather sources as a continuous process!!
 		# either
 			# after a while, pausing along with the stream like schedule_sounds
 		# or
@@ -49,13 +49,13 @@ class Sponge
 		callback(null, @context)
 	
 	gather_sources: ->
+		# TODO: add rule to never use the same source twice
+
 		if soundcloud_enabled
-			# TODO: search for random search terms
-			# or at least use something more random
-			# my feed is mostly Best Acquaintences...
-			SC.get "/me/activities/tracks/affiliated", (err, data)=>
+			query = randomWords(1).join(" ")
+			console.log "[SC] Searching SoundCloud for \"#{query}\""
+			SC.get "/tracks", {q: query}, (err, tracks)=>
 				return console.error err if err
-				tracks = (item.origin for item in data.collection)
 				tracks = tracks.filter((track)-> track.streamable)
 
 				shuffleArray(tracks)
@@ -87,7 +87,7 @@ class Sponge
 		# TODO: DRY!
 		if OGA_enabled
 			query = randomWords(5).join(" OR ")
-			console.log "Searching OpenGameArt for \"#{query}\""
+			console.log "[OGA] Searching OpenGameArt for \"#{query}\""
 			# TODO: handle errors gracefully and try again
 			# maybe with exponential backoff, esp. if we have other providers
 			# Note: no shuffling of tracks
