@@ -26,8 +26,6 @@ module.exports = (query, callback, track_callback)->
 			return
 		$ = cheerio.load(body)
 
-		# TODO: handle errors gracefully and basically ignore (but report) errors for individual track metadata-fetching
-		# TODO: limit fetching to a max number of tracks (possibly 1) and space out requests over time, stream / call back with individual track metadatas
 		async.eachLimit(
 			$("[data-mp3-url]")
 			2 # at a time
