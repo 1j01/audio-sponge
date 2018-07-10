@@ -37,7 +37,9 @@
   ],
   "scripts": {
     "start": "zoo coffee src/server.coffee",
-    "test-local": "zoo coffee src/test-local.coffee"
+    "now-start": "coffee src/server.coffee",
+    "test-local": "zoo coffee src/test-local.coffee",
+    "deploy": "now --public --dotenv production.env"
   },
   "dependencies": {
     "async": "^2.6.0",

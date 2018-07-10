@@ -28,19 +28,22 @@ this URL will change: https://audio-sponge.glitch.me/
 
 Licensed under the MIT license, see [LICENSE](LICENSE).
 
+### Development Setup
+
+[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/audio-sponge)
+
+or:
+
+1. [Clone the repo](https://help.github.com/articles/cloning-a-repository/)
+2. Install [Node.js]() if you don't have it already
+3. `npm i` to install dependencies
+4. `npm start`
+
 ### Deploy
 
 [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/audio-sponge)
 
-### Setup
-
-Fill out a `.env` file, with... hm, the SoundCloud "Register a new app" form is "Currently unavailable"...
-So I guess you can't really do this unless you already have a client ID, at least not properly.
-(You could get some other client ID like some people are suggesting.)
-
-Once you fill in the `SOUNDCLOUD_CLIENT_ID` you can go to the application and it should redirect to SoundCloud and you can connect with your account, whose feed of audio tracks will be used (TODO: use search instead), and then paste in token(s) from the address bar.
-
-TODO: more source providers, possibly a SoundCloud source that doesn't require a client ID?
+Or deploy to [Now](https://zeit.co/now) with `npm run deploy`
 
 ------------
 
