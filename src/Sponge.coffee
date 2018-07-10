@@ -6,20 +6,11 @@ get_env_var = require "./get-env-var" # TODO: remove me
 soundcloud_enabled = (get_env_var "SOUNDCLOUD_CLIENT_ID")?
 OGA = require "./opengameart"
 OGA_enabled = true
+shuffle = require "./shuffle"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
 Chorus = require "../lib/chorus"
 randomWords = require "random-words"
-
-shuffleArray = (array) ->
-	# modifies the array in-place
-	i = array.length
-	while --i > 0
-		j = ~~(Math.random() * (i + 1))
-		temp = array[j]
-		array[j] = array[i]
-		array[i] = temp
-	return
 
 module.exports =
 class Sponge
@@ -35,10 +26,10 @@ class Sponge
 		@chorus = new Chorus(@context)
 		@chorus.output.connect(@context.destination)
 
-		@predestination = @chorus # heheh "predestination" (it'd funnier if it was a reverse reverb)
+		@predestination = @chorus # heheh "predestination" (..altho, it'd funnier if it was a reverse reverb)
 
 		@gather_sources()
-		# TODO: gather sources as a continuous process!!
+		# TODO: gather sources as a continuous process!!!
 		# either
 			# after a while, pausing along with the stream like schedule_sounds
 		# or
@@ -52,14 +43,17 @@ class Sponge
 		# TODO: add rule to never use the same source twice
 
 		if soundcloud_enabled
+			# TODO: abstract OR searching by using OR for OGA but multiple searches for SC
+			# so we can do searches for themes globally, and maybe expose that to the user (altho there's a rabbit hole of content/suggestion filtering...)
 			query = randomWords(1).join(" ")
 			console.log "[SC] Searching SoundCloud for \"#{query}\""
 			SC.get "/tracks", {q: query}, (err, tracks)=>
-				return console.error err if err
+				if err
+					console.error "[SC] error searching for tracks:", err if err
+					return
 				tracks = tracks.filter((track)-> track.streamable)
 
-				shuffleArray(tracks)
-				async.eachLimit tracks, 2,
+				async.eachLimit shuffle(tracks), 2,
 					(track, callback)=>
 						metadata = {
 							link: track.permalink_url
@@ -80,6 +74,7 @@ class Sponge
 									callback null
 								, 500 # does this actually help?
 					(err)=>
+						console.error "[SC] error:", err if err
 						console.log "[SC] done with all sources"
 
 				console.log "[SC] soaking up sample slices from #{@sources.length} sources..."
@@ -94,10 +89,10 @@ class Sponge
 			# and no console.log "[OGA] soaking up sample slices from #{@sources.length} sources..."
 			OGA query,
 				(err)=>
-					return console.error "Error searching OpenGameArt:", err if err
+					return console.error "[OGA] Error searching OpenGameArt:", err if err
 					console.log "[OGA] done with all sources"
 				(err, track)=>
-					return console.error "Error fetching track metadata:", err if err
+					return console.error "[OGA] Error fetching track metadata:", err if err
 
 					metadata = {
 						link: track.permalink_url
@@ -111,7 +106,7 @@ class Sponge
 						(new_sample)=>
 							@source_samples.push(new_sample)
 						(err, source)=>
-							return console.error err if err
+							return console.error "[OGA] error:", err if err
 							console.log "[OGA]   done with #{source}"
 							console.log "[OGA]     currently #{@source_samples.length} samples"
 		
@@ -185,7 +180,7 @@ class Sponge
 		console.log rhythm.toString()
 		beats = rhythm.getBeats()
 		for super_measure_i in [0...4]
-			shuffleArray(beat_audio_buffers)
+			shuffle(beat_audio_buffers)
 			for beat in beats
 				start_time = schedule_start_time + (beat.time + super_measure_i) / bps
 				add_beat(beat.type, start_time)

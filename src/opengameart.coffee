@@ -3,6 +3,7 @@ qs = require "qs"
 cheerio = require "cheerio"
 request = require "request"
 async = require "async"
+shuffle = require "./shuffle"
 
 module.exports = (query, callback, track_callback)->
 
@@ -27,9 +28,10 @@ module.exports = (query, callback, track_callback)->
 		$ = cheerio.load(body)
 
 		async.eachLimit(
-			$("[data-mp3-url]")
+			shuffle($("[data-mp3-url]")) # sort of weird that shuffling is part of this otherwise somewhat generic scraper
 			2 # at a time
 			(element, callback)->
+				# TODO: callback! I didn't mean to limit to 2 *ever*~!
 				track_page_link_href = $(element).closest(".node").find(".art-preview-title a, div[property='dc:title'] a, a").first().attr("href")
 				track_page_url = new URL(track_page_link_href, url).href
 				track =
