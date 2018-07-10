@@ -30,8 +30,7 @@ module.exports = (query, callback, track_callback)->
 		async.eachLimit(
 			shuffle($("[data-mp3-url]")) # sort of weird that shuffling is part of this otherwise somewhat generic scraper
 			2 # at a time
-			(element, callback)->
-				# TODO: callback! I didn't mean to limit to 2 *ever*~!
+			(element, onwards)->
 				track_page_link_href = $(element).closest(".node").find(".art-preview-title a, div[property='dc:title'] a, a").first().attr("href")
 				track_page_url = new URL(track_page_link_href, url).href
 				track =
@@ -41,6 +40,7 @@ module.exports = (query, callback, track_callback)->
 				request(track.permalink_url, (error, response, body)->
 					if error
 						track_callback(error)
+						onwards()
 						return
 					track_page_$ = cheerio.load(body)
 					user_page_link_href = track_page_$(".field-name-author-submitter a").attr("href")
@@ -49,6 +49,7 @@ module.exports = (query, callback, track_callback)->
 					request(user_page_url, (error, response, body)->
 						if error
 							track_callback(error)
+							onwards()
 							return
 						user_page_$ = cheerio.load(body)
 					
@@ -57,6 +58,7 @@ module.exports = (query, callback, track_callback)->
 							permalink_url: user_page_url
 						
 						track_callback(null, track)
+						onwards()
 					)
 				)
 		)
