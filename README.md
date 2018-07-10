@@ -10,6 +10,10 @@ maybe it music! (not yet, not really, unless you're into anti-music/postmusic ty
 
 this URL will change: https://audio-sponge.glitch.me/
 
+it might change to: https://station.now.sh/
+
+and then change again
+
 ------------
 
 ### What it do tho?
@@ -20,7 +24,7 @@ this URL will change: https://audio-sponge.glitch.me/
 
 * plays the sounds in random rhythms (TODO: rhyme and reason - and effects!)
 
-* streams to listeners on a [webpage](https://audio-sponge.glitch.me/) (TODO: make this more robust)
+* streams to listeners on a webpage (TODO: make this more robust)
 
 ------------
 
