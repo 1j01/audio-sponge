@@ -157,7 +157,7 @@ sponge.start (err, context)->
 	, 12000
 
 app.get "/stream", (req, res)->
-	if soundcloud_access_token
+	if soundcloud_access_token or not soundcloud_enabled
 		stream_wrapper.stream(req, res)
 	else
 		res.redirect("/")
