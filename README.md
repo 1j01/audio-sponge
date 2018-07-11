@@ -4,31 +4,21 @@ soak up some sound, and squeeze some sound out
 
 maybe it music! (not yet, not really, unless you're into anti-music/postmusic type stuff)
 
-------------
-
-### Where is it?
-
-this URL will change: https://audio-sponge.glitch.me/
-
-it might change to: https://station.now.sh/
-
-and then change again
-
-------------
+this URL will change: https://station.now.sh/
 
 ### What it do tho?
 
-* globs a bunch of audio files or streams from SoundCloud (TODO: more sources)
+* streams audio from SoundCloud and OpenGameArt (TODO: more sources)
 
-* chooses random slices from the sources (TODO: detect beats and such)
+* chooses random slices from the sources (TODO: detect beats for percussion and perhaps pitch/harmonics for melody)
 
-* plays the sounds in random rhythms (TODO: rhyme and reason - and effects!)
+* plays the sounds in randomly structured rhythms (TODO: rhyme and reason - and effects!)
 
 * streams to listeners on a webpage (TODO: make this more robust)
 
 ------------
 
-### Can I, uh..?
+## Can I, uh..?
 
 Licensed under the MIT license, see [LICENSE](LICENSE).
 
@@ -73,8 +63,6 @@ no they just names:
 
 \*It would be ["nonsensical"](https://github.com/1j01/nonsensical) for me to use plain old Markov text chains in this project (considering I've made a sentence generator of my own (and could adapt that more easily))
 
-------------
-
 ### What if it doens't work?
 
 * ERROR
@@ -90,8 +78,6 @@ no they just names:
 * OCCULT ERROR
 * WARNING
 * VAGU[**E**](https://www.reddit.com/r/EmboldenTheE/) FEELING OF [UNEASE](https://youtu.be/8d3SMxK40YQ)
-
-------------
 
 ### What was that, like some avant-garde poetry?
 
