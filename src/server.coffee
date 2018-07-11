@@ -69,14 +69,14 @@ sponge.start (err, context)->
 	# okay, what I really want is it to buffer enough purge the buffer of the starting blips
 	# or, not necessarily automatically based on the max buffer size, but to buffer enough to *be able to*, explicitly, here
 	# I'd like it if it gives the illusion of having been running even when it was paused waiting for a first listener
-	console.log "Buffer a bit of audio for the first client(s)..."
+	console.log "Buffering some audio for the first client(s)..."
 	context.resume()
 	setTimeout =>
 		console.log "Buffered some audio for the first client(s)"
 		setInterval =>
 			if stream_wrapper.clients.length > 0
 				unless context._isPlaying
-					console.log "Clients: #{stream_wrapper.clients.length}, resume"
+					console.log "Clients: #{stream_wrapper.clients.length}, resuming"
 					context.resume()
 			else
 				if context._isPlaying

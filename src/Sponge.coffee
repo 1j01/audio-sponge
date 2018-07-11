@@ -60,7 +60,7 @@ class Sponge
 			console.log "[SC] Searching SoundCloud for \"#{query}\""
 			SC.get "/tracks", {q: query}, (err, tracks)=>
 				if err
-					console.error "[SC] error searching for tracks:", err if err
+					console.error "[SC] Error searching for tracks:", err if err
 					return
 				tracks = tracks.filter((track)-> track.streamable)
 
@@ -118,18 +118,17 @@ class Sponge
 						(err, source)=>
 							return console.error "[OGA] Error:", err if err
 							console.log "[OGA] Done with #{source}"
-							# console.log "[OGA] Currently #{@source_samples.length} samples"
 		
 		# TODO: DRY and reenable FS support
 		# maybe read metadata from files
 		# audio_glob = process.env.AUDIO_SOURCE_FILES_GLOB
 		
-		# console.log "AUDIO_SOURCE_FILES_GLOB", audio_glob
+		# console.log "[FS] AUDIO_SOURCE_FILES_GLOB:", audio_glob
 		# if audio_glob?
 		# 	glob audio_glob, (err, files)=>
-		# 		return console.error err if err
+		# 		return console.error "[FS] Error globbing filesystem:", err if err
 		# 		shuffleArray(files)
-		# 		console.log "files:", files
+		# 		console.log "[FS] Files:", files
 		# 		async.eachLimit files, 1,
 		# 			(file_path, callback)=>
 		# 				@sources.push new Source file_path, @context,
@@ -137,19 +136,18 @@ class Sponge
 		# 						@source_samples.push(new_sample)
 		# 					(err, source)=>
 		# 						return callback err if err
-		# 						console.log "  done with #{source}"
-		# 						console.log "    currently #{@source_samples.length} samples"
+		# 						console.log "[FS] Done with #{source}"
 		# 						setTimeout =>
 		# 							callback null
 		# 						, 500 # does this actually help?
 		# 			(err)=>
-		# 				console.log "done with all sources"
+		# 				console.log "[FS] Done with all sources"
 
-		# 		console.log "soaking up sample slices from #{@sources.length} sources..."
+		# 		console.log "[FS] Soaking up sample slices from #{@sources.length} sources..."
 
 	schedule_sounds: (schedule_start_time)->
 		{context} = @
-		console.log "Schedule output for context time #{schedule_start_time}"
+		console.log "Scheduling output for context time #{schedule_start_time}"
 		console.log "Source Samples: #{@source_samples.length}"
 		beat_audio_buffers = @source_samples
 
@@ -158,7 +156,7 @@ class Sponge
 		add_beat = (beat_type_index, start_time)=>
 			beat_audio_buffer = beat_audio_buffers[beat_type_index]
 			if not beat_audio_buffer
-				# console.error "not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
+				# console.error "Not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
 				
 				# use an oscillator as a placeholder for sampled beats
 
