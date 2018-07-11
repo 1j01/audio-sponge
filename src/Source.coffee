@@ -46,7 +46,7 @@ class Source
 		look_at_buffers_and_find_samples = (buffers)=>
 			# console.log "       look_at_buffers_and_find_samples start (#{buffers.length} buffers)"
 			if not pcm_format
-				return console.warn "pcm format not determined yet from mp3 stream after #{buffers.length} data buffers"
+				return console.warn "PCM format not determined yet from mp3 stream after #{buffers.length} data buffers"
 			buffer = Buffer.concat(buffers)
 			# console.log "looking at #{buffers.length} buffers (#{buffer.byteLength} bytes) for #{@uri} to find samples"
 			@findSamplesFromBuffer(buffer, pcm_format, sample_callback)

@@ -21,7 +21,7 @@ class Sponge
 	start: (callback)->
 		
 		@context = new StreamAudioContext()
-		console.log "created StreamAudioContext"
+		console.log "Created StreamAudioContext"
 		
 		# TODO: configure compressor
 		# set it up so comparisons can be made, such as by alternating between configurations periodically
@@ -79,29 +79,28 @@ class Sponge
 								@source_samples.push(new_sample)
 							(err, source)=>
 								return callback err if err
-								console.log "[SC]   done with #{source}"
-								console.log "[SC]     currently #{@source_samples.length} samples"
+								console.log "[SC] Done with #{source}"
+								# console.log "[SC] Currently #{@source_samples.length} samples"
 								setTimeout =>
 									callback null
 								, 500 # does this actually help?
 					(err)=>
-						console.error "[SC] error:", err if err
-						console.log "[SC] done with all sources"
+						console.error "[SC] Error:", err if err
+						console.log "[SC] Done with all sources"
 
-				console.log "[SC] soaking up sample slices from #{@sources.length} sources..."
+				console.log "[SC] Soaking up sample slices from #{@sources.length} sources..."
 
 		# TODO: DRY!
 		if OGA_enabled
 			query = randomWords(5).join(" OR ")
 			console.log "[OGA] Searching OpenGameArt for \"#{query}\""
-			# TODO: handle errors gracefully and try again
-			# maybe with exponential backoff, esp. if we have other providers
-			# Note: no shuffling of tracks
-			# and no console.log "[OGA] soaking up sample slices from #{@sources.length} sources..."
+			# TODO: try again on errors, as part of continuously finding sources
+			# maybe with exponential backoff, esp. if we have multiple providers enabled (but probably regardless?)
+			# Note: no console.log "[OGA] Soaking up sample slices from #{@sources.length} sources..."
 			OGA query,
 				(err)=>
 					return console.error "[OGA] Error searching OpenGameArt:", err if err
-					console.log "[OGA] done with all sources"
+					console.log "[OGA] Done with all sources"
 				(err, track)=>
 					return console.error "[OGA] Error fetching track metadata:", err if err
 
@@ -117,9 +116,9 @@ class Sponge
 						(new_sample)=>
 							@source_samples.push(new_sample)
 						(err, source)=>
-							return console.error "[OGA] error:", err if err
-							console.log "[OGA]   done with #{source}"
-							console.log "[OGA]     currently #{@source_samples.length} samples"
+							return console.error "[OGA] Error:", err if err
+							console.log "[OGA] Done with #{source}"
+							# console.log "[OGA] Currently #{@source_samples.length} samples"
 		
 		# TODO: DRY and reenable FS support
 		# maybe read metadata from files
@@ -150,8 +149,8 @@ class Sponge
 
 	schedule_sounds: (schedule_start_time)->
 		{context} = @
-		console.log "schedule sounds for context time #{schedule_start_time}"
-		console.log "#{@source_samples.length} samples to work with >:)"
+		console.log "Schedule output for context time #{schedule_start_time}"
+		console.log "Source Samples: #{@source_samples.length}"
 		beat_audio_buffers = @source_samples
 
 		bpm = 128 / 4
@@ -188,7 +187,7 @@ class Sponge
 		# TODO: apply effects to tracks, especially reverb, but also random, crazy DSP
 
 		rhythm = new Rhythm
-		console.log rhythm.toString()
+		# console.log rhythm.toString()
 		beats = rhythm.getBeats()
 		for super_measure_i in [0...4]
 			shuffle(beat_audio_buffers)
@@ -214,10 +213,10 @@ class Sponge
 			if diff >= scheduled_length
 				console.warn "WARNING: after setTimeout, context time difference was #{diff}; should be less than #{scheduled_length}"
 			# else
-			# 	console.log "after setTimeout, context time difference of #{diff} (which should be less than #{scheduled_length})"
+			# 	console.log "After setTimeout, context time difference of #{diff} (which should be less than #{scheduled_length})"
 			do wait_until_near_schedule_time = =>
 				if context.currentTime < next_schedule_time_minimum
-					# console.log "waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
+					# console.log "Waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
 					setTimeout wait_until_near_schedule_time, 50
 				else
 					@schedule_sounds next_start_time

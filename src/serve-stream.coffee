@@ -36,7 +36,7 @@ class StreamWrapper extends Writable
 		
 		@clients.push(response)
 		
-		console.log "burst #{@burstChunks.length} chunks to new client (now #{@clients.length} client(s))"
+		console.log "Burst #{@burstChunks.length} chunks to new client (now #{@clients.length} client(s))"
 		for chunk in @burstChunks
 			response.write(chunk)
 		
@@ -45,4 +45,4 @@ class StreamWrapper extends Writable
 			if index > -1
 				@inputStream?.unpipe(response)
 				@clients.splice(index, 1)
-				console.log "connection closed (now #{@clients.length} client(s))"
+				console.log "Connection closed (now #{@clients.length} client(s))"

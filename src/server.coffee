@@ -18,12 +18,12 @@ soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
 
 # Initialize SoundCloud client
 if soundcloud_enabled
-	console.log "init node-soundcloud client"
 	SC.init
 		id: soundcloud_client_id
 		secret: soundcloud_api_secret
 		uri: soundcloud_auth_callback_url
 		accessToken: soundcloud_access_token
+	console.log "[SC setup] Initialized node-soundcloud"
 
 # TODO: probably remove ALL THE OAUTH STUFF
 # and use https://www.npmjs.com/package/simple-soundcloud
@@ -35,18 +35,18 @@ initOAuth = (req, res)->
 
 auth = (code, callback)->
 	if soundcloud_access_token
-		console.log "reusing access token: #{soundcloud_access_token}"
+		console.log "[SC setup] reusing access token: #{soundcloud_access_token}"
 		process.nextTick ->
 			callback(null, soundcloud_access_token)
 	else
-		console.log "getting new access token for #{code}"
+		console.log "[SC setup] getting new access token for #{code}"
 		SC.authorize code, (err, new_soundcloud_access_token)->
 			soundcloud_access_token = new_soundcloud_access_token
 			callback(err, soundcloud_access_token)
 
 redirectHandler = (req, res)->
 	fail = (message)->
-		console.error "#{message}; querystring parameters:"
+		console.error "[SC setup] #redirectHandler #{message}; querystring parameters:"
 		console.error JSON.stringify req.query, null, 2
 		body = """
 			<!doctype html>
@@ -70,7 +70,7 @@ redirectHandler = (req, res)->
 	auth req.query.code, (err, soundcloud_access_token)->
 		return fail err.message if err
 		
-		console.log "got access token:", soundcloud_access_token
+		console.log "[SC setup] got access token:", soundcloud_access_token
 		unless soundcloud_access_token
 			return fail "access token should not be #{soundcloud_access_token}"
 		
@@ -141,18 +141,18 @@ sponge.start (err, context)->
 	# (having to wait is like the wooorst / it makes you feel.. like... ur cursed... or something)
 	# TODO: don't buffer until we have sources? or get sources faster somehow?
 	# okay, what I really want is it to buffer enough purge the buffer of the starting blips 
-	console.log "buffer a bit of audio for the first client(s)"
+	console.log "Buffer a bit of audio for the first client(s)..."
 	context.resume()
 	setTimeout =>
-		console.log "buffered some audio for the first client(s)"
+		console.log "Buffered some audio for the first client(s)"
 		setInterval =>
 			if stream_wrapper.clients.length > 0
 				unless context._isPlaying
-					console.log "#{stream_wrapper.clients.length} client(s), resume"
+					console.log "Clients: #{stream_wrapper.clients.length}, resume"
 					context.resume()
 			else
 				if context._isPlaying
-					console.log "no clients, pausing"
+					console.log "Clients: 0, pausing"
 					context.suspend()
 		, 200
 	, 12000
@@ -188,6 +188,6 @@ app.get "/ping", (req, res)->
 app.listen server_port, ->
 	console.log """
 		.--------------------------------------------------- - - -
-		| listening on #{app_origin}
+		| Listening on #{app_origin}
 		'--------------------------------------------------- - - -
 	"""

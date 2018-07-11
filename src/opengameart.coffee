@@ -19,7 +19,7 @@ module.exports = (query, callback, track_callback)->
 		items_per_page: '24',
 		Collection: ''
 	})
-	console.log "OGA search URL:", url
+	console.log "[OGA] Search URL:", url
 
 	request(url, (error, response, body)->
 		if error
