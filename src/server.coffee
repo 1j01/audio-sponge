@@ -1,82 +1,19 @@
 fs = require "fs"
 SC = require "node-soundcloud"
-# sc_searcher = require "soundcloud-searcher"
 get_env_var = require "./get-env-var"
 
 soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
 soundcloud_enabled = soundcloud_client_id?
-soundcloud_api_secret = get_env_var "SOUNDCLOUD_API_SECRET", required: soundcloud_enabled
-soundcloud_access_token = get_env_var "SOUNDCLOUD_ACCESS_TOKEN", required: soundcloud_enabled # NOTE: not constant
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
 now_url = get_env_var "NOW_URL"
 app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostname}:#{server_port}"
 
-soundcloud_auth_callback_path = "/okay"
-soundcloud_auth_callback_url = "#{app_origin}#{soundcloud_auth_callback_path}"
-
 # Initialize SoundCloud client
 if soundcloud_enabled
-	SC.init
-		id: soundcloud_client_id
-		secret: soundcloud_api_secret
-		uri: soundcloud_auth_callback_url
-		accessToken: soundcloud_access_token
-	console.log "[SC setup] Initialized node-soundcloud"
-
-# TODO: probably remove ALL THE OAUTH STUFF
-# and use https://www.npmjs.com/package/simple-soundcloud
-# or similar
-
-# Connect user to authorize application
-initOAuth = (req, res)->
-	res.redirect(SC.getConnectUrl())
-
-auth = (code, callback)->
-	if soundcloud_access_token
-		console.log "[SC setup] reusing access token: #{soundcloud_access_token}"
-		process.nextTick ->
-			callback(null, soundcloud_access_token)
-	else
-		console.log "[SC setup] getting new access token for #{code}"
-		SC.authorize code, (err, new_soundcloud_access_token)->
-			soundcloud_access_token = new_soundcloud_access_token
-			callback(err, soundcloud_access_token)
-
-redirectHandler = (req, res)->
-	fail = (message)->
-		console.error "[SC setup] #redirectHandler #{message}; querystring parameters:"
-		console.error JSON.stringify req.query, null, 2
-		body = """
-			<!doctype html>
-			<title>Sponge Error</title>
-			<body>
-				<p>#{message.replace(/&/g, "&").replace(/</g, "&lt;")}</p>
-				<p><a href="/">retry?</a></p>
-			</body>
-		"""
-		res.writeHead(500, {
-			"Content-Type": "text/html",
-			"Content-Length": Buffer.byteLength(body)
-		})
-		res.end(body)
-
-	if req.query.error or req.query.error_description
-		return fail "got error from soundcloud"
-	unless req.query.code
-		return fail "did not receive 'code' parameter from soundcloud"
-	
-	auth req.query.code, (err, soundcloud_access_token)->
-		return fail err.message if err
-		
-		console.log "[SC setup] got access token:", soundcloud_access_token
-		unless soundcloud_access_token
-			return fail "access token should not be #{soundcloud_access_token}"
-		
-		fs.writeFile "soundcloud-access-token", soundcloud_access_token, "utf8",
-		
-		res.redirect("/")
+	SC.init(id: soundcloud_client_id)
+	# console.log "[SC setup] Initialized node-soundcloud"
 
 express = require "express"
 app = express()
@@ -84,16 +21,7 @@ app = express()
 app.use(express.static("public"))
 
 app.get "/", (req, res)->
-	if soundcloud_access_token or not soundcloud_enabled
-		res.sendFile("public/app.html", root: __dirname + "/..")
-	else
-		initOAuth(req, res)
-
-app.get soundcloud_auth_callback_path, (req, res)->
-	if soundcloud_access_token
-		res.redirect("/")
-	else
-		redirectHandler(req, res)
+	res.sendFile("public/app.html", root: __dirname + "/..")
 
 lame = require "lame"
 
@@ -160,10 +88,7 @@ sponge.start (err, context)->
 	, 12000
 
 app.get "/stream", (req, res)->
-	if soundcloud_access_token or not soundcloud_enabled
-		stream_wrapper.stream(req, res)
-	else
-		res.redirect("/")
+	stream_wrapper.stream(req, res)
 
 app.get "/attribution", (req, res)->
 	# TODO: are these setHeaders needed?
