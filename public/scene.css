@@ -1,15 +1,10 @@
 /* /!\ You may need to add vendor prefixes in order to render the CSS properly (can use autoprefixer) /!\ */
 #tridiv {
 	perspective: 800px;
-	position: absolute;
 	overflow: hidden;
-	left: 0;
-	/* top: 50%; */
-	width: 100%;
-	height: 50%;
 	background: transparent;
 	font-size: 100%;
-	min-height: 200px;
+	height: 200px;
 }
 .face {
 	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
@@ -93,16 +88,16 @@
 /* .cub-1 styles */
 .cub-1 {
 	transform: translateY(-1.5em); /* this is to center the button *visually* on the surface which is cut off by the container */
-	transform: translateY(calc(1em - 4vh)); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
-	opacity:1;
-	width:25em;
-	height:5em;
-	margin:-2.5em 0 0 -12.5em;
+	transform: translateY(0em);
+	opacity: 1;
+	width: 25em;
+	height: 5em;
+	margin: -2.5em 0 0 -12.5em;
 }
 .cub-1:active,
 .cub-1.pressed {
 	transform: translateY(-1.5em) translateZ(-0.5em);
-	transform: translateY(calc(1em - 4vh)) translateZ(-0.5em); /* magic trial-and-error code; probably depends on the height of unrelated stuff */
+	transform: translateY(0em) translateZ(-0.5em);
 }
 .cub-1,
 .cub-1 * {

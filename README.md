@@ -33,6 +33,8 @@ or:
 3. `npm i` to install dependencies
 4. `npm start`
 
+<!-- To enable SoundCloud as a source, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file. -->
+
 ### Deploy
 
 [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/audio-sponge)
@@ -40,11 +42,12 @@ or:
 Or deploy to [Now](https://zeit.co/now) with `npm run deploy`
 
 ------------
-
+<!--
 ### Are these songs?
 
 no they just names:
 
+* The Sponge of Truth and Lies
 * In equal and opposite measure
 * Cathartic cacophony
 * Retched reverbertations
@@ -52,16 +55,14 @@ no they just names:
 * Automatic chaotic euphony
 * Synthetic symphonic hodgepodge
 * Percussive pandemonium & rambunctious rhythm
-* Wayward librettist - ~~Markov~~\* would be so ...-und (sound)
+* Wayward librettist
 * Select the server other is file not play
 * Large birds, soft cheese, green fruit
 * A gathering of empty places
 * I would understand a colorless green idea
 * Cozy paranoia
 * Primary reality beta
-<!-- * Warning: abstraction required -->
-
-\*It would be ["nonsensical"](https://github.com/1j01/nonsensical) for me to use plain old Markov text chains in this project (considering I've made a sentence generator of my own (and could adapt that more easily))
+-->
 
 ### What if it doens't work?
 

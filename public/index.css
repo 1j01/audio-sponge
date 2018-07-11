@@ -43,7 +43,7 @@ a {
 .attribution-links {
 	list-style-type: none;
 	/* text-align: left; */
-	max-height: 6em;
+	/* max-height: 6em; */
 	overflow: auto;
 }
 .attribution-links li {
