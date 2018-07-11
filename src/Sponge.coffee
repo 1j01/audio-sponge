@@ -23,10 +23,21 @@ class Sponge
 		@context = new StreamAudioContext()
 		console.log "created StreamAudioContext"
 		
-		@chorus = new Chorus(@context)
-		@chorus.output.connect(@context.destination)
+		# TODO: configure compressor
+		# set it up so comparisons can be made, such as by alternating between configurations periodically
+		# maybe use a limiter like https://webaudiotech.com/sites/limiter_comparison/
+		# (to avoid clipping in a more robust way)
+		@compressor = @context.createDynamicsCompressor()
+		@compressor.connect(@context.destination)
 
-		@predestination = @chorus # heheh "predestination" (..altho, it'd funnier if it was a reverse reverb)
+		@chorus = new Chorus(@context)
+		@chorus.output.connect(@compressor)
+
+		@pre_global_fx_gain = @context.createGain()
+		@pre_global_fx_gain.connect(@chorus.input)
+		@pre_global_fx_gain.gain.setValueAtTime(0.1, 0) # avoid clipping!
+
+		@pre_global_fx = @pre_global_fx_gain
 
 		@gather_sources()
 		# TODO: gather sources as a continuous process!!!
@@ -154,7 +165,7 @@ class Sponge
 
 				gain = context.createGain()
 				gain.gain.value = 0.3
-				gain.connect(@predestination.input)
+				gain.connect(@pre_global_fx)
 
 				oscillator = context.createOscillator()
 				oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12)
@@ -167,7 +178,7 @@ class Sponge
 				# TODO: envelopes
 				buffer_source = context.createBufferSource()
 				buffer_source.buffer = beat_audio_buffer
-				buffer_source.connect(@predestination.input)
+				buffer_source.connect(@pre_global_fx)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
 
