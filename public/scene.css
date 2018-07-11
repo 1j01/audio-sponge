@@ -193,21 +193,21 @@ button.shape {
 .status-indicator.live {
 	color: #F44336;
 }
-/* TODO: make it so the button isn't resting on what is supposed to be a speaker grill,
-probably just make it into two speaker grills either side of the button */
+.surface-plane.left {
+	left: 0;
+}
+.surface-plane.right {
+	right: 0;
+}
 .surface-plane {
 	position: absolute;
-	width: 100%;
+	width: 30%;
 	height: 100%;
-	/*background: rgb(13, 27, 33);*/
-	box-shadow: rgba(0, 0, 0, 0.18) 0 0 500px 0px inset;
-	/*background: #ececec;*/
 	transform: translateZ(-2em);
 	background:
 		radial-gradient(black 15%, transparent 16%) 0 0,
 		radial-gradient(black 15%, transparent 16%) 8px 8px,
 		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
 		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
-	/*background-color:#282828;*/
 	background-size:16px 16px;
 }
