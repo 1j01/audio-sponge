@@ -140,7 +140,9 @@ sponge.start (err, context)->
 	# buffer a bit of audio to burst / to the client that's first / to quench their thirst
 	# (having to wait is like the wooorst / it makes you feel.. like... ur cursed... or something)
 	# TODO: don't buffer until we have sources? or get sources faster somehow?
-	# okay, what I really want is it to buffer enough purge the buffer of the starting blips 
+	# okay, what I really want is it to buffer enough purge the buffer of the starting blips
+	# or, not necessarily automatically based on the max buffer size, but to buffer enough to *be able to*, explicitly, here
+	# I'd like it if it gives the illusion of having been running even when it was paused waiting for a first listener
 	console.log "Buffer a bit of audio for the first client(s)..."
 	context.resume()
 	setTimeout =>

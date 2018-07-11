@@ -189,15 +189,14 @@ class Sponge
 		rhythm = new Rhythm
 		# console.log rhythm.toString()
 		beats = rhythm.getBeats()
+		scheduled_length = 0
 		for super_measure_i in [0...4]
 			shuffle(beat_audio_buffers)
 			for beat in beats
 				start_time = schedule_start_time + (beat.time + super_measure_i) / bps
 				add_beat(beat.type, start_time)
+			scheduled_length += 1 / bps
 		
-		# TODO: make it so this doesn't need to be updated, i.e. by incrementing it in the loop above
-		scheduled_length = 4 * 1 / bps
-
 		# TODO: simplify the following to use a single setTimeout loop
 		# maybe look at other peoples code for scheduling to see how to do it better
 		# currently it does a kind of silly thing of waiting until the last second (or 0.2 seconds) to schedule
