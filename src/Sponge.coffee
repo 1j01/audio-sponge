@@ -10,6 +10,7 @@ shuffle = require "./shuffle"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
 Chorus = require "../lib/chorus"
+Granular = require "../lib/granular"
 randomWords = require "random-words"
 
 module.exports =
@@ -30,11 +31,12 @@ class Sponge
 		@compressor = @context.createDynamicsCompressor()
 		@compressor.connect(@context.destination)
 
-		@chorus = new Chorus(@context)
-		@chorus.output.connect(@compressor)
+		# @chorus = new Chorus(@context)
+		# @chorus.output.connect(@compressor)
 
 		@pre_global_fx_gain = @context.createGain()
-		@pre_global_fx_gain.connect(@chorus.input)
+		# @pre_global_fx_gain.connect(@chorus.input)
+		@pre_global_fx_gain.connect(@compressor)
 		@pre_global_fx_gain.gain.setValueAtTime(0.1, 0) # avoid clipping!
 
 		@pre_global_fx = @pre_global_fx_gain
