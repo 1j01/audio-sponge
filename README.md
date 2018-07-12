@@ -1,42 +1,52 @@
 # Audio Sponge (working title)
 
-soak up some sound, and squeeze some sound out
+Soak up some sound, and squeeze some sound out
 
-maybe it music! (...not *good* music, but maybe you can define it as such, as music... that's up to you)
+maybe it music!™ (...it's not *GOOD* music, but maybe you can define it as such, as music... that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as.. music..)
 
-this URL will change: https://station.now.sh/
+Currently deployed here: https://station.now.sh/
 
-### What it do tho?
+The stream itself is here: https://station.now.sh/stream
 
-* collects audio by streaming from SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources; Napster would be good, maybe Spotify)
+## What it does
 
-* takes random slices from the audio it collects (while streaming) (TODO: detect beats for percussion, and perhaps pitch/harmonics for melody)
+* Collects audio by streaming from SoundCloud, OpenGameArt, and/or the filesystem
 
-* plays the sounds in randomly structured rhythms (TODO: rhyme and reason, and effects, and melody!)
+* Takes random slices from the audio it collects (while streaming)
 
-* streams to listeners on a [webpage](https://station.now.sh/) (TODO: make this more robust, esp. when clients pause the stream)
+* Plays the sound slices in randomly structured rhythms
 
-------------
+* Streams to listeners on a [webpage](https://station.now.sh/)
 
-## Can I, uh..?
+## TODO
 
-Licensed under the MIT license, see [LICENSE](LICENSE).
+- Gather sources as a continuous process!
+- More sources; Napster would be good, maybe Spotify
+- Better structure (add in layers over time, and have sections like in a song)
+- Effects (I want to do crazy DSP, ideally with limits that make it not go annoyingly high pitched or loud or distort the sound until you can't hear it, but that'll be difficult)
+- Melody (could detect pitch/harmonics in samples, and do granular synthesis)
+- Detect beats for percussion (to get a more punchy, less wonky sound/rhythm)
+- Better name! Any suggestions? [Please share!](mailto:isaiahodhner@gmail.com)
 
-### Development Setup
+## License
+
+MIT licensed, see [LICENSE](LICENSE).
+
+## Development Setup
 
 1. [Clone the repo](https://help.github.com/articles/cloning-a-repository/)
 2. Install [Node.js]() if you don't have it already
 3. `npm i` to install dependencies
 4. `npm start`
 
-### Configuration
+## Configuration
 
-#### SoundCloud
+### SoundCloud
 
 To enable SoundCloud as a source, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
 [You'll need to get a client ID somehow.](https://stackoverflow.com/questions/40992480/getting-a-soundcloud-api-client-id)
 
-#### FileSystem
+### FileSystem
 
 To enable the filesystem as a source, add an `AUDIO_SOURCE_FILES_GLOB` key the `.env` file, e.g.
 ```
@@ -46,15 +56,31 @@ It must be a full path; that is, `%` or `$` variables are NOT supported.
 
 The files MUST be **MP3** files.
 
-### Deploy
+### OpenGameArt
+
+No configuration. TODO: option to toggle on/off.
+
+## Deployment
 
 Deploy to [Now](https://zeit.co/now) with `npm run deploy`
 
 First install Now with `npm i -g now`
 
-------------
+## Project Structure
+
+Written in [CoffeeScript](https://coffeescript.org/). (Could change to TypeScript later.)
+
+[`server.coffee`](src/server.coffee) is the main entry point for the server.
+
+The most interesting stuff is in [`Sponge.coffee`](src/Sponge.coffee); this handles generating the audio (using [web-audio-engine](https://www.npmjs.com/package/web-audio-engine)), as well as collecting audio at the top level. (At the lower level, it uses several audio providers located in [`src/audio-providers/`](src/audio-providers))
+
+The client code is in [`public/`](public/).
+
+[Fontello](http://fontello.com/) is currently used for some icons representing the audio providers but this could change to using favicons and be simpler.
+Workflow: drag [`config.json`](public/fontello/config.json) to Fontello, update font, download zip and replace [`fontello/`](public/fontello/)
+
 <!--
-### Are these songs?
+## Are these songs?
 
 no they just names:
 
@@ -75,7 +101,7 @@ no they just names:
 * Primary reality beta
 -->
 
-### What if it doens't work?
+## What if it doesn't work?
 
 * ERROR
 * ERROR ABOUT THERE BEING AN ERROR
@@ -83,10 +109,12 @@ no they just names:
 * ERROR ABOUT THERE BEING ERRORS
 * ERROR ABOUT ERRORS IN GENERAL
 * ERROR ABOUT ERRORS BEING ERRORS IN GENERAL
-* ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS <!-- * AREN'T THEY (ERRN'T THEY?) -->
+* ERRORS, AM I RIGHT? THEY ARE ALWAYS BEING ERRORS
+* ERRN'T THEY?
 * HOW ERRONEOUS OF THEM
+* ERRMAHGERD
 * INSERT ERROR MESSAGE HERE
-* AN ARROR HAS SPELLING-GRAMMAR OCCURD; PLEASE Contact LENSES
+* AN ERRER HAS SPELLING-GRAMMAR OCCURD; PLEASE Contact LENSES (0x2C)
 * OCCULT ERROR
 * WARNING
 * [VAGU](https://youtu.be/8d3SMxK40YQ)[**E**](https://www.reddit.com/r/EmboldenTheE/) [FEELING OF UNEASE](https://youtu.be/8d3SMxK40YQ)
@@ -96,3 +124,7 @@ no they just names:
 By the board above the books  
 Lies a truth between the crooks  
 [cont. ? one possibru -uation](https://www.reddit.com/r/LibraryofBabel/comments/7ophaq/ode_to_being_filthy_rich/?ref=share&ref_source=link)
+
+## Problems and Suggestions
+
+[Open an issue!](https://github.com/1j01/audio-sponge/issues)
