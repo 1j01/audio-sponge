@@ -72,8 +72,10 @@ class Sponge
 
 		# TODO: add rule to never use the same source twice
 
-		# TODO: abstract OR searching by using OR for OGA but multiple searches for SC
-		# so we can do searches for themes globally, and maybe expose that to the user (altho there's a rabbit hole of content/suggestion filtering...)
+		# TODO: abstract "OR"-searching by using "a OR b" for OGA but multiple searches for SC
+		# so we can do searches for themes globally, and maybe expose that to the user
+		# (altho there's of course a rabbit hole of content/suggestion filtering...)
+		# (altho it could already grab anything by chance)
 
 		on_new_source = (stream_url, attribution)=>
 			@sources.push new Source stream_url, attribution, @context,
@@ -88,7 +90,7 @@ class Sponge
 			query = randomWords(1).join(" ")
 			# TODO: named arguments
 			soundcloud.search query, on_new_source, ()=>
-				console.log "[SC] Done collecting source metadata from search"
+				console.log "[SC] Done collecting track metadata from search"
 
 		if OGA_enabled
 			query = randomWords(5).join(" OR ")
@@ -98,7 +100,7 @@ class Sponge
 					return console.error "[OGA] Error fetching track metadata:", err if err
 					on_new_source(stream_url, attribution)
 				()=>
-					console.log "[OGA] Done collecting source metadata from search"
+					console.log "[OGA] Done collecting track metadata from search"
 		
 		if FS_enabled
 			# TODO: named arguments
@@ -107,7 +109,7 @@ class Sponge
 					return console.error "[FS] Error fetching track metadata:", err if err
 					on_new_source(stream_url, attribution)
 				()=>
-					console.log "[OGA] Done collecting source metadata from search"
+					console.log "[FS] Done collecting track metadata from files"
 
 	schedule_sounds: (schedule_start_time)->
 		{context} = @
