@@ -1,7 +1,7 @@
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
 randomWords = require "random-words"
 Chorus = require "../lib/chorus"
-Granular = require "../lib/granular"
+# Granular = require "../lib/granular"
 shuffle = require "./shuffle"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
