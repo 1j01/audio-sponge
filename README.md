@@ -8,63 +8,17 @@ Currently deployed here: https://station.now.sh/
 
 The stream itself is here: https://station.now.sh/stream
 
+TODO: Better name! Any suggestions? [Please share!](mailto:isaiahodhner@gmail.com)
+
 ## What it does
 
-* Collects audio by streaming from SoundCloud, OpenGameArt, and/or the filesystem
+* Collects audio by streaming from SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources; Napster would be good, maybe Spotify. Also, gather sources as a continuous process!)
 
-* Takes random slices from the audio it collects (while streaming)
+* Takes random samples from the audio it collects (as it streams) (TODO: Detect beats for percussion, detect pitch/harmonics for melody)
 
-* Plays the sound slices in randomly structured rhythms
+* Plays the samples in randomly structured rhythms (TODO: melody, song structure, effects)
 
-* Streams to listeners on a [webpage](https://station.now.sh/)
-
-## TODO
-
-- Gather sources as a continuous process!
-- More sources; Napster would be good, maybe Spotify
-- Better structure (add in layers over time, and have sections like in a song)
-- Effects (I want to do crazy DSP, ideally with limits that make it not go annoyingly high pitched or loud or distort the sound until you can't hear it, but that'll be difficult)
-- Melody (could detect pitch/harmonics in samples, and do granular synthesis)
-- Detect beats for percussion (to get a more punchy, less wonky sound/rhythm)
-- Better name! Any suggestions? [Please share!](mailto:isaiahodhner@gmail.com)
-
-## License
-
-MIT licensed, see [LICENSE](LICENSE).
-
-## Development Setup
-
-1. [Clone the repo](https://help.github.com/articles/cloning-a-repository/)
-2. Install [Node.js]() if you don't have it already
-3. `npm i` to install dependencies
-4. `npm start`
-
-## Configuration
-
-### SoundCloud
-
-To enable SoundCloud as a source, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
-[You'll need to get a client ID somehow.](https://stackoverflow.com/questions/40992480/getting-a-soundcloud-api-client-id)
-
-### FileSystem
-
-To enable the filesystem as a source, add an `AUDIO_SOURCE_FILES_GLOB` key the `.env` file, e.g.
-```
-AUDIO_SOURCE_FILES_GLOB=C:\Users\Isaiah\Music\**\*.mp3
-```
-It must be a full path; that is, `%` or `$` variables are NOT supported.
-
-The files MUST be **MP3** files.
-
-### OpenGameArt
-
-No configuration. TODO: option to toggle on/off.
-
-## Deployment
-
-Deploy to [Now](https://zeit.co/now) with `npm run deploy`
-
-First install Now with `npm i -g now`
+* Streams to listeners on a [webpage](https://station.now.sh/), along with live attribution of the sources its using
 
 ## Project Structure
 
@@ -78,6 +32,42 @@ The client code is in [`public/`](public/).
 
 [Fontello](http://fontello.com/) is currently used for some icons representing the audio providers but this could change to using favicons and be simpler.
 Workflow: drag [`config.json`](public/fontello/config.json) to Fontello, update font, download zip and replace [`fontello/`](public/fontello/)
+
+## License
+
+MIT licensed, see [LICENSE](LICENSE).
+
+## Development Setup
+
+1. [Clone the repository](https://help.github.com/articles/cloning-a-repository/)
+2. Install [Node.js]() if you don't have it already
+3. Run `npm i` in a terminal/command-prompt to install dependencies
+4. `npm start` to start the server
+5. Wait for it to say "Listening on http://localhost:3901" and open that URL
+
+## Configuration
+
+### SoundCloud
+
+To enable the SoundCloud audio provider, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
+[You'll need to get a client ID somehow.](https://stackoverflow.com/questions/40992480/getting-a-soundcloud-api-client-id)
+
+### FileSystem
+
+To enable the filesystem audio provider, add an `AUDIO_SOURCE_FILES_GLOB` key the `.env` file, e.g.
+```
+AUDIO_SOURCE_FILES_GLOB=C:\Users\Isaiah\Music\**\*.mp3
+```
+It must be a full path. `%` or `$` variables are NOT supported.
+Uses [glob syntax](https://www.npmjs.com/package/glob#glob-primer).
+
+The files MUST be MP3s. Only MP3 files are supported, currently.
+
+## Deployment
+
+You can deploy to [△ Now](https://zeit.co/now) with `npm run deploy`
+
+(First install Now with `npm i -g now`)
 
 <!--
 ## Are these songs?
