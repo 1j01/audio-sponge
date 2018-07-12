@@ -3,6 +3,7 @@ node_modules/
 temp/
 output/
 .env
+production.env
 
 # Logs
 logs
