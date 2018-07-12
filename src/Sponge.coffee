@@ -38,19 +38,14 @@ class Sponge
 		@context = new StreamAudioContext()
 		console.log "Created StreamAudioContext"
 		
-		# TODO: configure compressor
-		# set it up so comparisons can be made, such as by alternating between configurations periodically
-		# maybe use a limiter like https://webaudiotech.com/sites/limiter_comparison/
-		# (to avoid clipping in a more robust way)
-		@compressor = @context.createDynamicsCompressor()
-		@compressor.connect(@context.destination)
-
 		# @chorus = new Chorus(@context)
-		# @chorus.output.connect(@compressor)
+		# @chorus.output.connect(@context.destination)
 
+		# TODO: maybe add a limiter to avoid clipping in a more robust way than just gain reduction
+		# see https://webaudiotech.com/sites/limiter_comparison/
 		@pre_global_fx_gain = @context.createGain()
 		# @pre_global_fx_gain.connect(@chorus.input)
-		@pre_global_fx_gain.connect(@compressor)
+		@pre_global_fx_gain.connect(@context.destination)
 		@pre_global_fx_gain.gain.setValueAtTime(0.1, 0) # avoid clipping!
 
 		@pre_global_fx = @pre_global_fx_gain
