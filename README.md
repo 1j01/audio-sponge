@@ -24,10 +24,6 @@ Licensed under the MIT license, see [LICENSE](LICENSE).
 
 ### Development Setup
 
-[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/audio-sponge)
-
-or:
-
 1. [Clone the repo](https://help.github.com/articles/cloning-a-repository/)
 2. Install [Node.js]() if you don't have it already
 3. `npm i` to install dependencies
@@ -52,9 +48,9 @@ The files MUST be **MP3** files.
 
 ### Deploy
 
-[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/audio-sponge)
+Deploy to [Now](https://zeit.co/now) with `npm run deploy`
 
-Or deploy to [Now](https://zeit.co/now) with `npm run deploy`
+First install Now with `npm i -g now`
 
 ------------
 <!--
