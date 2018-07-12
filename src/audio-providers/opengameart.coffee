@@ -37,7 +37,8 @@ module.exports.search = (query, track_callback, done_callback)->
 			shuffle(elements_with_data_mp3_url) # sort of weird that shuffling is part of this otherwise somewhat generic scraper
 			2 # at a time
 			(element, onwards)->
-				# FIXME: callbacks within (implicitly) try-caught block (by `async`)? maybe not a problem since it uses request which is async
+				# NOTE: MUST not call callback herein syncronously!
+				# An error in the callback would be caught by `async` and lead to confusion.
 				track_page_link_href = $(element).closest(".node").find(".art-preview-title a, div[property='dc:title'] a, a").first().attr("href")
 				track_page_url = new URL(track_page_link_href, url).href
 				stream_url = $(element).attr("data-mp3-url")

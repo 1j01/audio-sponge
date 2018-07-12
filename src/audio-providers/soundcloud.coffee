@@ -17,6 +17,8 @@ module.exports.search = (query, track_callback, done_callback)->
 
 		async.eachLimit shuffle(tracks), 2,
 			(track, callback)=>
+				# NOTE: MUST not call callback herein syncronously!
+				# An error in the callback would be caught by `async` and lead to confusion.
 				attribution = {
 					link: track.permalink_url
 					name: track.title
@@ -26,11 +28,11 @@ module.exports.search = (query, track_callback, done_callback)->
 					}
 					provider: "soundcloud"
 				}
-				# FIXME: callback within (implicitly) try-caught block (by `async`)
-				track_callback(track.stream_url, attribution)
-				setTimeout =>
-					callback null
-				, 500 # TODO: does this actually help?
+				process.nextTick => # avoid synchronous callback!
+					track_callback(track.stream_url, attribution)
+					setTimeout =>
+						callback null
+					, 500 # TODO: does this actually help?
 			(err)=>
 				# FIXME: catches errors within track_callback
 				console.error "[SC] Error:", err if err
