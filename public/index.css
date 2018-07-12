@@ -52,3 +52,18 @@ a[href] {
 .provider-icon {
 	margin-right: 0.2em;
 }
+
+.status-indicator {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	transform: translateZ(2.5em);
+	transform-style: preserve-3d;
+	background: rgba(0, 0, 0, 0.13); /* NOTE: should inherit light text color */
+	text-shadow: rgba(8, 8, 8, 0.5) 0px 1px 1px;
+	border: 1px solid rgba(0, 0, 0, 0.32);
+	padding: 0.3em;
+}
+.status-indicator.live {
+	color: #F44336;
+}

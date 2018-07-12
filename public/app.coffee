@@ -1,6 +1,6 @@
 listen_button = document.querySelector(".listen-button")
 button_label = listen_button.querySelector(".button-label")
-status_indicator = listen_button.querySelector(".status-indicator")
+status_indicator = document.querySelector(".status-indicator")
 attribution_links_ul = document.querySelector(".attribution-links")
 
 state = {}

@@ -155,8 +155,7 @@ button.shape {
 .shape:focus {
 	outline: none;
 }
-.button-label,
-.status-indicator {
+.button-label {
 	pointer-events: none;
 }
 .scene * {
@@ -173,20 +172,6 @@ button.shape {
 	align-items: center;
 	justify-content: center;
 	height: 100%;
-}
-.status-indicator {
-	position: absolute;
-	right: 5px;
-	bottom: 5px;
-	transform: translateZ(2.5em);
-	transform-style: preserve-3d;
-	background: rgba(0, 0, 0, 0.13); /* NOTE: should inherit light text color */
-	text-shadow: rgba(8, 8, 8, 0.5) 0px 1px 1px;
-	border: 1px solid rgba(0, 0, 0, 0.32);
-	padding: 0.3em;
-}
-.status-indicator.live {
-	color: #F44336;
 }
 .surface-plane.left {
 	left: 0;
