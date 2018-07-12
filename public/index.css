@@ -22,7 +22,7 @@ h2 {
 h3 {
 	font-size: 1.1em;
 }
-a {
+a[href] {
 	color: #19b7ff;
 	text-decoration: none;
 }

@@ -2,13 +2,9 @@ async = require "async"
 SC = require "node-soundcloud"
 shuffle = require "../shuffle"
 
-# TODO: maybe have init method that just wraps SC.init?
-# which is better, having an extra wrapper, or sharing global state thru node-soundcloud?
-# or are we sharing state either way? this would still use the global state..
-# but you'd be able to consider it this module's global state, as an abstraction
-# yeah, I think that's why having a wrapper would be better
+module.exports.init = (options)-> SC.init(options)
 
-module.exports = (query, track_callback, done_callback)->
+module.exports.search = (query, track_callback, done_callback)->
 	console.log "[SC] Searching SoundCloud for \"#{query}\""
 	SC.get "/tracks", {q: query}, (err, tracks)=>
 		if err

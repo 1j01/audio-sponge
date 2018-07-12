@@ -1,22 +1,31 @@
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
-
-get_env_var = require "./get-env-var"
-soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
-soundcloud_enabled = soundcloud_client_id?
-if soundcloud_enabled
-	SC = require "node-soundcloud"
-	SC.init(id: soundcloud_client_id)
-	soundcloud = require "./audio-providers/soundcloud"
-OGA_enabled = true
-if OGA_enabled
-	OGA = require "./audio-providers/opengameart"
-
+randomWords = require "random-words"
+Chorus = require "../lib/chorus"
+Granular = require "../lib/granular"
 shuffle = require "./shuffle"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
-Chorus = require "../lib/chorus"
-Granular = require "../lib/granular"
-randomWords = require "random-words"
+
+# ---------------------
+# Setup audio providers
+# ---------------------
+get_env_var = require "./get-env-var"
+
+soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
+soundcloud_enabled = soundcloud_client_id?
+if soundcloud_enabled
+	soundcloud = require "./audio-providers/soundcloud"
+	soundcloud.init(id: soundcloud_client_id)
+
+FS_audio_glob = get_env_var "AUDIO_SOURCE_FILES_GLOB"
+FS_enabled = FS_audio_glob?
+if FS_enabled
+	FS = require "./audio-providers/filesystem"
+
+OGA_enabled = true
+if OGA_enabled
+	OGA = require "./audio-providers/opengameart"
+# ---------------------
 
 module.exports =
 class Sponge
@@ -78,15 +87,24 @@ class Sponge
 		if soundcloud_enabled
 			query = randomWords(1).join(" ")
 			# TODO: named arguments
-			soundcloud query, on_new_source, ()=>
+			soundcloud.search query, on_new_source, ()=>
 				console.log "[SC] Done collecting source metadata from search"
 
 		if OGA_enabled
 			query = randomWords(5).join(" OR ")
 			# TODO: named arguments
-			OGA query,
+			OGA.search query,
 				(err, stream_url, attribution)=>
 					return console.error "[OGA] Error fetching track metadata:", err if err
+					on_new_source(stream_url, attribution)
+				()=>
+					console.log "[OGA] Done collecting source metadata from search"
+		
+		if FS_enabled
+			# TODO: named arguments
+			FS.glob FS_audio_glob,
+				(err, stream_url, attribution)=>
+					return console.error "[FS] Error fetching track metadata:", err if err
 					on_new_source(stream_url, attribution)
 				()=>
 					console.log "[OGA] Done collecting source metadata from search"

@@ -2,19 +2,19 @@
 
 soak up some sound, and squeeze some sound out
 
-maybe it music! (not yet, not really, unless you're into anti-music/postmusic type stuff)
+maybe it music! (...not *good* music, but maybe you can define it as such, as music... that's up to you)
 
 this URL will change: https://station.now.sh/
 
 ### What it do tho?
 
-* streams audio from SoundCloud and OpenGameArt (TODO: more sources)
+* collects audio by streaming from SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources; Napster would be good, maybe Spotify)
 
-* chooses random slices from the sources (TODO: detect beats for percussion and perhaps pitch/harmonics for melody)
+* takes random slices from the audio it collects (while streaming) (TODO: detect beats for percussion, and perhaps pitch/harmonics for melody)
 
-* plays the sounds in randomly structured rhythms (TODO: rhyme and reason - and effects!)
+* plays the sounds in randomly structured rhythms (TODO: rhyme and reason, and effects, and melody!)
 
-* streams to listeners on a webpage (TODO: make this more robust)
+* streams to listeners on a [webpage](https://station.now.sh/) (TODO: make this more robust, esp. when clients pause the stream)
 
 ------------
 
@@ -33,7 +33,16 @@ or:
 3. `npm i` to install dependencies
 4. `npm start`
 
-<!-- To enable SoundCloud as a source, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file. -->
+### Configuration
+
+To enable SoundCloud as a source, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
+[You'll need to get a client ID somehow.](https://stackoverflow.com/questions/40992480/getting-a-soundcloud-api-client-id)
+
+To enable the filesystem as a source, add an `AUDIO_SOURCE_FILES_GLOB` key the `.env` file, e.g.
+```
+AUDIO_SOURCE_FILES_GLOB=C:\Users\Isaiah\Music\**\*.mp3
+```
+It must be a full path; that is, `%` or `$` variables are NOT supported.
 
 ### Deploy
 
@@ -78,7 +87,7 @@ no they just names:
 * AN ARROR HAS SPELLING-GRAMMAR OCCURD; PLEASE Contact LENSES
 * OCCULT ERROR
 * WARNING
-* VAGU[**E**](https://www.reddit.com/r/EmboldenTheE/) FEELING OF [UNEASE](https://youtu.be/8d3SMxK40YQ)
+* [VAGU](https://youtu.be/8d3SMxK40YQ)[**E**](https://www.reddit.com/r/EmboldenTheE/) [FEELING OF UNEASE](https://youtu.be/8d3SMxK40YQ)
 
 ### What was that, like some avant-garde poetry?
 

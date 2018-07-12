@@ -29,12 +29,13 @@ class Source
 	# constructor: (@metadata, @stream, @context, sample_callback, callback)->
 		@metadata.number_of_samples = 0
 		# should just accept a stream (pcm and format?)
-		if uri.match(/http[s]:/)
+		if uri.match(/^http[s]:/)
 			@uri = uri
 			@readStream = request(uri, qs: client_id: process.env.SOUNDCLOUD_CLIENT_ID)
 		else
-			@uri = "file:///#{uri}"
-			@readStream = fs.createReadStream(uri)
+			file_path = uri
+			@uri = "file:///#{file_path}"
+			@readStream = fs.createReadStream(file_path)
 
 		# TODO: wav support and maybe other formats
 		decoder = new lame.Decoder

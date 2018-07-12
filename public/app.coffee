@@ -64,17 +64,21 @@ update_attribution = (attribution)->
 	attribution_links_ul.innerHTML = ""
 	for source in attribution.sources
 		li = document.createElement("li")
+		# TODO: icons representing audio providers
 		track_link = document.createElement("a")
-		track_link.href = source.link
-		track_link.textContent = source.name or "track"
-		track_link.setAttribute("target", "_blank")
-		author_link = document.createElement("a")
-		author_link.href = source.author.link
-		author_link.textContent = source.author.name or "someone"
-		author_link.setAttribute("target", "_blank")
+		track_link.textContent = source.name or "something"
+		if source.link
+			track_link.href = source.link
+			track_link.setAttribute("target", "_blank")
 		li.appendChild(track_link)
-		li.appendChild(document.createTextNode(" by "))
-		li.appendChild(author_link)
+		if source.author?.link or source.author?.name
+			author_link = document.createElement("a")
+			author_link.textContent = source.author?.name or "someone"
+			if source.author?.link
+				author_link.href = source.author.link
+				author_link.setAttribute("target", "_blank")
+			li.appendChild(document.createTextNode(" by "))
+			li.appendChild(author_link)
 		li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
 		attribution_links_ul.appendChild(li)
 
@@ -85,7 +89,12 @@ check_attribution = ->
 		if req.readyState is 4
 			if req.status in [0, 200]
 				# update status: "live"
-				update_attribution(JSON.parse(req.responseText))
+				try
+					attribution = JSON.parse(req.responseText)
+				catch error
+					console.error "Invalid JSON response", {responseText: req.responseText, error}
+				if attribution
+					update_attribution(attribution)
 			else
 				# update status: "offline"
 	req.addEventListener "error", ->

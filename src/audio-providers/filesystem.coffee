@@ -1,28 +1,35 @@
+path = require "path"
 async = require "async"
 glob = require "glob"
+shuffle = require "../shuffle"
 
-# TODO: DRY and reenable FS support
-# maybe read metadata from files
-# audio_glob = process.env.AUDIO_SOURCE_FILES_GLOB
+module.exports.glob = (audio_glob, track_callback, done_callback)->
+	console.log "[FS] Globbing the filesystem for:", audio_glob
+	glob audio_glob, (err, files)=>
+		if err
+			console.error "[FS] Error globbing the filesystem:", err if err
+			done_callback()
+			return
+		console.log "[FS] Files:", files
+		console.log "[FS] Found #{files.length} files"
+		async.eachLimit shuffle(files), 1,
+			(file_path, callback)=>
+				# TODO: attribution
+				attribution = {
+					link: "file:///" + file_path
+					name: path.basename(file_path)
+					# author: {
+					# 	name: user.username
+					# 	link: user.permalink_url
+					# }
+				}
 
-# console.log "[FS] AUDIO_SOURCE_FILES_GLOB:", audio_glob
-# if audio_glob?
-# 	glob audio_glob, (err, files)=>
-# 		return console.error "[FS] Error globbing filesystem:", err if err
-# 		shuffleArray(files)
-# 		console.log "[FS] Files:", files
-# 		async.eachLimit files, 1,
-# 			(file_path, callback)=>
-# 				@sources.push new Source file_path, @context,
-# 					(new_sample)=>
-# 						@source_samples.push(new_sample)
-# 					(err, source)=>
-# 						return callback err if err
-# 						console.log "[FS] Done with #{source}"
-# 						setTimeout =>
-# 							callback null
-# 						, 500 # does this actually help?
-# 			(err)=>
-# 				console.log "[FS] Done with all sources"
-
-# 		console.log "[FS] Soaking up sample slices from #{@sources.length} sources..."
+				# FIXME: callback within (implicitly) try-caught block (by `async`)
+				track_callback(null, file_path, attribution)
+				setTimeout =>
+					callback null
+				, 500 # TODO: does this actually help?
+			(err)=>
+				# FIXME: catches errors within track_callback
+				console.error "[FS] Error:", err if err
+				done_callback() # regardless of error

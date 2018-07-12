@@ -5,7 +5,7 @@ request = require "request"
 async = require "async"
 shuffle = require "../shuffle"
 
-module.exports = (query, track_callback, done_callback)->
+module.exports.search = (query, track_callback, done_callback)->
 
 	url = "https://opengameart.org/art-search-advanced?" + qs.stringify({
 		keys: query,
@@ -42,6 +42,9 @@ module.exports = (query, track_callback, done_callback)->
 				track_page_url = new URL(track_page_link_href, url).href
 				stream_url = $(element).attr("data-mp3-url")
 				track_name = $(element).closest(".node").find(".art-preview-title, div[property='dc:title']").first().text()
+				track_attribution =
+					name: track_name
+					link: track_page_url
 				request(track_page_url, (error, response, body)->
 					if error
 						track_callback(error)
@@ -51,6 +54,13 @@ module.exports = (query, track_callback, done_callback)->
 					user_page_link_href = track_page_$(".field-name-author-submitter a").attr("href")
 					user_page_url = new URL(user_page_link_href, url).href
 
+					# TODO: detect external user links and use link track_page_$(".field-name-author-submitter a").text() as the name
+					# for e.g. https://opengameart.org/content/knife-sharpening-slice-2
+					# which links to https://archive.org/details/Berklee44v13
+					# track_attribution.author =
+					# 	name: track_page_$(".field-name-author-submitter a").text()
+					# 	link: user_page_url
+
 					request(user_page_url, (error, response, body)->
 						if error
 							track_callback(error)
@@ -58,12 +68,9 @@ module.exports = (query, track_callback, done_callback)->
 							return
 						user_page_$ = cheerio.load(body)
 
-						track_attribution =
-							name: track_name
-							link: track_page_url
-							author:
-								name: user_page_$(".field-name-field-real-name, div[property='foaf:name']").first().text()
-								link: user_page_url
+						track_attribution.author =
+							name: user_page_$(".field-name-field-real-name, div[property='foaf:name']").first().text()
+							link: user_page_url
 						
 						track_callback(null, stream_url, track_attribution)
 						onwards()
