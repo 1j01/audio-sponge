@@ -82,16 +82,11 @@ app.get "/stream", (req, res)->
 	stream_wrapper.stream(req, res)
 
 app.get "/attribution", (req, res)->
-	# TODO: are these setHeaders needed?
 	res.setHeader "Cache-Control", "no-store, must-revalidate"
 	res.setHeader "Expires", "0"
 	# TODO: eventually drop sources, so that this list doesn't get ridiculous
 	res.json({
-		sources:
-			for source in sponge.sources
-				# {link, name} = source.metadata
-				# {link, name}
-				source.metadata
+		sources: (source.metadata for source in sponge.sources)
 	})
 
 app.get "/ping", (req, res)->

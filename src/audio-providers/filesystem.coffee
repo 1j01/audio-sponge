@@ -36,10 +36,10 @@ module.exports.glob = (audio_glob, track_callback, done_callback)->
 				# Promises swallow errors like a whale swallows copies of Moby Dick or some shit.
 				.catch (error)=>
 					# throw error # THIS WILL NOT WORK because errors are swallowed even in .catch blocks!
-					# one option:
-					# console.error error
-					# process.exit(1)
-					# another option, a BIT better:
+					# could use:
+					#	console.error error
+					#	process.exit(1)
+					# but I think this is a bit better:
 					process.nextTick =>
 						throw error
 			(err)=>
