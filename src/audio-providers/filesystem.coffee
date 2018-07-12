@@ -42,6 +42,7 @@ module.exports.glob = (audio_glob, track_callback, done_callback)->
 					# but I think this is a bit better:
 					process.nextTick =>
 						throw error
+					# allow for normal uncaught error handling, and graceful shutdown if there is any
 			(err)=>
 				console.error "[FS] Error:", err if err
 				done_callback() # regardless of error
