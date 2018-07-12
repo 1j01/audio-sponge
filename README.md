@@ -47,6 +47,8 @@ MIT licensed, see [LICENSE](LICENSE).
 
 ## Configuration
 
+Copy `template.env` to a new file called simply `.env`
+
 ### SoundCloud
 
 To enable the SoundCloud audio provider, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
@@ -68,6 +70,8 @@ The files MUST be MP3s. Only MP3 files are supported, currently.
 You can deploy to [△ Now](https://zeit.co/now) with `npm run deploy`
 
 (First install Now with `npm i -g now`)
+
+For configuration, copy `template.env` or `.env` to a new file called `production.env`
 
 <!--
 ## Are these songs?
