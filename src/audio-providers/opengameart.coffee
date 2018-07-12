@@ -45,6 +45,7 @@ module.exports.search = (query, track_callback, done_callback)->
 				track_attribution =
 					name: track_name
 					link: track_page_url
+					provider: "opengameart"
 				request(track_page_url, (error, response, body)->
 					if error
 						track_callback(error)

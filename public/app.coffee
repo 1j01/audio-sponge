@@ -57,14 +57,34 @@ audio.addEventListener "pause", ->
 audio.addEventListener "emptied", ->
 	update listening: no
 
+provider_to_icon =
+	"filesystem": "icon-folder"
+	"soundcloud": "icon-soundcloud"
+	"spotify": "icon-spotify"
+	"bandcamp": "icon-bandcamp"
+	"lastfm": "icon-lastfm"
+	"opengameart": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
+
+provider_to_acquisition_method_description =
+	"filesystem": "Via the filesystem"
+	"soundcloud": "Via the SoundCloud API"
+	# "spotify": "Via the Spotify API"
+	# "bandcamp": "Via the Bandcamp API"
+	# "lastfm": "Via the Last.fm API"
+	# "napster": "Via the Napster API"
+	"opengameart": "Scraped from OpenGameArt.org"
 
 update_attribution = (attribution)->
 	# TODO: diff-based updates
 	# not for performance, just so selection can work better; currently the selection gets cleared unnecessarily
+	# and so inspecting the DOM is easier
 	attribution_links_ul.innerHTML = ""
 	for source in attribution.sources
 		li = document.createElement("li")
-		# TODO: icons representing audio providers
+		provider_icon = document.createElement("i")
+		provider_icon.className = (provider_to_icon[source.provider] ? "icon-file-audio") + " provider-icon"
+		provider_icon.title = provider_to_acquisition_method_description[source.provider] ? "Procured somehow, probably"
+		li.appendChild(provider_icon)
 		track_link = document.createElement("a")
 		track_link.textContent = source.name or "something"
 		if source.link

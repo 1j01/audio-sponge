@@ -17,6 +17,7 @@ module.exports.glob = (audio_glob, track_callback, done_callback)->
 				attribution = {
 					link: "file:///" + file_path
 					name: path.basename(file_path)
+					provider: "filesystem"
 				}
 				mm.parseFile file_path, {native: true}
 				.then (metadata)=>

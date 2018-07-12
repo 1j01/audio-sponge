@@ -24,6 +24,7 @@ module.exports.search = (query, track_callback, done_callback)->
 						name: track.user.username
 						link: track.user.permalink_url
 					}
+					provider: "soundcloud"
 				}
 				# FIXME: callback within (implicitly) try-caught block (by `async`)
 				track_callback(track.stream_url, attribution)

@@ -1,0 +1,8 @@
+
+.icon-globe:before { content: '\e800'; } /* '' */
+.icon-folder:before { content: '\e801'; } /* '' */
+.icon-soundcloud:before { content: '\f089'; } /* '' */
+.icon-spotify:before { content: '\f1bc'; } /* '' */
+.icon-file-audio:before { content: '\f1c7'; } /* '' */
+.icon-lastfm:before { content: '\f321'; } /* '' */
+.icon-bandcamp:before { content: '\f32b'; } /* '' */
