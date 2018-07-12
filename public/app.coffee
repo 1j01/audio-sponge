@@ -12,7 +12,7 @@ update = (new_state)->
 	status_indicator.innerHTML =
 		switch status
 			when "loading"
-				"Loading..."
+				"Checking..."
 			# when "connecting"
 			# 	"Connecting..."
 			when "offline"

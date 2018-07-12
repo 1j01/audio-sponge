@@ -33,12 +33,22 @@
 			<p>Cozy paranoia</p>
 			<p>Primary reality beta</p>
 		</div>-->
+		<noscript>
+			<style>
+				.js-only {
+					display: none !important;
+				}
+			</style>
+		</noscript>
 		<div id="tridiv">
 			<div class="scene" style="-webkit-transform:rotateX(21deg) rotateY(0deg); -moz-transform:rotateX(21deg) rotateY(0deg); -ms-transform:rotateX(21deg) rotateY(0deg); transform:rotateX(21deg) rotateY(0deg); ">
 				<div class="listen-button shape cuboid-1 cub-1" role="button" tabIndex="0">
 					<div class="face ft">
 						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
-						<div class="button-label">Hello</div>
+						<div class="button-label">
+							<!-- <noscript>Not </noscript>Loading<span class="js-only">...</span> -->
+							&#9654;&#xFE0E; Listen
+						</div>
 					</div>
 					<div class="face bk"></div>
 					<div class="face rt"></div>
@@ -50,7 +60,11 @@
 				<div class="surface-plane right"></div>
 			</div>
 		</div>
-		<div class="status-indicator"><noscript>Not </noscript>Loading...</div>
+		<div class="status-indicator">
+			<!-- <noscript>Not </noscript>Loading<span class="js-only">...</span> -->
+			<span class="js-only">Checking...</span>
+			<noscript>JavaScript is required for streaming with attribution information</noscript>
+		</div>
 		<div class="attribution">
 			<h3>Audio Sources</h3>
 			<ul class="attribution-links"></ul>
