@@ -1,11 +1,16 @@
-async = require "async"
-glob = require "glob"
 {StreamAudioContext, AudioBuffer} = require "web-audio-engine"
-SC = require "node-soundcloud"
-get_env_var = require "./get-env-var" # TODO: remove me
-soundcloud_enabled = (get_env_var "SOUNDCLOUD_CLIENT_ID")?
-OGA = require "./opengameart"
+
+get_env_var = require "./get-env-var"
+soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
+soundcloud_enabled = soundcloud_client_id?
+if soundcloud_enabled
+	SC = require "node-soundcloud"
+	SC.init(id: soundcloud_client_id)
+	soundcloud = require "./audio-providers/soundcloud"
 OGA_enabled = true
+if OGA_enabled
+	OGA = require "./audio-providers/opengameart"
+
 shuffle = require "./shuffle"
 Rhythm = require "./Rhythm"
 Source = require "./Source"
@@ -42,110 +47,49 @@ class Sponge
 		@pre_global_fx = @pre_global_fx_gain
 
 		@gather_sources()
-		# TODO: gather sources as a continuous process!!!
-		# either
-			# after a while, pausing along with the stream like schedule_sounds
-		# or
-			# when run out / near running out
 
+		# @layers = []
 		@schedule_sounds @context.currentTime
 
 		callback(null, @context)
 	
 	gather_sources: ->
+		# TODO: gather sources as a continuous process!!!
+		# either
+			# after a while, pausing along with the stream like schedule_sounds
+		# or
+			# when run out / near running out
+		# also try again on errors, probably with exponential backoff, esp. if we have multiple providers enabled (but probably regardless?)
+
 		# TODO: add rule to never use the same source twice
 
+		# TODO: abstract OR searching by using OR for OGA but multiple searches for SC
+		# so we can do searches for themes globally, and maybe expose that to the user (altho there's a rabbit hole of content/suggestion filtering...)
+
+		on_new_source = (stream_url, attribution)=>
+			@sources.push new Source stream_url, attribution, @context,
+				(new_sample)=>
+					@source_samples.push(new_sample)
+				(err, source)=>
+					return console.error err if err
+					console.log "Done with #{source}"
+					# console.log "Source Samples: #{@source_samples.length}"
+
 		if soundcloud_enabled
-			# TODO: abstract OR searching by using OR for OGA but multiple searches for SC
-			# so we can do searches for themes globally, and maybe expose that to the user (altho there's a rabbit hole of content/suggestion filtering...)
 			query = randomWords(1).join(" ")
-			console.log "[SC] Searching SoundCloud for \"#{query}\""
-			SC.get "/tracks", {q: query}, (err, tracks)=>
-				if err
-					console.error "[SC] Error searching for tracks:", err if err
-					return
-				tracks = tracks.filter((track)-> track.streamable)
+			# TODO: named arguments
+			soundcloud query, on_new_source, ()=>
+				console.log "[SC] Done collecting source metadata from search"
 
-				async.eachLimit shuffle(tracks), 2,
-					(track, callback)=>
-						metadata = {
-							link: track.permalink_url
-							name: track.title
-							author: {
-								name: track.user.username
-								link: track.user.permalink_url
-							}
-						}
-						@sources.push new Source track.stream_url, metadata, @context,
-							(new_sample)=>
-								@source_samples.push(new_sample)
-							(err, source)=>
-								return callback err if err
-								console.log "[SC] Done with #{source}"
-								# console.log "[SC] Currently #{@source_samples.length} samples"
-								setTimeout =>
-									callback null
-								, 500 # does this actually help?
-					(err)=>
-						console.error "[SC] Error:", err if err
-						console.log "[SC] Done with all sources"
-
-				console.log "[SC] Soaking up sample slices from #{@sources.length} sources..."
-
-		# TODO: DRY!
 		if OGA_enabled
 			query = randomWords(5).join(" OR ")
-			console.log "[OGA] Searching OpenGameArt for \"#{query}\""
-			# TODO: try again on errors, as part of continuously finding sources
-			# maybe with exponential backoff, esp. if we have multiple providers enabled (but probably regardless?)
-			# Note: no console.log "[OGA] Soaking up sample slices from #{@sources.length} sources..."
+			# TODO: named arguments
 			OGA query,
-				(err)=>
-					return console.error "[OGA] Error searching OpenGameArt:", err if err
-					console.log "[OGA] Done with all sources"
-				(err, track)=>
+				(err, stream_url, attribution)=>
 					return console.error "[OGA] Error fetching track metadata:", err if err
-
-					metadata = {
-						link: track.permalink_url
-						name: track.title
-						author: {
-							name: track.user.username
-							link: track.user.permalink_url
-						}
-					}
-					@sources.push new Source track.stream_url, metadata, @context,
-						(new_sample)=>
-							@source_samples.push(new_sample)
-						(err, source)=>
-							return console.error "[OGA] Error:", err if err
-							console.log "[OGA] Done with #{source}"
-		
-		# TODO: DRY and reenable FS support
-		# maybe read metadata from files
-		# audio_glob = process.env.AUDIO_SOURCE_FILES_GLOB
-		
-		# console.log "[FS] AUDIO_SOURCE_FILES_GLOB:", audio_glob
-		# if audio_glob?
-		# 	glob audio_glob, (err, files)=>
-		# 		return console.error "[FS] Error globbing filesystem:", err if err
-		# 		shuffleArray(files)
-		# 		console.log "[FS] Files:", files
-		# 		async.eachLimit files, 1,
-		# 			(file_path, callback)=>
-		# 				@sources.push new Source file_path, @context,
-		# 					(new_sample)=>
-		# 						@source_samples.push(new_sample)
-		# 					(err, source)=>
-		# 						return callback err if err
-		# 						console.log "[FS] Done with #{source}"
-		# 						setTimeout =>
-		# 							callback null
-		# 						, 500 # does this actually help?
-		# 			(err)=>
-		# 				console.log "[FS] Done with all sources"
-
-		# 		console.log "[FS] Soaking up sample slices from #{@sources.length} sources..."
+					on_new_source(stream_url, attribution)
+				()=>
+					console.log "[OGA] Done collecting source metadata from search"
 
 	schedule_sounds: (schedule_start_time)->
 		{context} = @
@@ -174,7 +118,8 @@ class Sponge
 				# oscillator.stop(start_time + 0.1)
 				oscillator.stop(start_time + 0.005)
 			else
-				# TODO: envelopes
+				# TODO: envelopes (to avoid clicking at start/end of sliced audio),
+				# or granular synthesis, which would have envelopes, lots of envelopes..
 				buffer_source = context.createBufferSource()
 				buffer_source.buffer = beat_audio_buffer
 				buffer_source.connect(@pre_global_fx)

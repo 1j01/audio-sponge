@@ -3,9 +3,9 @@ qs = require "qs"
 cheerio = require "cheerio"
 request = require "request"
 async = require "async"
-shuffle = require "./shuffle"
+shuffle = require "../shuffle"
 
-module.exports = (query, callback, track_callback)->
+module.exports = (query, track_callback, done_callback)->
 
 	url = "https://opengameart.org/art-search-advanced?" + qs.stringify({
 		keys: query,
@@ -19,25 +19,30 @@ module.exports = (query, callback, track_callback)->
 		items_per_page: '24',
 		Collection: ''
 	})
-	console.log "[OGA] Search URL:", url
+	console.log "[OGA] Searching OpenGameArt for \"#{query}\", search URL:", url
 
 	request(url, (error, response, body)->
 		if error
-			callback(error)
+			console.error "[OGA] Error searching OpenGameArt:", error
+			done_callback()
 			return
+		
 		$ = cheerio.load(body)
 
+		elements_with_data_mp3_url = $("[data-mp3-url]")
+
+		console.log "[OGA] Found #{elements_with_data_mp3_url.length} tracks"
+
 		async.eachLimit(
-			shuffle($("[data-mp3-url]")) # sort of weird that shuffling is part of this otherwise somewhat generic scraper
+			shuffle(elements_with_data_mp3_url) # sort of weird that shuffling is part of this otherwise somewhat generic scraper
 			2 # at a time
 			(element, onwards)->
+				# FIXME: callbacks within (implicitly) try-caught block (by `async`)? maybe not a problem since it uses request which is async
 				track_page_link_href = $(element).closest(".node").find(".art-preview-title a, div[property='dc:title'] a, a").first().attr("href")
 				track_page_url = new URL(track_page_link_href, url).href
-				track =
-					stream_url: $(element).attr("data-mp3-url")
-					title: $(element).closest(".node").find(".art-preview-title, div[property='dc:title']").first().text()
-					permalink_url: track_page_url
-				request(track.permalink_url, (error, response, body)->
+				stream_url = $(element).attr("data-mp3-url")
+				track_name = $(element).closest(".node").find(".art-preview-title, div[property='dc:title']").first().text()
+				request(track_page_url, (error, response, body)->
 					if error
 						track_callback(error)
 						onwards()
@@ -52,14 +57,20 @@ module.exports = (query, callback, track_callback)->
 							onwards()
 							return
 						user_page_$ = cheerio.load(body)
-					
-						track.user =
-							username: user_page_$(".field-name-field-real-name, div[property='foaf:name']").first().text()
-							permalink_url: user_page_url
+
+						track_attribution =
+							name: track_name
+							link: track_page_url
+							author:
+								name: user_page_$(".field-name-field-real-name, div[property='foaf:name']").first().text()
+								link: user_page_url
 						
-						track_callback(null, track)
+						track_callback(null, stream_url, track_attribution)
 						onwards()
 					)
 				)
+			(err)->
+				console.error "[OGA] Error:", err if err
+				done_callback() # regardless of error
 		)
 	)

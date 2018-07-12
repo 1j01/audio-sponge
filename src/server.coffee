@@ -1,17 +1,10 @@
 fs = require "fs"
-SC = require "node-soundcloud"
 get_env_var = require "./get-env-var"
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
 now_url = get_env_var "NOW_URL"
 app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostname}:#{server_port}"
-
-soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
-soundcloud_enabled = soundcloud_client_id?
-
-if soundcloud_enabled
-	SC.init(id: soundcloud_client_id)
 
 express = require "express"
 app = express()
