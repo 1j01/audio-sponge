@@ -35,14 +35,20 @@ or:
 
 ### Configuration
 
+#### SoundCloud
+
 To enable SoundCloud as a source, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
 [You'll need to get a client ID somehow.](https://stackoverflow.com/questions/40992480/getting-a-soundcloud-api-client-id)
+
+#### FileSystem
 
 To enable the filesystem as a source, add an `AUDIO_SOURCE_FILES_GLOB` key the `.env` file, e.g.
 ```
 AUDIO_SOURCE_FILES_GLOB=C:\Users\Isaiah\Music\**\*.mp3
 ```
 It must be a full path; that is, `%` or `$` variables are NOT supported.
+
+The files MUST be **MP3** files.
 
 ### Deploy
 

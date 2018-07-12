@@ -11,8 +11,7 @@ module.exports.glob = (audio_glob, track_callback, done_callback)->
 			console.error "[FS] Error globbing the filesystem:", err if err
 			done_callback()
 			return
-		# console.log "[FS] Files:", files
-		console.log "[FS] Found #{files.length} files"
+		console.log "[FS] Found #{files.length} files:", files
 		async.eachLimit shuffle(files), 1,
 			(file_path, callback)=>
 				mm.parseFile file_path, {native: true}
