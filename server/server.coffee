@@ -10,10 +10,10 @@ app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostnam
 
 app = express()
 
-app.use(express.static("public"))
+app.use(express.static("client"))
 
 app.get "/", (req, res)->
-	res.sendFile("public/app.html", root: __dirname + "/..")
+	res.sendFile("client/app.html", root: __dirname + "/..")
 
 
 sources = []

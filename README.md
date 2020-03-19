@@ -14,16 +14,16 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
 
 Written in [CoffeeScript](https://coffeescript.org/).
 
-[`src/server.coffee`](src/server.coffee) is the main entry point for the server.
+[`server/server.coffee`](server/server.coffee) is the main entry point for the server.
 
-[`src/gather-audio.coffee`](src/gather-audio.coffee) collects audio sources, using several audio providers located in [`src/audio-providers/`](src/audio-providers))
+[`server/gather-audio.coffee`](server/gather-audio.coffee) collects audio sources, using several audio providers located in [`server/audio-providers/`](server/audio-providers))
 
-The client code is in [`public/`](public/).
+The client code is in [`client/`](client/).
 
-[`public/song.coffee`](public/song.coffee) generates the songs.
+[`client/song.coffee`](client/song.coffee) generates the songs.
 
 [Fontello](http://fontello.com/) is currently used for some icons representing the audio providers but this could change to using favicons and be simpler.
-Workflow: drag [`config.json`](public/fontello/config.json) to Fontello, update font, download zip and replace [`fontello/`](public/fontello/)
+Workflow: drag [`config.json`](client/fontello/config.json) to Fontello, update font, download zip and replace [`fontello/`](client/fontello/)
 
 ## License
 
