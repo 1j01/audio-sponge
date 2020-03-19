@@ -1,7 +1,5 @@
 fs = require "fs"
 request = require "request"
-lame = require "lame"
-pcm = require "pcm-util"
 # Meyda = require "meyda"
 sliceAudioBuffer = require "./slice-audiobuffer.js"
 

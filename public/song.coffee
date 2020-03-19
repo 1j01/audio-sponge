@@ -14,7 +14,7 @@ class @Song
 		@sources = []
 		@source_samples = []
 
-		@context = new AudioContext
+		@context = new (window.AudioContext || window.webkitAudioContext)()
 
 		# @chorus = new Chorus(@context)
 		# @chorus.output.connect(@context.destination)
