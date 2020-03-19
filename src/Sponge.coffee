@@ -1,6 +1,4 @@
 randomWords = require "random-words"
-Chorus = require "../lib/chorus"
-# Granular = require "../lib/granular"
 shuffle = require "./shuffle"
 Source = require "./Source"
 

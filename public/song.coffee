@@ -8,7 +8,6 @@ shuffle = (array) ->
 		array[i] = temp
 	return array
 
-
 sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
 	{numberOfChannels, sampleRate} = audioBuffer
 	

@@ -32,16 +32,33 @@ generate_button.onclick = ->
 
 	audio_buffers = []
 
-	for [0..20]
+	target = 5
+	active = 0
+	parallelism = 2
+
+	get_one = ->
+		active += 1
 		fetch_audio_buffer((error, audio_buffer)->
-			console.error(error) if error
-			audio_buffers.push(audio_buffer)
-			# some will fail. try to get 5.
-			console.log(audio_buffers.length, "collected")
-			if audio_buffers.length is 5
-				song = new Song(audio_buffers)
-				song.source_samples = audio_buffers
+			active -= 1
+			if error
+				console.error(error)
+			else
+				audio_buffers.push(audio_buffer)
+				console.log("collected #{audio_buffers.length} so far")
+				if audio_buffers.length is target
+					got_audio_buffers()
+			console.log("collected #{audio_buffers.length} so far, plus #{active} active requests; target: #{target}")
+			if audio_buffers.length + active < target
+				get_one()
 		)
+
+	for [0..parallelism]
+		get_one()
+	
+	got_audio_buffers = ->
+		song = new Song()
+		song.source_samples = [audio_buffers...]
+		# findSamplesFromAudioBuffer
 
 # state = {}
 # update = (new_state)->
