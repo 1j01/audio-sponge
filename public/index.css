@@ -65,5 +65,5 @@ a[href] {
 	padding: 0.3em;
 }
 .status-indicator.live {
-	color: #F44336;
+	color: lime;
 }
