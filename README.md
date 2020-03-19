@@ -1,34 +1,26 @@
-# Audio Sponge (working title)
+# Procedural Song Generator
 
-Soak up some sound, and squeeze some sound out
-
-maybe it music!™ (...it's not *GOOD* music, but maybe you can define it as such, as music... that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as.. music..)
-
-Currently deployed here: https://station.now.sh/
-
-The stream itself is here: https://station.now.sh/stream
-
-TODO: Better name! Any suggestions? [Please share!](mailto:isaiahodhner@gmail.com)
+Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as such, as music - that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as: music.)
 
 ## What it does
 
-* Collects audio by streaming from SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources; Napster would be good, maybe Spotify. Also, gather sources as a continuous process!)
+* Collects audio by searching SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources; Napster would be good, maybe Spotify.)
 
-* Takes random samples from the audio it collects (as it streams) (TODO: Detect beats for percussion, detect pitch/harmonics for melody)
+* Takes random samples from the audio it collects (TODO: Detect beats for percussion, detect pitch/harmonics for melody)
 
 * Plays the samples in randomly structured rhythms (TODO: melody, song structure, effects)
 
-* Streams to listeners on a [webpage](https://station.now.sh/), along with live attribution of the sources its using
-
 ## Project Structure
 
-Written in [CoffeeScript](https://coffeescript.org/). (Could change to TypeScript later.)
+Written in [CoffeeScript](https://coffeescript.org/).
 
 [`server.coffee`](src/server.coffee) is the main entry point for the server.
 
-The most interesting stuff is in [`Sponge.coffee`](src/Sponge.coffee); this handles generating the audio (using [web-audio-engine](https://www.npmjs.com/package/web-audio-engine)), as well as collecting audio at the top level. (At the lower level, it uses several audio providers located in [`src/audio-providers/`](src/audio-providers))
+[`Sponge.coffee`](src/Sponge.coffee) collects audio sources, using several audio providers located in [`src/audio-providers/`](src/audio-providers))
 
 The client code is in [`public/`](public/).
+
+[`public/song.coffee`](public/song.coffee) generates the songs.
 
 [Fontello](http://fontello.com/) is currently used for some icons representing the audio providers but this could change to using favicons and be simpler.
 Workflow: drag [`config.json`](public/fontello/config.json) to Fontello, update font, download zip and replace [`fontello/`](public/fontello/)
@@ -40,7 +32,7 @@ MIT licensed, see [LICENSE](LICENSE).
 ## Development Setup
 
 1. [Clone the repository](https://help.github.com/articles/cloning-a-repository/)
-2. Install [Node.js]() if you don't have it already
+2. Install [Node.js](https://nodejs.org) if you don't have it already
 3. Run `npm i` in a terminal/command-prompt to install dependencies
 4. `npm start` to start the server
 5. Wait for it to say "Listening on http://localhost:3901" and open that URL
@@ -117,7 +109,6 @@ no they just names:
 
 By the board above the books  
 Lies a truth between the crooks  
-[cont. ? one possibru -uation](https://www.reddit.com/r/LibraryofBabel/comments/7ophaq/ode_to_being_filthy_rich/?ref=share&ref_source=link)
 
 ## Problems and Suggestions
 
