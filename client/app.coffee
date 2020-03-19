@@ -79,6 +79,16 @@ generate_button.onclick = ->
 	for [0..parallelism]
 		get_one()
 	
+	song_output_li = document.createElement("li")
+	song_output_audio = document.createElement("audio")
+	song_download_link = document.createElement("a")
+	song_output_audio.controls = true
+	song_download_link.textContent = "download"
+	song_download_link.download = "generated-song.ogg"
+	song_output_li.appendChild(song_download_link)
+	song_output_li.appendChild(song_output_audio)
+	songs_output_ul.appendChild(song_output_li)
+
 	got_audio_buffers = ->
 
 		update generating: false
@@ -89,8 +99,11 @@ generate_button.onclick = ->
 
 		song = new Song([audio_buffers...], ()-> mediaRecorder.stop())
 
-		song.connect(window.audioContext.destination)
 		song.connect(destination)
+
+		# song.connect(window.audioContext.destination)
+		song_output_audio.srcObject = destination.stream
+		song_output_audio.play()
 
 		chunks = []
 		mediaRecorder.ondataavailable = (event)->
@@ -101,17 +114,11 @@ generate_button.onclick = ->
 			blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' })
 			blob_url = URL.createObjectURL(blob)
 
-			song_output_li = document.createElement("li")
-			song_output_audio = document.createElement("audio")
-			song_download_link = document.createElement("a")
+			currentTime = song_output_audio.currentTime
+			song_output_audio.srcObject = null
 			song_output_audio.src = blob_url
-			song_output_audio.controls = true
-			song_download_link.textContent = "download"
-			song_download_link.download = "generated-song.ogg"
+			song_output_audio.currentTime = currentTime
 			song_download_link.href = blob_url
-			song_output_li.appendChild(song_download_link)
-			song_output_li.appendChild(song_output_audio)
-			songs_output_ul.appendChild(song_output_li)
 
 provider_to_icon =
 	"filesystem": "icon-folder"
