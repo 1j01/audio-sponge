@@ -9,18 +9,27 @@ Source = require "./Source"
 # ---------------------
 get_env_var = require "./get-env-var"
 
+net_enabled = false
+
+OGA_enabled = true
+
 soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
 soundcloud_enabled = soundcloud_client_id?
+
+FS_audio_glob = get_env_var "AUDIO_SOURCE_FILES_GLOB"
+FS_enabled = FS_audio_glob?
+
+if not net_enabled
+	soundcloud_enabled = false
+	OGA_enabled = false
+
 if soundcloud_enabled
 	soundcloud = require "./audio-providers/soundcloud"
 	soundcloud.init(id: soundcloud_client_id)
 
-FS_audio_glob = get_env_var "AUDIO_SOURCE_FILES_GLOB"
-FS_enabled = FS_audio_glob?
 if FS_enabled
 	FS = require "./audio-providers/filesystem"
 
-OGA_enabled = true
 if OGA_enabled
 	OGA = require "./audio-providers/opengameart"
 # ---------------------
@@ -31,14 +40,8 @@ class Sponge
 		@sources = []
 		@source_samples = []
 	
-	start: (callback)->
-		
-		@gather_sources()
-
-		callback(null, @context)
-	
-	gather_sources: ->
-		# TODO: gather sources as a continuous process!!!
+	gatherSources: ->
+		# TODO: gather sources as a continuous process?
 		# either
 			# after a while, pausing along with the stream like schedule_sounds
 		# or
@@ -48,18 +51,10 @@ class Sponge
 		# TODO: add rule to never use the same source twice
 
 		# TODO: abstract "OR"-searching by using "a OR b" for OGA but multiple searches for SC
-		# so we can do searches for themes globally, and maybe expose that to the user
-		# (altho there's of course a rabbit hole of content/suggestion filtering...)
-		# (altho it could already grab anything by chance)
+		# so we can do searches for themes globally, and expose that to the user
 
 		on_new_source = (stream_url, attribution)=>
-			@sources.push new Source stream_url, attribution, @context,
-				(new_sample)=>
-					@source_samples.push(new_sample)
-				(err, source)=>
-					return console.error err if err
-					console.log "Done with #{source}"
-					# console.log "Source Samples: #{@source_samples.length}"
+			@sources.push new Source stream_url, attribution
 
 		if soundcloud_enabled
 			query = randomWords(1).join(" ")

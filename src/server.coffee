@@ -1,12 +1,13 @@
 fs = require "fs"
 get_env_var = require "./get-env-var"
+express = require "express"
+Sponge = require "./Sponge"
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
 now_url = get_env_var "NOW_URL"
 app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostname}:#{server_port}"
 
-express = require "express"
 app = express()
 
 app.use(express.static("public"))
@@ -14,18 +15,26 @@ app.use(express.static("public"))
 app.get "/", (req, res)->
 	res.sendFile("public/app.html", root: __dirname + "/..")
 
-Sponge = require "./Sponge"
 
 sponge = new Sponge
+sponge.gatherSources()
 
-sponge.start (err, context)->
-	if err
-		console.error err
-		console.log "The server will exit shortly."
-		setTimeout ->
-			process.exit(1)
-		, 200
-		# TODO: exit more cleanly? like end the server and such
+app.get "/some-sound", (req, res)->
+	console.log("picking from #{sponge.sources.length} sources")
+
+	index = ~~(Math.random() * sponge.sources.length)
+	source = sponge.sources[index]
+	console.log("picked:", source)
+
+	res.setHeader "Cache-Control", "no-store, must-revalidate"
+	res.setHeader "Expires", "0"
+	# res.setHeader "Content-Type", "audio/unknown"
+	# res.setHeader "Content-Type", "audio/mpeg"
+	res.setHeader "Content-Type", "application/octet-stream"
+	
+	# res.setHeader "Content-Length", byteLength
+	# res.end()
+	source.readStream.pipe(res)
 
 app.get "/attribution", (req, res)->
 	res.setHeader "Cache-Control", "no-store, must-revalidate"

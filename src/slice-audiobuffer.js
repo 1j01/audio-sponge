@@ -35,10 +35,16 @@ module.exports = sliceAudioBuffer;
 sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
 	{numberOfChannels, sampleRate} = audioBuffer
 	
+	if startOffset < 0
+		throw new RangeError('start time must be greater than or equal to 0')
+	if endOffset > audioBuffer.duration
+		throw new RangeError('end time must be less than or equal to the duration of the buffer (' + audioBuffer.duration + ')')
+
 	array =
 		for channel in [0...numberOfChannels]
 			samples = audioBuffer.getChannelData(channel)
 			samples.slice(startOffset * sampleRate, endOffset * sampleRate)
 		
 	AudioBuffer.fromArray(array, sampleRate)
+
 */
