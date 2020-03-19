@@ -32,8 +32,7 @@ app.get "/some-sound", (req, res)->
 	res.setHeader "Content-Type", "application/octet-stream"
 	# res.setHeader "Content-Length", byteLength
 
-	# TODO: don't try to pipe twice from the same stream
-	source.readStream.pipe(res)
+	source.createReadStream().pipe(res)
 
 app.get "/attribution", (req, res)->
 	res.setHeader "Cache-Control", "no-store, must-revalidate"

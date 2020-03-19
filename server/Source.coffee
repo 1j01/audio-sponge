@@ -11,10 +11,11 @@ class Source
 		# should just accept a stream (pcm and format?)
 		if uri.match(/^http[s]:/)
 			@uri = uri
-			@readStream = request(uri, qs: client_id: process.env.SOUNDCLOUD_CLIENT_ID)
+			# TODO: cache?
+			@createReadStream = -> request(uri, qs: client_id: process.env.SOUNDCLOUD_CLIENT_ID)
 		else
 			file_path = uri
 			@uri = "file:///#{file_path}"
-			@readStream = fs.createReadStream(file_path)
+			@createReadStream = -> fs.createReadStream(file_path)
 
 	toString: -> @uri
