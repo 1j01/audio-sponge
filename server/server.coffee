@@ -22,6 +22,7 @@ gather_audio((new_source)-> sources.push(new_source))
 app.get "/some-sound", (req, res)->
 	if sources.length is 0
 		res.status(404).send("Not enough sources collected yet!") # 425 isn't really relevant
+		return
 
 	index = ~~(Math.random() * sources.length)
 	source = sources[index]
