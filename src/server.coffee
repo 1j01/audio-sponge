@@ -1,7 +1,7 @@
 fs = require "fs"
-get_env_var = require "./get-env-var"
 express = require "express"
-Sponge = require "./Sponge"
+get_env_var = require "./get-env-var"
+gather_audio = require "./gather-audio"
 
 server_port = get_env_var "PORT", default: 3901, number: yes
 app_hostname = get_env_var "APP_HOSTNAME", default: "localhost"
@@ -16,13 +16,13 @@ app.get "/", (req, res)->
 	res.sendFile("public/app.html", root: __dirname + "/..")
 
 
-sponge = new Sponge
-sponge.gatherSources()
+sources = []
+gather_audio((new_source)-> sources.push(new_source))
 
 app.get "/some-sound", (req, res)->
-	index = ~~(Math.random() * sponge.sources.length)
-	source = sponge.sources[index]
-	console.log("from #{sponge.sources.length} sources, picked:", source.uri)
+	index = ~~(Math.random() * sources.length)
+	source = sources[index]
+	console.log("from #{sources.length} sources, picked:", source.uri)
 
 	res.setHeader "Cache-Control", "no-store, must-revalidate"
 	res.setHeader "Expires", "0"
@@ -37,7 +37,7 @@ app.get "/attribution", (req, res)->
 	res.setHeader "Expires", "0"
 	# TODO: eventually drop sources, so that this list doesn't get ridiculous
 	res.json({
-		sources: (source.metadata for source in sponge.sources)
+		sources: (source.metadata for source in sources)
 	})
 
 app.get "/ping", (req, res)->

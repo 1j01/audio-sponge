@@ -14,9 +14,9 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
 
 Written in [CoffeeScript](https://coffeescript.org/).
 
-[`server.coffee`](src/server.coffee) is the main entry point for the server.
+[`src/server.coffee`](src/server.coffee) is the main entry point for the server.
 
-[`Sponge.coffee`](src/Sponge.coffee) collects audio sources, using several audio providers located in [`src/audio-providers/`](src/audio-providers))
+[`src/gather-audio.coffee`](src/gather-audio.coffee) collects audio sources, using several audio providers located in [`src/audio-providers/`](src/audio-providers))
 
 The client code is in [`public/`](public/).
 
