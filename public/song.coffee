@@ -13,15 +13,17 @@ shuffle = (array) ->
 findSamplesFromAudioBuffer = (audio_buffer, sample_callback)->
 	# TODO: find beats with Meyda or another module
 	
-	duration = Math.random() / 2 + 0.1
-	duration = Math.min(duration, audio_buffer.duration)
-	start = Math.random() * (audio_buffer.duration - duration)
-	duration = Math.max(0, duration - 0.01)
-	end = start + duration
-	new_audio_buffer = sliceAudioBuffer audio_buffer, start, end, window.audioContext
+	samples_to_take = Math.max(2, Math.min(10, audio_buffer.length / 10))
+	for [0..samples_to_take]
+		duration = Math.random() / 2 + 0.1
+		duration = Math.min(duration, audio_buffer.duration)
+		start = Math.random() * (audio_buffer.duration - duration)
+		duration = Math.max(0, duration - 0.01)
+		end = start + duration
+		new_audio_buffer = sliceAudioBuffer audio_buffer, start, end, window.audioContext
 
-	sample_callback(new_audio_buffer)
-	# metadata.number_of_samples[this particular source] += 1
+		sample_callback(new_audio_buffer)
+		# metadata.number_of_samples[this particular source] += 1
 
 class @Song
 	constructor: (audio_buffers)->
@@ -31,6 +33,7 @@ class @Song
 		for audio_buffer in audio_buffers
 			findSamplesFromAudioBuffer audio_buffer, (sample)=>
 				@source_samples.push(sample)
+				console.log("#{@source_samples.length} source_samples")
 
 		@context = window.audioContext
 

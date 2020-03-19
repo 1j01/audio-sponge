@@ -38,22 +38,24 @@ generate_button.onclick = ->
 
 	get_one = ->
 		active += 1
-		fetch_audio_buffer((error, audio_buffer)->
-			active -= 1
-			if error
-				console.error(error)
-			else
-				audio_buffers.push(audio_buffer)
-				console.log("collected #{audio_buffers.length} so far")
-				if audio_buffers.length is target
-					console.log("reached target of #{target} audio buffers")
-					got_audio_buffers()
-				if audio_buffers.length > target
-					console.log("extraneous audio buffer collected (#{audio_buffers.length} / #{target})")
-			console.log("collected #{audio_buffers.length} so far, plus #{active} active requests; target: #{target}")
-			if audio_buffers.length + active < target
-				get_one()
-		)
+		setTimeout ->
+			fetch_audio_buffer((error, audio_buffer)->
+				active -= 1
+				if error
+					console.warn(error)
+				else
+					audio_buffers.push(audio_buffer)
+					console.log("collected #{audio_buffers.length} audio buffers so far")
+					if audio_buffers.length is target
+						console.log("reached target of #{target} audio buffers")
+						got_audio_buffers()
+					if audio_buffers.length > target
+						console.log("extraneous audio buffer collected (#{audio_buffers.length} / #{target})")
+				console.log("collected #{audio_buffers.length} audio buffers so far, plus #{active} active requests; target: #{target}")
+				if audio_buffers.length + active < target
+					get_one()
+			)
+		, Math.random() * 500
 
 	for [0..parallelism]
 		get_one()
