@@ -1,4 +1,4 @@
-module.exports = (array) ->
+module.exports = shuffle = (array) ->
 	array = Array.from(array)
 	i = array.length
 	while --i > 0

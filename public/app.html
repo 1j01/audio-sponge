@@ -2,20 +2,20 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>Audio Sponge</title>
+		<title>Procedural Song Generator</title>
 		<link rel="stylesheet" type="text/css" href="index.css">
 		<link rel="stylesheet" type="text/css" href="scene.css">
 		<link rel="stylesheet" type="text/css" href="fontello/css/audio-providers.css">
-		<meta name="description" content="Infinite audio stream">
+		<meta name="description" content="Randomly generated songs">
 		<meta name="author" content="Isaiah Odhner" />
 		<meta property="og:type" content="music.radio_station" />
 		<meta property="og:url" content="https://station.now.sh/" />
 		<meta property="og:audio" content="https://station.now.sh/stream" />
-		<meta property="og:title" content="Audio Sponge" />
-		<meta property="og:description" content="Infinite audio stream" />
+		<meta property="og:title" content="Procedural Song Generator" />
+		<meta property="og:description" content="Randomly generated songs" />
 	</head>
 	<body>
-		<h1>Audio Sponge</h1>
+		<h1>Procedural Song Generator</h1>
 		<!--<div class="columns">
 			<p>The Sponge of Truth and Lies</p>
 			<p>In equal and opposite measure</p>
@@ -42,12 +42,11 @@
 		</noscript>
 		<div id="tridiv">
 			<div class="scene" style="-webkit-transform:rotateX(21deg) rotateY(0deg); -moz-transform:rotateX(21deg) rotateY(0deg); -ms-transform:rotateX(21deg) rotateY(0deg); transform:rotateX(21deg) rotateY(0deg); ">
-				<div class="listen-button shape cuboid-1 cub-1" role="button" tabIndex="0">
+				<div class="generate-button shape cuboid-1 cub-1" role="button" tabindex="0">
 					<div class="face ft">
 						<div class="photon-shader" style="background-color: rgba(255, 255, 255, 0.0313726);"></div>
 						<div class="button-label">
-							<!-- <noscript>Not </noscript>Loading<span class="js-only">...</span> -->
-							&#9654;&#xFE0E; Listen
+							Generate Song
 						</div>
 					</div>
 					<div class="face bk"></div>
@@ -60,16 +59,17 @@
 				<div class="surface-plane right"></div>
 			</div>
 		</div>
-		<div class="status-indicator">
-			<!-- <noscript>Not </noscript>Loading<span class="js-only">...</span> -->
+		<!-- <div class="status-indicator">
 			<span class="js-only">Checking...</span>
-			<noscript>JavaScript is required for streaming with attribution information</noscript>
-		</div>
+			<noscript>JavaScript is required</noscript>
+		</div> -->
 		<div class="attribution">
 			<h3>Audio Sources</h3>
 			<ul class="attribution-links"></ul>
 		</div>
 		<script src="lib/coffeescript.js"></script>
+		<script src="Rhythm.coffee" type="text/coffeescript"></script>
+		<script src="song.coffee" type="text/coffeescript"></script>
 		<script src="app.coffee" type="text/coffeescript"></script>
 	</body>
 </html>
