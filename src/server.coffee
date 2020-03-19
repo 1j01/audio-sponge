@@ -20,20 +20,16 @@ sponge = new Sponge
 sponge.gatherSources()
 
 app.get "/some-sound", (req, res)->
-	console.log("picking from #{sponge.sources.length} sources")
-
 	index = ~~(Math.random() * sponge.sources.length)
 	source = sponge.sources[index]
-	console.log("picked:", source.uri) # , source.metadata
+	console.log("from #{sponge.sources.length} sources, picked:", source.uri)
 
 	res.setHeader "Cache-Control", "no-store, must-revalidate"
 	res.setHeader "Expires", "0"
-	# res.setHeader "Content-Type", "audio/unknown"
-	# res.setHeader "Content-Type", "audio/mpeg"
 	res.setHeader "Content-Type", "application/octet-stream"
-	
 	# res.setHeader "Content-Length", byteLength
-	# res.end()
+
+	# TODO: don't try to pipe twice from the same stream
 	source.readStream.pipe(res)
 
 app.get "/attribution", (req, res)->

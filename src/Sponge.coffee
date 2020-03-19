@@ -36,18 +36,8 @@ module.exports =
 class Sponge
 	constructor: ->
 		@sources = []
-		@source_samples = []
 	
 	gatherSources: ->
-		# TODO: gather sources as a continuous process?
-		# either
-			# after a while, pausing along with the stream like schedule_sounds
-		# or
-			# when run out / near running out
-		# also try again on errors, probably with exponential backoff, esp. if we have multiple providers enabled (but probably regardless?)
-
-		# TODO: add rule to never use the same source twice
-
 		# TODO: abstract "OR"-searching by using "a OR b" for OGA but multiple searches for SC
 		# so we can do searches for themes globally, and expose that to the user
 
