@@ -108,7 +108,7 @@ class @Song
 
 		setTimeout =>
 			song_over()
-		, scheduled_length * 1000
+		, scheduled_length * 1000 + 200
 
 		###
 		# TODO: simplify the following to use a single setTimeout loop

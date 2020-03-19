@@ -80,11 +80,17 @@ generate_button.onclick = ->
 		mediaRecorder.onstop = (event)->
 			# Make blob out of our blobs, and open it.
 			blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' })
+			blob_url = URL.createObjectURL(blob)
 
 			song_output_li = document.createElement("li")
 			song_output_audio = document.createElement("audio")
-			song_output_audio.src = URL.createObjectURL(blob)
+			song_download_link = document.createElement("a")
+			song_output_audio.src = blob_url
 			song_output_audio.controls = true
+			song_download_link.textContent = "download"
+			song_download_link.download = "generated-song.ogg"
+			song_download_link.href = blob_url
+			song_output_li.appendChild(song_download_link)
 			song_output_li.appendChild(song_output_audio)
 			songs_output_ul.appendChild(song_output_li)
 
