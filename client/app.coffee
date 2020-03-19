@@ -42,7 +42,10 @@ fetch_audio_buffer = (callback)->
 				callback(new Error("arraybuffer.byteLength is 0"))
 				return
 
-			audioContext.decodeAudioData(arraybuffer, (audio_buffer)-> callback(null, audio_buffer))
+			audioContext.decodeAudioData(arraybuffer).then(
+				(audio_buffer)-> callback(null, audio_buffer)
+				(error)-> callback(error)
+			)
 		else
 			callback(new Error("HTTP #{xhr.status}: #{xhr.statusText}"))
 
