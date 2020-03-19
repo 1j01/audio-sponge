@@ -46,7 +46,10 @@ generate_button.onclick = ->
 				audio_buffers.push(audio_buffer)
 				console.log("collected #{audio_buffers.length} so far")
 				if audio_buffers.length is target
+					console.log("reached target of #{target} audio buffers")
 					got_audio_buffers()
+				if audio_buffers.length > target
+					console.log("extraneous audio buffer collected (#{audio_buffers.length} / #{target})")
 			console.log("collected #{audio_buffers.length} so far, plus #{active} active requests; target: #{target}")
 			if audio_buffers.length + active < target
 				get_one()
@@ -56,9 +59,7 @@ generate_button.onclick = ->
 		get_one()
 	
 	got_audio_buffers = ->
-		song = new Song()
-		song.source_samples = [audio_buffers...]
-		# findSamplesFromAudioBuffer
+		song = new Song([audio_buffers...])
 
 # state = {}
 # update = (new_state)->

@@ -8,23 +8,9 @@ shuffle = (array) ->
 		array[i] = temp
 	return array
 
-sliceAudioBuffer = (audioBuffer, startOffset, endOffset, audioContext)->
-	{numberOfChannels, sampleRate} = audioBuffer
-	
-	if startOffset < 0
-		throw new RangeError('start time must be greater than or equal to 0')
-	if endOffset > audioBuffer.duration
-		throw new RangeError('end time must be less than or equal to the duration of the buffer (' + audioBuffer.duration + ')')
 
-	array =
-		for channel in [0...numberOfChannels]
-			samples = audioBuffer.getChannelData(channel)
-			samples.slice(startOffset * sampleRate, endOffset * sampleRate)
-		
-	AudioBuffer.fromArray(array, sampleRate)
-
-# TODO: findInterestingSamplesFromBuffer
-findSamplesFromAudioBuffer = (audio_buffer, pcm_format, sample_callback)->
+# TODO: findInterestingSamplesFromAudioBuffer
+findSamplesFromAudioBuffer = (audio_buffer, sample_callback)->
 	# TODO: find beats with Meyda or another module
 	
 	duration = Math.random() / 2 + 0.1
@@ -32,16 +18,19 @@ findSamplesFromAudioBuffer = (audio_buffer, pcm_format, sample_callback)->
 	start = Math.random() * (audio_buffer.duration - duration)
 	duration = Math.max(0, duration - 0.01)
 	end = start + duration
-	new_audio_buffer = sliceAudioBuffer audio_buffer, start, end, @context
+	new_audio_buffer = sliceAudioBuffer audio_buffer, start, end, window.audioContext
 
 	sample_callback(new_audio_buffer)
 	# metadata.number_of_samples[this particular source] += 1
 
 class @Song
-	constructor: ->
+	constructor: (audio_buffers)->
 
-		@sources = []
+		# @sources = []
 		@source_samples = []
+		for audio_buffer in audio_buffers
+			findSamplesFromAudioBuffer audio_buffer, (sample)=>
+				@source_samples.push(sample)
 
 		@context = window.audioContext
 
