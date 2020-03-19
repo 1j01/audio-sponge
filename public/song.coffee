@@ -44,7 +44,7 @@ class @Song
 		@sources = []
 		@source_samples = []
 
-		@context = new (window.AudioContext || window.webkitAudioContext)()
+		@context = window.audioContext
 
 		# @chorus = new Chorus(@context)
 		# @chorus.output.connect(@context.destination)
@@ -72,7 +72,7 @@ class @Song
 		add_beat = (beat_type_index, start_time)=>
 			beat_audio_buffer = beat_audio_buffers[beat_type_index]
 			if not beat_audio_buffer
-				# console.error "Not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
+				console.error "Not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
 				
 				# use an oscillator as a placeholder for sampled beats
 
@@ -96,7 +96,7 @@ class @Song
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
 
-		# TODO: visualize the rhythm, possibly by sending it (in time) to the client
+		# TODO: visualize the rhythm
 		# TODO: layers of sound (i.e. tracks), with potentially different or similar/related rhythms for melody and percussion
 		# TODO: phase in and out layers and their sources
 		# TODO: apply effects to tracks, especially reverb, but also random, crazy DSP

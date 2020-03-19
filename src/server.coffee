@@ -24,7 +24,7 @@ app.get "/some-sound", (req, res)->
 
 	index = ~~(Math.random() * sponge.sources.length)
 	source = sponge.sources[index]
-	console.log("picked:", source)
+	console.log("picked:", source.uri, source.metadata)
 
 	res.setHeader "Cache-Control", "no-store, must-revalidate"
 	res.setHeader "Expires", "0"

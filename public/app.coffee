@@ -4,8 +4,44 @@ generate_button = document.querySelector(".generate-button")
 # status_indicator = document.querySelector(".status-indicator")
 # attribution_links_ul = document.querySelector(".attribution-links")
 
+
+fetch_audio_buffer = (callback)->
+
+	url = "/some-sound"
+
+	xhr = new XMLHttpRequest()
+	xhr.open("GET", url)
+	xhr.responseType = "arraybuffer"
+	xhr.onerror = (error)-> callback(error)
+	xhr.onload = ->
+		if xhr.status is 200
+			arraybuffer = xhr.response
+			if arraybuffer.byteLength is 0
+				callback(new Error("arraybuffer.byteLength is 0"))
+				return
+
+			audioContext.decodeAudioData(arraybuffer, (audio_buffer)-> callback(null, audio_buffer))
+		else
+			callback(new Error("HTTP #{xhr.status}: #{xhr.statusText}"))
+
+	xhr.send()
+
 generate_button.onclick = ->
-	new Song()
+
+	window.audioContext ?= new (window.AudioContext || window.webkitAudioContext)()
+
+	audio_buffers = []
+
+	for [0..20]
+		fetch_audio_buffer((error, audio_buffer)->
+			console.error(error) if error
+			audio_buffers.push(audio_buffer)
+			# some will fail. try to get 5.
+			console.log(audio_buffers.length, "collected")
+			if audio_buffers.length is 5
+				song = new Song(audio_buffers)
+				song.source_samples = audio_buffers
+		)
 
 # state = {}
 # update = (new_state)->
