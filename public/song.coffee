@@ -26,7 +26,7 @@ findSamplesFromAudioBuffer = (audio_buffer, sample_callback)->
 		# metadata.number_of_samples[this particular source] += 1
 
 class @Song
-	constructor: (audio_buffers)->
+	constructor: (audio_buffers, song_over)->
 
 		# @sources = []
 		@source_samples = []
@@ -44,15 +44,17 @@ class @Song
 		# see https://webaudiotech.com/sites/limiter_comparison/
 		@pre_global_fx_gain = @context.createGain()
 		# @pre_global_fx_gain.connect(@chorus.input)
-		@pre_global_fx_gain.connect(@context.destination)
 		@pre_global_fx_gain.gain.setValueAtTime(0.1, 0) # avoid clipping!
 
 		@pre_global_fx = @pre_global_fx_gain
 
 		# @layers = []
-		@schedule_sounds @context.currentTime
+		@schedule_sounds @context.currentTime, song_over
 
-	schedule_sounds: (schedule_start_time)->
+	connect: (destination)->
+		@pre_global_fx_gain.connect(destination)
+
+	schedule_sounds: (schedule_start_time, song_over)->
 		{context} = @
 		console.log "Scheduling output for context time #{schedule_start_time}"
 		console.log "Source Samples: #{@source_samples.length}"
@@ -103,6 +105,12 @@ class @Song
 				add_beat(beat.type, start_time)
 			scheduled_length += 1 / bps
 		
+
+		setTimeout =>
+			song_over()
+		, scheduled_length * 1000
+
+		###
 		# TODO: simplify the following to use a single setTimeout loop
 		# maybe look at other peoples code for scheduling to see how to do it better
 		# currently it does a kind of silly thing of waiting until the last second (or 0.2 seconds) to schedule
@@ -124,5 +132,6 @@ class @Song
 					# console.log "Waiting for context.currentTime (#{context.currentTime}) to continue to at least #{next_schedule_time_minimum}"
 					setTimeout wait_until_near_schedule_time, 50
 				else
-					@schedule_sounds next_start_time
+					@schedule_sounds next_start_time, song_over
 		, wait_before_trying_to_schedule_next * 1000
+		###

@@ -1,4 +1,6 @@
 generate_button = document.querySelector(".generate-button")
+songs_output_ul = document.querySelector(".songs-output")
+
 # listen_button = document.querySelector(".listen-button")
 # button_label = listen_button.querySelector(".button-label")
 # status_indicator = document.querySelector(".status-indicator")
@@ -61,7 +63,30 @@ generate_button.onclick = ->
 		get_one()
 	
 	got_audio_buffers = ->
-		song = new Song([audio_buffers...])
+
+		destination = window.audioContext.createMediaStreamDestination()
+		mediaRecorder = new MediaRecorder(destination.stream)
+		mediaRecorder.start()
+
+		song = new Song([audio_buffers...], ()-> mediaRecorder.stop())
+
+		song.connect(window.audioContext.destination)
+		song.connect(destination)
+
+		chunks = []
+		mediaRecorder.ondataavailable = (event)->
+			chunks.push(event.data)
+
+		mediaRecorder.onstop = (event)->
+			# Make blob out of our blobs, and open it.
+			blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' })
+
+			song_output_li = document.createElement("li")
+			song_output_audio = document.createElement("audio")
+			song_output_audio.src = URL.createObjectURL(blob)
+			song_output_audio.controls = true
+			song_output_li.appendChild(song_output_audio)
+			songs_output_ul.appendChild(song_output_li)
 
 # state = {}
 # update = (new_state)->
