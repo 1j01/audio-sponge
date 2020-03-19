@@ -28,28 +28,17 @@ update = (new_state)->
 			"Generate Song"
 
 fetch_audio_buffer = (callback)->
+	fetch("/some-sound")
+		.then (response)->
+			# TODO: how descriptive is the fetch error?
+			# if xhr.status isnt 200
+			# 	throw new Error("HTTP #{response.status} #{response.statusText}")
+			response.arrayBuffer()
+		.then (arrayBuffer)->
+			if arrayBuffer.byteLength is 0
+				throw new Error("arrayBuffer.byteLength is 0")
+			audioContext.decodeAudioData(arrayBuffer)
 
-	url = "/some-sound"
-
-	xhr = new XMLHttpRequest()
-	xhr.open("GET", url)
-	xhr.responseType = "arraybuffer"
-	xhr.onerror = (error)-> callback(error)
-	xhr.onload = ->
-		if xhr.status is 200
-			arraybuffer = xhr.response
-			if arraybuffer.byteLength is 0
-				callback(new Error("arraybuffer.byteLength is 0"))
-				return
-
-			audioContext.decodeAudioData(arraybuffer).then(
-				(audio_buffer)-> callback(null, audio_buffer)
-				(error)-> callback(error)
-			)
-		else
-			callback(new Error("HTTP #{xhr.status}: #{xhr.statusText}"))
-
-	xhr.send()
 
 generate_button.onclick = ->
 
@@ -66,11 +55,14 @@ generate_button.onclick = ->
 	get_one = ->
 		active += 1
 		setTimeout ->
-			fetch_audio_buffer((error, audio_buffer)->
+			fetch_audio_buffer()
+			.catch((error)->
+				console.warn(error)
+				# continues to then
+			)
+			.then((audio_buffer)->
 				active -= 1
-				if error
-					console.warn(error)
-				else
+				if audio_buffer
 					audio_buffers.push(audio_buffer)
 					console.log("collected #{audio_buffers.length} audio buffers so far")
 					if audio_buffers.length is target
