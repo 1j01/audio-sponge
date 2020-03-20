@@ -2,6 +2,7 @@ fs = require "fs"
 express = require "express"
 get_env_var = require "./get-env-var"
 gather_audio = require "./gather-audio"
+gather_midi = require "./gather-midi"
 shuffle = require "./shuffle"
 
 server_port = get_env_var "PORT", default: 3901, number: yes
@@ -13,14 +14,20 @@ app = express()
 http = require("http").createServer(app)
 io = require("socket.io")(http)
 
+gather_sources = ({query, midi}, new_source_callback)->
+	if midi
+		gather_midi query, new_source_callback, ->
+	else
+		gather_audio query, new_source_callback
+
 io.on "connection", (socket)->
 	console.log("a user connected")
 	socket.on "disconnect", ->
 		console.log("user disconnected")
 
-	socket.on "sound-search", ({query, query_id})->
+	socket.on "sound-search", ({query, midi, query_id})->
 		sources = []
-		gather_audio query, (new_source)->
+		gather_sources {query, midi}, (new_source)->
 			sources.push(new_source)
 
 			if sources.length is 5

@@ -65,6 +65,33 @@ sanitizeFileName = (input, replacement="")->
 		.slice(0, 255)
 
 
+sound_search = ({query, song_id, midi}, callback)->
+	query_id = "#{if midi then "midi" else "sounds"}-for-#{song_id}"
+
+	metadatas_received = []
+	socket.emit "sound-search", {query, midi, query_id}
+	socket.on "sound-metadata:#{query_id}", (metadata)->
+		metadatas_received.push(metadata)
+		{sound_id} = metadata
+		chunk_array_buffers = []
+		socket.on "sound-data:#{sound_id}", (array_buffer)->
+			chunk_array_buffers.push(array_buffer)
+		socket.once "sound-data-end:#{sound_id}", ->
+			socket.off "sound-data:#{sound_id}"
+			file_array_buffer = concatArrayBuffers(chunk_array_buffers)
+			chunk_array_buffers = null
+			callback(file_array_buffer, metadata)
+			file_array_buffer = null
+
+	cancel = ->
+		socket.off "sound-metadata:#{query_id}"
+		for {sound_id} in metadatas_received
+			socket.off "sound-data:#{sound_id}"
+			socket.off "sound-data-end:#{sound_id}"
+
+	return cancel
+
+
 
 generate_button.onclick = ->
 
@@ -73,12 +100,10 @@ generate_button.onclick = ->
 	update collecting: true
 
 	audio_buffers = []
-	metadatas_received = []
 	metadatas_used = []
 
 	query = keywords_input.value
-	query_id = sanitizeFileName("#{generateId(6)}-#{query}").replace(/\s/, "-")
-	song_id = "song-#{query_id}"
+	song_id = sanitizeFileName("song-#{generateId(6)}-#{query}").replace(/\s/, "-")
 
 	song_output_li = document.createElement("li")
 	song_output_li.className = "song"
@@ -99,32 +124,26 @@ generate_button.onclick = ->
 	song_output_li.appendChild(song_audio_row)
 	songs_output_ul.prepend(song_output_li)
 
-	socket.emit "sound-search", {query: keywords_input.value, query_id}
-	socket.on "sound-metadata:#{query_id}", (metadata)->
-		metadatas_received.push(metadata)
-		{sound_id} = metadata
-		array_buffers = []
-		socket.on "sound-data:#{sound_id}", (buffer)->
-			array_buffers.push(buffer)
-		socket.once "sound-data-end:#{sound_id}", ->
-			socket.off "sound-data:#{sound_id}"
-			array_buffer = concatArrayBuffers(array_buffers)
+	audio_buffers = []
 
-			audioContext.decodeAudioData(array_buffer).then(
-				(audio_buffer)->
-					audio_buffers.push(audio_buffer)
-					metadatas_used.push(metadata)
-					console.log "collected #{audio_buffers.length} audio buffers so far"
-					if audio_buffers.length is 5
-						got_audio_buffers()
-				(error)-> console.warn(error)
-			)
+	sound_search {query, song_id, midi: true}, (file_array_buffer, metadata)->
+		console.log "found a midi:", {file_array_buffer, metadata}
+	
+	cancel_getting_audio = sound_search {query, song_id}, (file_array_buffer, metadata)->
+		console.log "found a sound:", {file_array_buffer, metadata}
+		
+		audioContext.decodeAudioData(file_array_buffer).then(
+			(audio_buffer)->
+				audio_buffers.push(audio_buffer)
+				metadatas_used.push(metadata)
+				console.log "collected #{audio_buffers.length} audio buffers so far"
+				if audio_buffers.length is 5
+					got_audio_buffers()
+			(error)-> console.warn(error)
+		)
 
 	setTimeout ->
-		socket.off "sound-metadata:#{query_id}"
-		for {sound_id} in metadatas_received
-			socket.off "sound-data:#{sound_id}"
-			socket.off "sound-data-end:#{sound_id}"
+		cancel_getting_audio()
 		if audio_buffers.length > 0
 			got_audio_buffers()
 		else
