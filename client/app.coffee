@@ -76,11 +76,16 @@ generate_button.onclick = ->
 	metadatas_received = []
 	metadatas_used = []
 
-	query_id = sanitizeFileName("#{generateId(6)}-#{keywords_input.value}").replace(/\s/, "-")
+	query = keywords_input.value
+	query_id = sanitizeFileName("#{generateId(6)}-#{query}").replace(/\s/, "-")
 	song_id = "song-#{query_id}"
 
 	song_output_li = document.createElement("li")
 	song_output_li.className = "song"
+	song_search_terms = document.createElement("div")
+	song_search_terms.className = "song-search-terms"
+	song_search_terms.textContent = "🔎 #{query}"
+	song_search_terms.onclick = -> keywords_input.value = query
 	song_status = document.createElement("div")
 	song_status.className = "song-status"
 	song_status.textContent = "Collecting sounds..."
@@ -88,6 +93,7 @@ generate_button.onclick = ->
 	song_audio_row.className = "song-audio-row"
 	song_output_audio = document.createElement("audio")
 	song_output_audio.controls = true
+	song_output_li.appendChild(song_search_terms)
 	song_audio_row.appendChild(song_status)
 	song_audio_row.appendChild(song_output_audio)
 	song_output_li.appendChild(song_audio_row)

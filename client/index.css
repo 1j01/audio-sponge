@@ -69,10 +69,15 @@ a[href] {
 	background: black;
 	color: white;
 }
+.song-search-terms {
+	text-align: left;
+	cursor: pointer;
+}
 .song-audio-row {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	margin: 5px 0;
 }
 .song-status {
 	margin: 10px;
