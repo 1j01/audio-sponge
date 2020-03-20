@@ -52,13 +52,27 @@ generate_button.onclick = ->
 
 	query_id = keywords_input.value + Math.random()
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
-	socket.on "sound:#{query_id}", ({metadata, array_buffer})->
-		audioContext.decodeAudioData(array_buffer).then(
-			(audio_buffer)-> audio_buffers.push(audio_buffer)
-			(error)-> console.warn(error)
-		)
+	ss(socket).on "sound:#{query_id}", (stream, metadata)->
+		console.log {metadata, stream}
+		buffers = []
+		stream.on "data", (buffer)->
+			buffers.push(buffer)
+			console.log("buffers received:", buffers.length)
+		stream.on "end", ->
+			console.log("stream end")
+			buffer = ss.Buffer.concat(buffers)
 
-	
+			audioContext.decodeAudioData(buffer).then(
+				(audio_buffer)-> audio_buffers.push(audio_buffer)
+				(error)-> console.warn(error)
+			)
+		stream.on "error", (error)->
+			console.log("stream error", error)
+		stream.on "close", ->
+			console.log("stream close")
+		stream.resume()
+
+
 
 	# target = 5
 	# active = 0
