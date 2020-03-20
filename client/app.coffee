@@ -26,21 +26,6 @@ update = (new_state)->
 		else
 			"Generate Song"
 
-# fetch_audio_buffer = (callback)->
-# 	fetch("/some-sound")
-# 		.then (response)->
-# 			if response.status isnt 200
-# 				throw new Error("HTTP #{response.status} #{response.statusText}")
-# 			response.arrayBuffer()
-# 		.then (array_buffer)->
-# 			if array_buffer.byteLength is 0
-# 				throw new Error("array_buffer.byteLength is 0")
-# 			audioContext.decodeAudioData(array_buffer)
-# 		.then(
-# 			(audio_buffer)-> callback(null, audio_buffer)
-# 			(error)-> callback(error)
-# 		)
-
 
 concatArrayBuffers = (arrayBuffers)->
 	offset = 0
@@ -66,14 +51,11 @@ generate_button.onclick = ->
 	query_id = keywords_input.value + Math.random()
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
 	socket.on "sound-metadata:#{query_id}", (metadata)->
-		console.log "sound-metadata:#{query_id}", metadata
 		{sound_id} = metadata
 		array_buffers = []
 		socket.on "sound-data:#{sound_id}", (buffer)->
 			array_buffers.push(buffer)
-			console.log("sound-data:#{sound_id}, array_buffers received:", array_buffers.length)
 		socket.on "sound-data-end:#{sound_id}", ->
-			console.log("sound-data-end", array_buffers)
 			array_buffer = concatArrayBuffers(array_buffers)
 
 			audioContext.decodeAudioData(array_buffer).then(
@@ -138,7 +120,6 @@ generate_button.onclick = ->
 
 		song.connect(destination)
 
-		# song.connect(window.audioContext.destination)
 		song_output_audio.srcObject = destination.stream
 		song_output_audio.play()
 
@@ -147,7 +128,6 @@ generate_button.onclick = ->
 			chunks.push(event.data)
 
 		mediaRecorder.onstop = (event)->
-			# Make blob out of our blobs, and open it.
 			blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' })
 			blob_url = URL.createObjectURL(blob)
 

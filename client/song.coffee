@@ -14,7 +14,7 @@ findSamplesFromAudioBuffer = (audio_buffer, sample_callback)->
 	# TODO: find beats with Meyda or another module
 	
 	samples_to_take = Math.max(2, Math.min(10, audio_buffer.length / 10))
-	for [0..samples_to_take]
+	for [0...samples_to_take]
 		duration = Math.random() / 2 + 0.1
 		duration = Math.min(duration, audio_buffer.duration)
 		start = Math.random() * (audio_buffer.duration - duration)
@@ -33,7 +33,7 @@ class @Song
 		for audio_buffer in audio_buffers
 			findSamplesFromAudioBuffer audio_buffer, (sample)=>
 				@source_samples.push(sample)
-				console.log("#{@source_samples.length} source_samples")
+			# console.log("#{@source_samples.length} source_samples")
 
 		@context = window.audioContext
 

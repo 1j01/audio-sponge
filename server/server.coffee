@@ -42,8 +42,8 @@ io.on "connection", (socket)->
 					stream.on "end", ->
 						console.log "sound-data-end:#{sound_id}"
 						socket.emit("sound-data-end:#{sound_id}")
-					stream.on "close", ->
-						console.log "close", sound_id
+					# stream.on "close", ->
+					# 	console.log "close", sound_id
 					stream.on "error", (error)->
 						console.log "error", sound_id, error
 
