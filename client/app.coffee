@@ -123,7 +123,10 @@ generate_button.onclick = ->
 	song_output_li.appendChild(song_output_audio)
 	songs_output_ul.appendChild(song_output_li)
 
+	already_started = false
 	got_audio_buffers = ->
+		return if already_started
+		already_started = true
 
 		update generating: false
 		songs_output_ul.appendChild(show_attribution(metadatas_used))
