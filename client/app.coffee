@@ -55,13 +55,15 @@ generate_button.onclick = ->
 		array_buffers = []
 		socket.on "sound-data:#{sound_id}", (buffer)->
 			array_buffers.push(buffer)
-		socket.on "sound-data-end:#{sound_id}", ->
+		socket.once "sound-data-end:#{sound_id}", ->
+			socket.off "sound-data:#{sound_id}"
 			array_buffer = concatArrayBuffers(array_buffers)
 
 			audioContext.decodeAudioData(array_buffer).then(
 				(audio_buffer)->
 					audio_buffers.push(audio_buffer)
 					metadatas.push(metadata)
+					console.log "collected #{audio_buffers.length} audio buffers so far"
 					if audio_buffers.length is 5
 						got_audio_buffers()
 				(error)-> console.warn(error)
