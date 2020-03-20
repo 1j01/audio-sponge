@@ -22,14 +22,6 @@ io.on "connection", (socket)->
 		sources = []
 		gather_audio (new_source)->
 			sources.push(new_source)
-			# socket.emit("attribution", {
-			# 	query_id
-			# 	sources: (source.metadata for source in sources)
-			# })
-
-			# sources_to_use = shuffle(sources).slice(0, 5)
-			# console.log("send #{sources_to_use.length} sources to client")
-			# for source in shuffle(sources).slice(0, 5)
 
 			if sources.length is 5
 				sources.forEach (source)->
@@ -42,19 +34,13 @@ io.on "connection", (socket)->
 					stream.on "end", ->
 						console.log "sound-data-end:#{sound_id}"
 						socket.emit("sound-data-end:#{sound_id}")
-					# stream.on "close", ->
-					# 	console.log "close", sound_id
 					stream.on "error", (error)->
 						console.log "error", sound_id, error
-
-
-
 
 app.use(express.static("client"))
 
 app.get "/", (req, res)->
 	res.sendFile("client/app.html", root: __dirname + "/..")
-
 
 http.listen server_port, ->
 	console.log """
