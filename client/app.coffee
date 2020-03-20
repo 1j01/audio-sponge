@@ -46,6 +46,7 @@ generate_button.onclick = ->
 	update generating: true
 
 	audio_buffers = []
+	metadatas = []
 
 	query_id = keywords_input.value + Math.random()
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
@@ -60,6 +61,7 @@ generate_button.onclick = ->
 			audioContext.decodeAudioData(array_buffer).then(
 				(audio_buffer)->
 					audio_buffers.push(audio_buffer)
+					metadatas.push(metadata)
 					if audio_buffers.length is 5
 						got_audio_buffers()
 				(error)-> console.warn(error)
@@ -110,6 +112,7 @@ generate_button.onclick = ->
 	got_audio_buffers = ->
 
 		update generating: false
+		songs_output_ul.appendChild(show_attribution(metadatas))
 
 		destination = window.audioContext.createMediaStreamDestination()
 		mediaRecorder = new MediaRecorder(destination.stream)
@@ -153,26 +156,26 @@ provider_to_acquisition_method_description =
 	# "napster": "Via the Napster API"
 	"opengameart": "Scraped from OpenGameArt.org"
 
-show_attribution = (attribution)->
+show_attribution = (metadatas)->
 	# TODO: details summary
 	attribution_links_ul = document.createElement("ul")
-	for source in attribution.sources
+	for metadata in metadatas
 		li = document.createElement("li")
 		provider_icon = document.createElement("i")
-		provider_icon.className = (provider_to_icon[source.provider] ? "icon-file-audio") + " provider-icon"
-		provider_icon.title = provider_to_acquisition_method_description[source.provider] ? "Procured somehow, probably"
+		provider_icon.className = (provider_to_icon[metadata.provider] ? "icon-file-audio") + " provider-icon"
+		provider_icon.title = provider_to_acquisition_method_description[metadata.provider] ? "Procured somehow, probably"
 		li.appendChild(provider_icon)
 		track_link = document.createElement("a")
-		track_link.textContent = source.name or "something"
-		if source.link
-			track_link.href = source.link
+		track_link.textContent = metadata.name or "something"
+		if metadata.link
+			track_link.href = metadata.link
 			track_link.setAttribute("target", "_blank")
 		li.appendChild(track_link)
-		if source.author?.link or source.author?.name
+		if metadata.author?.link or metadata.author?.name
 			author_link = document.createElement("a")
-			author_link.textContent = source.author?.name or "someone"
-			if source.author?.link
-				author_link.href = source.author.link
+			author_link.textContent = metadata.author?.name or "someone"
+			if metadata.author?.link
+				author_link.href = metadata.author.link
 				author_link.setAttribute("target", "_blank")
 			li.appendChild(document.createTextNode(" by "))
 			li.appendChild(author_link)
@@ -181,8 +184,6 @@ show_attribution = (attribution)->
 	return attribution_links_ul
 
 socket = io()
-
-socket.on "attribution", update_attribution
 
 # give it a bit to connect (while saying "Checking...") before saying "Offline" if it hasn't
 setTimeout ->
