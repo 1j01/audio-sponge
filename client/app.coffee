@@ -129,7 +129,7 @@ generate_button.onclick = ->
 		already_started = true
 
 		update generating: false
-		songs_output_ul.appendChild(show_attribution(metadatas_used))
+		song_output_li.appendChild(show_attribution(metadatas_used))
 
 		destination = window.audioContext.createMediaStreamDestination()
 		mediaRecorder = new MediaRecorder(destination.stream)
