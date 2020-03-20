@@ -7,7 +7,7 @@ Source = require "./Source"
 # ---------------------
 get_env_var = require "./get-env-var"
 
-net_enabled = false
+net_enabled = true
 
 OGA_enabled = true
 
@@ -15,7 +15,7 @@ soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
 soundcloud_enabled = soundcloud_client_id?
 
 FS_audio_glob = get_env_var "AUDIO_SOURCE_FILES_GLOB"
-FS_enabled = FS_audio_glob?
+FS_enabled = false #FS_audio_glob?
 
 if not net_enabled
 	soundcloud_enabled = false
@@ -32,7 +32,7 @@ if OGA_enabled
 	OGA = require "./audio-providers/opengameart"
 # ---------------------
 
-module.exports = (new_source_callback)->
+module.exports = (query, new_source_callback)->
 	sources = []
 
 	# TODO: abstract "OR"-searching by using "a OR b" for OGA but multiple searches for SC
@@ -42,13 +42,13 @@ module.exports = (new_source_callback)->
 		new_source_callback new Source stream_url, attribution
 
 	if soundcloud_enabled
-		query = randomWords(1).join(" ")
+		# query = randomWords(1).join(" ")
 		# TODO: named arguments
 		soundcloud.search query, on_new_source, ()=>
 			console.log "[SC] Done collecting track metadata from search"
 
 	if OGA_enabled
-		query = randomWords(5).join(" OR ")
+		# query = randomWords(5).join(" OR ")
 		# TODO: named arguments
 		OGA.search query,
 			(err, stream_url, attribution)=>

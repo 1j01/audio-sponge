@@ -20,7 +20,7 @@ io.on "connection", (socket)->
 
 	socket.on "sound-search", ({query, query_id})->
 		sources = []
-		gather_audio (new_source)->
+		gather_audio query, (new_source)->
 			sources.push(new_source)
 
 			if sources.length is 5
@@ -32,7 +32,7 @@ io.on "connection", (socket)->
 					stream.on "data", (data)->
 						socket.emit("sound-data:#{sound_id}", data)
 					stream.on "end", ->
-						console.log "sound-data-end:#{sound_id}"
+						console.log "sound-data-end:#{sound_id}", source.uri
 						socket.emit("sound-data-end:#{sound_id}")
 					stream.on "error", (error)->
 						console.log "error", sound_id, error
