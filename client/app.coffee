@@ -1,6 +1,5 @@
 keywords_input = document.querySelector(".keywords-input")
 generate_button = document.querySelector(".generate-button")
-button_label = generate_button.querySelector(".button-label")
 songs_output_ul = document.querySelector(".songs-output")
 status_indicator = document.querySelector(".status-indicator")
 
@@ -19,7 +18,7 @@ update = (new_state)->
 			when "online"
 				"Online"
 	generate_button.disabled = generating
-	button_label.innerHTML =
+	generate_button.value =
 		if generating
 			"Generating Song..."
 		else
