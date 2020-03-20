@@ -3,7 +3,6 @@ generate_button = document.querySelector(".generate-button")
 button_label = generate_button.querySelector(".button-label")
 songs_output_ul = document.querySelector(".songs-output")
 status_indicator = document.querySelector(".status-indicator")
-attribution_links_ul = document.querySelector(".attribution-links")
 
 state = {}
 update = (new_state)->
@@ -154,11 +153,9 @@ provider_to_acquisition_method_description =
 	# "napster": "Via the Napster API"
 	"opengameart": "Scraped from OpenGameArt.org"
 
-update_attribution = (attribution)->
-	# TODO: diff-based updates
-	# not for performance, just so selection can work better; currently the selection gets cleared unnecessarily
-	# and so inspecting the DOM is easier
-	attribution_links_ul.innerHTML = ""
+show_attribution = (attribution)->
+	# TODO: details summary
+	attribution_links_ul = document.createElement("ul")
 	for source in attribution.sources
 		li = document.createElement("li")
 		provider_icon = document.createElement("i")
@@ -181,6 +178,7 @@ update_attribution = (attribution)->
 			li.appendChild(author_link)
 		# li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
 		attribution_links_ul.appendChild(li)
+	return attribution_links_ul
 
 socket = io()
 
