@@ -83,7 +83,7 @@ generate_button.onclick = ->
 	song_output_li.className = "song"
 	song_status = document.createElement("div")
 	song_status.className = "song-status"
-	song_status.textContent = "collecting sounds..."
+	song_status.textContent = "Collecting sounds..."
 	song_audio_row = document.createElement("div")
 	song_audio_row.className = "song-audio-row"
 	song_output_audio = document.createElement("audio")
@@ -124,7 +124,8 @@ generate_button.onclick = ->
 		else
 			update collecting: false
 			alert "Did't find enough tracks to sample from."
-			song_status.textContent = "failed"
+			song_status.textContent = "Failed"
+			song_output_li.classList.add("failed")
 	, 1000 * 10
 
 	# target = 5
@@ -161,7 +162,7 @@ generate_button.onclick = ->
 		already_started = true
 
 		update collecting: false
-		song_status.textContent = "generating..."
+		song_status.textContent = "Generating..."
 		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
 		destination = window.audioContext.createMediaStreamDestination()
@@ -193,7 +194,7 @@ generate_button.onclick = ->
 
 			song_download_link = document.createElement("a")
 			song_download_link.className = "download-link"
-			song_download_link.textContent = "download"
+			song_download_link.textContent = "Download"
 			song_download_link.href = blob_url
 			song_download_link.download = "#{song_id}.ogg"
 			song_status.innerHTML = ""

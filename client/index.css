@@ -76,7 +76,16 @@ a[href] {
 }
 .song-status {
 	margin: 10px;
-	width: 200px;
+	width: 150px;
+}
+.song.failed .song-status {
+	color: #ff4c4c;
+}
+.song.failed {
+	background: rgba(0, 0, 0, 0.6);
+}
+.song.failed audio {
+	opacity: 0.1;
 }
 
 summary {
