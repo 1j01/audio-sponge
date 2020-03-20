@@ -43,7 +43,7 @@ io.on "connection", (socket)->
 
 setInterval ->
 	mem = process.memoryUsage().heapUsed
-	mem_limit = 30666000
+	mem_limit = 60666000
 	console.log("Memory:", mem)
 	if mem > mem_limit
 		console.error("Reached memory limit of #{mem_limit}; exiting")
