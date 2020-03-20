@@ -48,7 +48,10 @@ generate_button.onclick = ->
 	metadatas_received = []
 	metadatas_used = []
 
+	# TODO: sanitize for filename, and better ID
 	query_id = keywords_input.value + Math.random()
+	song_id = "song-#{query_id}"
+
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
 	socket.on "sound-metadata:#{query_id}", (metadata)->
 		metadatas_received.push(metadata)
@@ -119,7 +122,7 @@ generate_button.onclick = ->
 	song_output_audio.controls = true
 	song_download_link.textContent = "download"
 	song_download_link.className = "download-link"
-	song_download_link.download = "generated-song.ogg"
+	song_download_link.download = "#{song_id}.ogg"
 	song_audio_row.appendChild(song_download_link)
 	song_audio_row.appendChild(song_output_audio)
 	song_output_li.appendChild(song_audio_row)
@@ -131,7 +134,7 @@ generate_button.onclick = ->
 		already_started = true
 
 		update generating: false
-		song_output_li.appendChild(show_attribution(metadatas_used))
+		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
 		destination = window.audioContext.createMediaStreamDestination()
 		mediaRecorder = new MediaRecorder(destination.stream)
@@ -175,7 +178,7 @@ provider_to_acquisition_method_description =
 	# "napster": "Via the Napster API"
 	"opengameart": "Scraped from OpenGameArt.org"
 
-show_attribution = (metadatas)->
+show_attribution = (metadatas, song_id)->
 	attribution_links_details = document.createElement("details")
 	attribution_links_summary = document.createElement("summary")
 	attribution_links_details.appendChild(attribution_links_summary)
@@ -205,6 +208,25 @@ show_attribution = (metadatas)->
 			li.appendChild(author_link)
 		# li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
 		attribution_links_ul.appendChild(li)
+	
+	attribution_html = """
+		<!doctype html>
+		<html>
+			<head>
+				<title>Attribution</title>
+			</head>
+			<body>
+				#{attribution_links_ul.outerHTML}
+			</body>
+		</html>
+	"""
+	attribution_blob = new Blob([attribution_html], {type: "text/html"})
+	attribution_download_link = document.createElement("a")
+	attribution_download_link.download = "#{song_id}-attribution.html"
+	attribution_download_link.href = URL.createObjectURL(attribution_blob)
+	attribution_download_link.textContent = "Download Attribution as HTML"
+	attribution_links_details.appendChild(attribution_download_link)
+
 	return attribution_links_details
 
 socket = io()
