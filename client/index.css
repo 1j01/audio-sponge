@@ -78,6 +78,11 @@ a[href] {
 	margin: 10px;
 }
 
+summary {
+	padding: 5px;
+	cursor: pointer;
+}
+
 .attribution-links {
 	text-align: left;
 	list-style-type: none;
