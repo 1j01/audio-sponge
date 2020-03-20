@@ -126,7 +126,7 @@ generate_button.onclick = ->
 	song_audio_row.appendChild(song_download_link)
 	song_audio_row.appendChild(song_output_audio)
 	song_output_li.appendChild(song_audio_row)
-	songs_output_ul.appendChild(song_output_li)
+	songs_output_ul.prepend(song_output_li)
 
 	already_started = false
 	got_audio_buffers = ->
