@@ -46,11 +46,13 @@ generate_button.onclick = ->
 	update generating: true
 
 	audio_buffers = []
-	metadatas = []
+	metadatas_received = []
+	metadatas_used = []
 
 	query_id = keywords_input.value + Math.random()
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
 	socket.on "sound-metadata:#{query_id}", (metadata)->
+		metadatas_received.push(metadata)
 		{sound_id} = metadata
 		array_buffers = []
 		socket.on "sound-data:#{sound_id}", (buffer)->
@@ -62,14 +64,24 @@ generate_button.onclick = ->
 			audioContext.decodeAudioData(array_buffer).then(
 				(audio_buffer)->
 					audio_buffers.push(audio_buffer)
-					metadatas.push(metadata)
+					metadatas_used.push(metadata)
 					console.log "collected #{audio_buffers.length} audio buffers so far"
 					if audio_buffers.length is 5
 						got_audio_buffers()
 				(error)-> console.warn(error)
 			)
 
-
+	setTimeout ->
+		socket.off "sound-metadata:#{query_id}"
+		for {sound_id} in metadatas_received
+			socket.off "sound-data:#{sound_id}"
+			socket.off "sound-data-end:#{sound_id}"
+		if audio_buffers.length > 0
+			got_audio_buffers()
+		else
+			update generating: false
+			alert "Couldn't find enough tracks to sample from."
+	, 1000 * 10
 
 	# target = 5
 	# active = 0
@@ -114,7 +126,7 @@ generate_button.onclick = ->
 	got_audio_buffers = ->
 
 		update generating: false
-		songs_output_ul.appendChild(show_attribution(metadatas))
+		songs_output_ul.appendChild(show_attribution(metadatas_used))
 
 		destination = window.audioContext.createMediaStreamDestination()
 		mediaRecorder = new MediaRecorder(destination.stream)
@@ -161,6 +173,7 @@ provider_to_acquisition_method_description =
 show_attribution = (metadatas)->
 	# TODO: details summary
 	attribution_links_ul = document.createElement("ul")
+	attribution_links_ul.className = "attribution-links"
 	for metadata in metadatas
 		li = document.createElement("li")
 		provider_icon = document.createElement("i")
