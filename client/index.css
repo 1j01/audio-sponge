@@ -40,6 +40,15 @@ a[href] {
 	margin: 0;
 	padding: 0.5em;
 }
+
+.button-label {
+	font-size: 2em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
 .attribution-links {
 	list-style-type: none;
 	/* text-align: left; */

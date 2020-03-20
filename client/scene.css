@@ -166,13 +166,6 @@ button.shape {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.button-label {
-	font-size: 2em;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-}
 .surface-plane.left {
 	left: 0;
 }
