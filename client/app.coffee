@@ -21,6 +21,7 @@ update = (new_state)->
 				"Offline"
 			when "live"
 				"Online"
+	generate_button.disabled = generating
 	button_label.innerHTML =
 		if generating
 			"Generating Song..."
