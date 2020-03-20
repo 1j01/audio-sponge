@@ -37,6 +37,34 @@ concatArrayBuffers = (arrayBuffers)->
 		offset += buf.byteLength
 	return combined
 
+generateId = (len=40)->
+	to_hex = (n)-> "0#{n.toString(16)}".substr(-2)
+	arr = new Uint8Array(len / 2)
+	window.crypto.getRandomValues(arr)
+	Array.from(arr, to_hex).join('')
+
+
+# Taken from https://github.com/parshap/node-sanitize-filename/blob/master/index.js
+# but without utf8 truncation, just a slice.
+# I haven't looked into the security implications of that because the browser will already do sanitization on this,
+# I just want to control the resulting filename.
+sanitizeFileName = (input, replacement="")->
+	if typeof input isnt "string"
+		throw new TypeError("input must be a string")
+	illegalRe = /[\/\?<>\\:\*\|"]/g
+	controlRe = /[\x00-\x1f\x80-\x9f]/g
+	reservedRe = /^\.+$/
+	windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i
+	windowsTrailingRe = /[\. ]+$/
+	input
+		.replace(illegalRe, replacement)
+		.replace(controlRe, replacement)
+		.replace(reservedRe, replacement)
+		.replace(windowsReservedRe, replacement)
+		.replace(windowsTrailingRe, replacement)
+		.slice(0, 255)
+
+
 
 generate_button.onclick = ->
 
@@ -48,8 +76,7 @@ generate_button.onclick = ->
 	metadatas_received = []
 	metadatas_used = []
 
-	# TODO: sanitize for filename, and better ID
-	query_id = keywords_input.value + Math.random()
+	query_id = sanitizeFileName("#{generateId(6)}-#{keywords_input.value}").replace(/\s/, "-")
 	song_id = "song-#{query_id}"
 
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
