@@ -76,6 +76,7 @@ a[href] {
 }
 .download-link {
 	margin: 10px;
+	width: 200px;
 }
 
 summary {

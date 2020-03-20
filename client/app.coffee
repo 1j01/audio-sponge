@@ -7,7 +7,7 @@ state = {}
 update = (new_state)->
 	status_indicator.classList.remove(state.status)
 	state[k] = v for k, v of new_state
-	{status, generating} = state
+	{status, collecting} = state
 	status_indicator.classList.add(status)
 	status_indicator.innerHTML =
 		switch status
@@ -17,10 +17,10 @@ update = (new_state)->
 				"Offline"
 			when "online"
 				"Online"
-	generate_button.disabled = generating
+	generate_button.disabled = collecting
 	generate_button.value =
-		if generating
-			"Generating Song..."
+		if collecting
+			"Collecting Sounds..."
 		else
 			"Generate Song"
 
@@ -70,7 +70,7 @@ generate_button.onclick = ->
 
 	window.audioContext ?= new (window.AudioContext || window.webkitAudioContext)()
 
-	update generating: true
+	update collecting: true
 
 	audio_buffers = []
 	metadatas_received = []
@@ -78,6 +78,20 @@ generate_button.onclick = ->
 
 	query_id = sanitizeFileName("#{generateId(6)}-#{keywords_input.value}").replace(/\s/, "-")
 	song_id = "song-#{query_id}"
+
+	song_output_li = document.createElement("li")
+	song_output_li.className = "song"
+	song_audio_row = document.createElement("div")
+	song_audio_row.className = "song-audio-row"
+	song_output_audio = document.createElement("audio")
+	song_download_link = document.createElement("a")
+	song_output_audio.controls = true
+	song_download_link.className = "download-link"
+	song_download_link.textContent = "collecting sounds..."
+	song_audio_row.appendChild(song_download_link)
+	song_audio_row.appendChild(song_output_audio)
+	song_output_li.appendChild(song_audio_row)
+	songs_output_ul.prepend(song_output_li)
 
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
 	socket.on "sound-metadata:#{query_id}", (metadata)->
@@ -108,8 +122,9 @@ generate_button.onclick = ->
 		if audio_buffers.length > 0
 			got_audio_buffers()
 		else
-			update generating: false
-			alert "Couldn't find enough tracks to sample from."
+			update collecting: false
+			alert "Did't find enough tracks to sample from."
+			song_download_link.textContent = "failed"
 	, 1000 * 10
 
 	# target = 5
@@ -140,27 +155,13 @@ generate_button.onclick = ->
 	# for [0..parallelism]
 	# 	get_one()
 	
-	song_output_li = document.createElement("li")
-	song_output_li.className = "song"
-	song_audio_row = document.createElement("div")
-	song_audio_row.className = "song-audio-row"
-	song_output_audio = document.createElement("audio")
-	song_download_link = document.createElement("a")
-	song_output_audio.controls = true
-	song_download_link.textContent = "download"
-	song_download_link.className = "download-link"
-	song_download_link.download = "#{song_id}.ogg"
-	song_audio_row.appendChild(song_download_link)
-	song_audio_row.appendChild(song_output_audio)
-	song_output_li.appendChild(song_audio_row)
-	songs_output_ul.prepend(song_output_li)
-
 	already_started = false
 	got_audio_buffers = ->
 		return if already_started
 		already_started = true
 
-		update generating: false
+		update collecting: false
+		song_download_link.textContent = "generating..."
 		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
 		destination = window.audioContext.createMediaStreamDestination()
@@ -187,6 +188,8 @@ generate_button.onclick = ->
 			song_output_audio.src = blob_url
 			song_output_audio.currentTime = currentTime
 			song_download_link.href = blob_url
+			song_download_link.textContent = "download"
+			song_download_link.download = "#{song_id}.ogg"
 
 provider_to_icon =
 	"filesystem": "icon-folder"
