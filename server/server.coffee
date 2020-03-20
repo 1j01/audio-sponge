@@ -32,7 +32,7 @@ io.on "connection", (socket)->
 			# for source in shuffle(sources).slice(0, 5)
 
 			if sources.length is 5
-				for source in sources
+				sources.forEach (source)->
 					socket.emit("sound-metadata:#{query_id}", source.metadata)
 					{sound_id} = source.metadata
 
