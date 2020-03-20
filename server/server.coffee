@@ -9,6 +9,14 @@ now_url = get_env_var "NOW_URL"
 app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostname}:#{server_port}"
 
 app = express()
+http = require("http").createServer(app)
+io = require("socket.io")(http)
+
+
+io.on "connection", (socket)->
+	console.log("a user connected")
+	socket.on "disconnect", ->
+		console.log("user disconnected")
 
 app.use(express.static("client"))
 
@@ -52,7 +60,7 @@ app.get "/ping", (req, res)->
 		"Content-Length": Buffer.byteLength(body)
 	res.end(body)
 
-app.listen server_port, ->
+http.listen server_port, ->
 	console.log """
 		.--------------------------------------------------- - - -
 		| Listening on #{app_origin}
