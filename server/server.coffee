@@ -29,13 +29,26 @@ io.on "connection", (socket)->
 					{sound_id} = source.metadata
 
 					stream = source.createReadStream()
-					stream.on "data", (data)->
+					stream.on "data", on_data = (data)->
 						socket.emit("sound-data:#{sound_id}", data)
-					stream.on "end", ->
+					stream.on "end", on_end = ->
 						console.log "sound-data-end:#{sound_id}", source.uri
 						socket.emit("sound-data-end:#{sound_id}")
-					stream.on "error", (error)->
+						stream.off "data", on_data # not sure this is needed or works how i want it
+						stream.off "error", on_error # not sure this is needed or works how i want it
+					stream.on "error", on_error = (error)->
 						console.log "error", sound_id, error
+						stream.off "data", on_data # not sure this is needed or works how i want it
+						stream.off "end", on_end # not sure this is needed or works how i want it
+
+setInterval ->
+	mem = process.memoryUsage().heapUsed
+	mem_limit = 30666000
+	console.log("Memory:", mem)
+	if mem > mem_limit
+		console.error("Reached memory limit of #{mem_limit}; exiting")
+		process.exit(1)
+, 1000
 
 app.use(express.static("client"))
 
