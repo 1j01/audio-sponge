@@ -1,3 +1,4 @@
+keywords_input = document.querySelector(".keywords-input")
 generate_button = document.querySelector(".generate-button")
 button_label = generate_button.querySelector(".button-label")
 songs_output_ul = document.querySelector(".songs-output")
@@ -25,20 +26,20 @@ update = (new_state)->
 		else
 			"Generate Song"
 
-fetch_audio_buffer = (callback)->
-	fetch("/some-sound")
-		.then (response)->
-			if response.status isnt 200
-				throw new Error("HTTP #{response.status} #{response.statusText}")
-			response.arrayBuffer()
-		.then (array_buffer)->
-			if array_buffer.byteLength is 0
-				throw new Error("array_buffer.byteLength is 0")
-			audioContext.decodeAudioData(array_buffer)
-		.then(
-			(audio_buffer)-> callback(null, audio_buffer)
-			(error)-> callback(error)
-		)
+# fetch_audio_buffer = (callback)->
+# 	fetch("/some-sound")
+# 		.then (response)->
+# 			if response.status isnt 200
+# 				throw new Error("HTTP #{response.status} #{response.statusText}")
+# 			response.arrayBuffer()
+# 		.then (array_buffer)->
+# 			if array_buffer.byteLength is 0
+# 				throw new Error("array_buffer.byteLength is 0")
+# 			audioContext.decodeAudioData(array_buffer)
+# 		.then(
+# 			(audio_buffer)-> callback(null, audio_buffer)
+# 			(error)-> callback(error)
+# 		)
 
 
 generate_button.onclick = ->
@@ -49,39 +50,51 @@ generate_button.onclick = ->
 
 	audio_buffers = []
 
-	target = 5
-	active = 0
-	parallelism = 2
+	query_id = keywords_input.value + Math.random()
+	socket.emit "sound-search", {query: keywords_input.value, query_id}
+	socket.on "sound:#{query_id}", ({metadata, array_buffer})->
+		audioContext.decodeAudioData(array_buffer).then(
+			(audio_buffer)-> audio_buffers.push(audio_buffer)
+			(error)-> console.warn(error)
+		)
 
-	get_one = ->
-		active += 1
-		setTimeout ->
-			fetch_audio_buffer((error, audio_buffer)->
-				active -= 1
-				if error
-					console.warn(error)
-				else
-					audio_buffers.push(audio_buffer)
-					console.log("collected #{audio_buffers.length} audio buffers so far")
-					if audio_buffers.length is target
-						console.log("reached target of #{target} audio buffers")
-						got_audio_buffers()
-					if audio_buffers.length > target
-						console.log("extraneous audio buffer collected (#{audio_buffers.length} / #{target})")
-				console.log("collected #{audio_buffers.length} audio buffers so far, plus #{active} active requests; target: #{target}")
-				if audio_buffers.length + active < target
-					get_one()
-			)
-		, Math.random() * 500
+	
 
-	for [0..parallelism]
-		get_one()
+	# target = 5
+	# active = 0
+	# parallelism = 2
+
+	# get_one = ->
+	# 	active += 1
+	# 	setTimeout ->
+	# 		fetch_audio_buffer((error, audio_buffer)->
+	# 			active -= 1
+	# 			if error
+	# 				console.warn(error)
+	# 			else
+	# 				audio_buffers.push(audio_buffer)
+	# 				console.log("collected #{audio_buffers.length} audio buffers so far")
+	# 				if audio_buffers.length is target
+	# 					console.log("reached target of #{target} audio buffers")
+	# 					got_audio_buffers()
+	# 				if audio_buffers.length > target
+	# 					console.log("extraneous audio buffer collected (#{audio_buffers.length} / #{target})")
+	# 			console.log("collected #{audio_buffers.length} audio buffers so far, plus #{active} active requests; target: #{target}")
+	# 			if audio_buffers.length + active < target
+	# 				get_one()
+	# 		)
+	# 	, Math.random() * 500
+
+	# for [0..parallelism]
+	# 	get_one()
 	
 	song_output_li = document.createElement("li")
+	song_output_li.className = "song"
 	song_output_audio = document.createElement("audio")
 	song_download_link = document.createElement("a")
 	song_output_audio.controls = true
 	song_download_link.textContent = "download"
+	song_download_link.className = "download-link"
 	song_download_link.download = "generated-song.ogg"
 	song_output_li.appendChild(song_download_link)
 	song_output_li.appendChild(song_output_audio)
@@ -167,7 +180,7 @@ socket = io()
 
 socket.on "attribution", update_attribution
 
-# give it a bit to connect saying "Checking..." before saying Offline if it hasn't
+# give it a bit to connect (while saying "Checking...") before saying "Offline" if it hasn't
 setTimeout ->
 	update status: if socket.connected then "online" else "offline"
 , 500

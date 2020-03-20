@@ -11,44 +11,28 @@ app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostnam
 app = express()
 http = require("http").createServer(app)
 io = require("socket.io")(http)
-
+ss = require("socket.io-stream")
 
 io.on "connection", (socket)->
 	console.log("a user connected")
-	socket.emit("attribution", {
-		sources: (source.metadata for source in sources)
-	})
 	socket.on "disconnect", ->
 		console.log("user disconnected")
+
+	socket.on "sound-search", ({query, query_id})->
+		sources = []
+		gather_audio (new_source)->
+			sources.push(new_source)
+			io.emit("attribution", {
+				sources: (source.metadata for source in sources)
+			})
+
+			source.createReadStream().pipe(io)
+
 
 app.use(express.static("client"))
 
 app.get "/", (req, res)->
 	res.sendFile("client/app.html", root: __dirname + "/..")
-
-
-sources = []
-gather_audio (new_source)->
-	sources.push(new_source)
-	io.emit("attribution", {
-		sources: (source.metadata for source in sources)
-	})
-
-app.get "/some-sound", (req, res)->
-	if sources.length is 0
-		res.status(404).send("Not enough sources collected yet!") # 425 isn't really relevant
-		return
-
-	index = ~~(Math.random() * sources.length)
-	source = sources[index]
-	console.log("from #{sources.length} sources, picked:", source.uri)
-
-	res.setHeader "Cache-Control", "no-store, must-revalidate"
-	res.setHeader "Expires", "0"
-	res.setHeader "Content-Type", "application/octet-stream"
-	# res.setHeader "Content-Length", byteLength
-
-	source.createReadStream().pipe(res)
 
 
 http.listen server_port, ->
