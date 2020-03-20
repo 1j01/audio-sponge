@@ -81,14 +81,14 @@ generate_button.onclick = ->
 
 	song_output_li = document.createElement("li")
 	song_output_li.className = "song"
+	song_status = document.createElement("div")
+	song_status.className = "song-status"
+	song_status.textContent = "collecting sounds..."
 	song_audio_row = document.createElement("div")
 	song_audio_row.className = "song-audio-row"
 	song_output_audio = document.createElement("audio")
-	song_download_link = document.createElement("a")
 	song_output_audio.controls = true
-	song_download_link.className = "download-link"
-	song_download_link.textContent = "collecting sounds..."
-	song_audio_row.appendChild(song_download_link)
+	song_audio_row.appendChild(song_status)
 	song_audio_row.appendChild(song_output_audio)
 	song_output_li.appendChild(song_audio_row)
 	songs_output_ul.prepend(song_output_li)
@@ -124,7 +124,7 @@ generate_button.onclick = ->
 		else
 			update collecting: false
 			alert "Did't find enough tracks to sample from."
-			song_download_link.textContent = "failed"
+			song_status.textContent = "failed"
 	, 1000 * 10
 
 	# target = 5
@@ -161,7 +161,7 @@ generate_button.onclick = ->
 		already_started = true
 
 		update collecting: false
-		song_download_link.textContent = "generating..."
+		song_status.textContent = "generating..."
 		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
 		destination = window.audioContext.createMediaStreamDestination()
@@ -187,9 +187,17 @@ generate_button.onclick = ->
 			song_output_audio.srcObject = null
 			song_output_audio.src = blob_url
 			song_output_audio.currentTime = currentTime
-			song_download_link.href = blob_url
+			# FIXME: there's a case where pressing play will play the tiniest bit because it's at the end
+			# maybe only set currentTime if it was playing?
+			# or compare with duration to see how near it is to the end
+
+			song_download_link = document.createElement("a")
+			song_download_link.className = "download-link"
 			song_download_link.textContent = "download"
+			song_download_link.href = blob_url
 			song_download_link.download = "#{song_id}.ogg"
+			song_status.innerHTML = ""
+			song_status.appendChild(song_download_link)
 
 provider_to_icon =
 	"filesystem": "icon-folder"
