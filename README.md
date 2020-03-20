@@ -4,7 +4,7 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
 
 ## What it does
 
-* Collects audio by searching SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources; Napster would be good, maybe Spotify.)
+* Collects audio by searching SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources, maybe Napster, maybe Spotify, maybe DuckDuckGo with `filetype:mp3` search parameter.)
 
 * Takes random samples from the audio it collects (TODO: Detect beats for percussion, detect pitch/harmonics for melody)
 
@@ -12,7 +12,7 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
 
 ## Project Structure
 
-Written in [CoffeeScript](https://coffeescript.org/).
+Written in [CoffeeScript](https://coffeescript.org/) with [Socket.IO](https://socket.io/).
 
 [`server/server.coffee`](server/server.coffee) is the main entry point for the server.
 

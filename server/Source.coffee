@@ -7,7 +7,6 @@ module.exports =
 class Source
 	constructor: (uri, @metadata)->
 	# constructor: (@metadata, @stream)->
-		@metadata.number_of_samples = 0
 		# should just accept a stream (pcm and format?)
 		if uri.match(/^http[s]:/)
 			@uri = uri

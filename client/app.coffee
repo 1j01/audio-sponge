@@ -1,7 +1,6 @@
 generate_button = document.querySelector(".generate-button")
-songs_output_ul = document.querySelector(".songs-output")
-
 button_label = generate_button.querySelector(".button-label")
+songs_output_ul = document.querySelector(".songs-output")
 status_indicator = document.querySelector(".status-indicator")
 attribution_links_ul = document.querySelector(".attribution-links")
 
@@ -15,11 +14,9 @@ update = (new_state)->
 		switch status
 			when "loading"
 				"Checking..."
-			# when "connecting"
-			# 	"Connecting..."
 			when "offline"
 				"Offline"
-			when "live"
+			when "online"
 				"Online"
 	generate_button.disabled = generating
 	button_label.innerHTML =
@@ -163,17 +160,20 @@ update_attribution = (attribution)->
 				author_link.setAttribute("target", "_blank")
 			li.appendChild(document.createTextNode(" by "))
 			li.appendChild(author_link)
-		li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
+		# li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
 		attribution_links_ul.appendChild(li)
 
 socket = io()
 
 socket.on "attribution", update_attribution
 
-update status: if socket.connected then "live" else "offline"
+# give it a bit to connect saying "Checking..." before saying Offline if it hasn't
+setTimeout ->
+	update status: if socket.connected then "online" else "offline"
+, 500
 
 socket.on "connect", ->
-	update status: "live"
+	update status: "online"
 
 socket.on "disconnect", ->
 	update status: "offline"

@@ -73,6 +73,6 @@ a[href] {
 	border: 1px solid rgba(0, 0, 0, 0.32);
 	padding: 0.3em;
 }
-.status-indicator.live {
+.status-indicator.online {
 	color: lime;
 }
