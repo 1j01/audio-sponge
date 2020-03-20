@@ -25,7 +25,11 @@ app.get "/", (req, res)->
 
 
 sources = []
-gather_audio((new_source)-> sources.push(new_source))
+gather_audio (new_source)->
+	sources.push(new_source)
+	io.emit("attribution", {
+		sources: (source.metadata for source in sources)
+	})
 
 app.get "/some-sound", (req, res)->
 	if sources.length is 0
@@ -43,22 +47,6 @@ app.get "/some-sound", (req, res)->
 
 	source.createReadStream().pipe(res)
 
-app.get "/attribution", (req, res)->
-	res.setHeader "Cache-Control", "no-store, must-revalidate"
-	res.setHeader "Expires", "0"
-	# TODO: eventually drop sources, so that this list doesn't get ridiculous
-	res.json({
-		sources: (source.metadata for source in sources)
-	})
-
-app.get "/ping", (req, res)->
-	body = "pong"
-	res.writeHead 200,
-		"Cache-Control": "no-store, must-revalidate"
-		"Expires": "0"
-		"Content-Type": "text/plain"
-		"Content-Length": Buffer.byteLength(body)
-	res.end(body)
 
 http.listen server_port, ->
 	console.log """

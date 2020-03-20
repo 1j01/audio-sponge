@@ -166,45 +166,14 @@ update_attribution = (attribution)->
 		li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
 		attribution_links_ul.appendChild(li)
 
-check_attribution = ->
-	req = new XMLHttpRequest()
-	req.addEventListener "readystatechange", ->
-		# console?.log "readystatechange", req.readyState, req.status
-		if req.readyState is 4
-			if req.status in [0, 200]
-				# update status: "live"
-				try
-					attribution = JSON.parse(req.responseText)
-				catch error
-					console.error "Invalid JSON response", {responseText: req.responseText, error}
-				if attribution
-					update_attribution(attribution)
-			else
-				# update status: "offline"
-	req.addEventListener "error", ->
-		# console?.log "error", arguments
-		# update status: "offline"
-	req.open("GET", "attribution")
-	req.send()
+socket = io()
 
-check_status = ->
-	# TODO: check status via attribution checking?
-	req = new XMLHttpRequest()
-	req.addEventListener "readystatechange", ->
-		# console?.log "readystatechange", req.readyState, req.status
-		if req.readyState is 4
-			if req.status in [0, 200]
-				update status: "live"
-			else
-				update status: "offline"
-	req.addEventListener "error", ->
-		# console?.log "error", arguments
-		update status: "offline"
-	req.open("GET", "ping")
-	req.send()
+socket.on "attribution", update_attribution
 
-do periodically_check_status_and_attribution = ->
-	unless document.hidden
-		check_status()
-		check_attribution()
-	setTimeout periodically_check_status_and_attribution, 5000
+update status: if socket.connected then "live" else "offline"
+
+socket.on "connect", ->
+	update status: "live"
+
+socket.on "disconnect", ->
+	update status: "offline"
