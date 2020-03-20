@@ -113,14 +113,17 @@ generate_button.onclick = ->
 	
 	song_output_li = document.createElement("li")
 	song_output_li.className = "song"
+	song_audio_row = document.createElement("div")
+	song_audio_row.className = "song-audio-row"
 	song_output_audio = document.createElement("audio")
 	song_download_link = document.createElement("a")
 	song_output_audio.controls = true
 	song_download_link.textContent = "download"
 	song_download_link.className = "download-link"
 	song_download_link.download = "generated-song.ogg"
-	song_output_li.appendChild(song_download_link)
-	song_output_li.appendChild(song_output_audio)
+	song_audio_row.appendChild(song_download_link)
+	song_audio_row.appendChild(song_output_audio)
+	song_output_li.appendChild(song_audio_row)
 	songs_output_ul.appendChild(song_output_li)
 
 	already_started = false
@@ -174,9 +177,13 @@ provider_to_acquisition_method_description =
 	"opengameart": "Scraped from OpenGameArt.org"
 
 show_attribution = (metadatas)->
-	# TODO: details summary
+	attribution_links_details = document.createElement("details")
+	attribution_links_summary = document.createElement("summary")
+	attribution_links_details.appendChild(attribution_links_summary)
+	attribution_links_summary.textContent = "Audio Sources"
 	attribution_links_ul = document.createElement("ul")
 	attribution_links_ul.className = "attribution-links"
+	attribution_links_details.appendChild(attribution_links_ul)
 	for metadata in metadatas
 		li = document.createElement("li")
 		provider_icon = document.createElement("i")
@@ -199,7 +206,7 @@ show_attribution = (metadatas)->
 			li.appendChild(author_link)
 		# li.appendChild(document.createTextNode(" (#{source.number_of_samples} samples)"))
 		attribution_links_ul.appendChild(li)
-	return attribution_links_ul
+	return attribution_links_details
 
 socket = io()
 

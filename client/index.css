@@ -59,6 +59,10 @@ a[href] {
 
 .song {
 	display: flex;
+	flex-direction: column;
+}
+.song-audio-row {
+	display: flex;
 	align-items: center;
 	justify-content: center;
 }
