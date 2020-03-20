@@ -1,3 +1,4 @@
+crypto = require "crypto"
 fs = require "fs"
 request = require "request"
 
@@ -8,6 +9,7 @@ class Source
 	constructor: (uri, @metadata)->
 	# constructor: (@metadata, @stream)->
 		# should just accept a stream (pcm and format?)
+		@metadata.sound_id = crypto.randomBytes(16).toString("hex")
 		if uri.match(/^http[s]:/)
 			@uri = uri
 			# TODO: cache?

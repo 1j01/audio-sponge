@@ -12,7 +12,6 @@ app_origin = now_url or get_env_var "APP_ORIGIN", default: "http://#{app_hostnam
 app = express()
 http = require("http").createServer(app)
 io = require("socket.io")(http)
-ss = require("socket.io-stream")
 
 io.on "connection", (socket)->
 	console.log("a user connected")
@@ -34,10 +33,21 @@ io.on "connection", (socket)->
 
 			if sources.length is 5
 				for source in sources
-					stream = ss.createStream()
-					# Note: path to the file being streamed is leaked
-					ss(socket).emit("sound:#{query_id}", stream, source.metadata)
-					stream.pipe source.createReadStream()
+					socket.emit("sound-metadata:#{query_id}", source.metadata)
+					{sound_id} = source.metadata
+
+					stream = source.createReadStream()
+					stream.on "data", (data)->
+						socket.emit("sound-data:#{sound_id}", data)
+					stream.on "end", ->
+						console.log "sound-data-end:#{sound_id}"
+						socket.emit("sound-data-end:#{sound_id}")
+					stream.on "close", ->
+						console.log "close", sound_id
+					stream.on "error", (error)->
+						console.log "error", sound_id, error
+
+
 
 
 app.use(express.static("client"))

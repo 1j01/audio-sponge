@@ -42,6 +42,19 @@ update = (new_state)->
 # 		)
 
 
+concatArrayBuffers = (arrayBuffers)->
+	offset = 0
+	bytes = 0
+	arrayBuffers.forEach (buf)->
+		bytes += buf.byteLength
+	combined = new ArrayBuffer(bytes)
+	store = new Uint8Array(combined)
+	arrayBuffers.forEach (buf)->
+		store.set(new Uint8Array(buf.buffer ? buf, buf.byteOffset), offset)
+		offset += buf.byteLength
+	return combined
+
+
 generate_button.onclick = ->
 
 	window.audioContext ?= new (window.AudioContext || window.webkitAudioContext)()
@@ -52,25 +65,24 @@ generate_button.onclick = ->
 
 	query_id = keywords_input.value + Math.random()
 	socket.emit "sound-search", {query: keywords_input.value, query_id}
-	ss(socket).on "sound:#{query_id}", (stream, metadata)->
-		console.log {metadata, stream}
-		buffers = []
-		stream.on "data", (buffer)->
-			buffers.push(buffer)
-			console.log("buffers received:", buffers.length)
-		stream.on "end", ->
-			console.log("stream end")
-			buffer = ss.Buffer.concat(buffers)
+	socket.on "sound-metadata:#{query_id}", (metadata)->
+		console.log "sound-metadata:#{query_id}", metadata
+		{sound_id} = metadata
+		array_buffers = []
+		socket.on "sound-data:#{sound_id}", (buffer)->
+			array_buffers.push(buffer)
+			console.log("sound-data:#{sound_id}, array_buffers received:", array_buffers.length)
+		socket.on "sound-data-end:#{sound_id}", ->
+			console.log("sound-data-end", array_buffers)
+			array_buffer = concatArrayBuffers(array_buffers)
 
-			audioContext.decodeAudioData(buffer).then(
-				(audio_buffer)-> audio_buffers.push(audio_buffer)
+			audioContext.decodeAudioData(array_buffer).then(
+				(audio_buffer)->
+					audio_buffers.push(audio_buffer)
+					if audio_buffers.length is 5
+						got_audio_buffers()
 				(error)-> console.warn(error)
 			)
-		stream.on "error", (error)->
-			console.log("stream error", error)
-		stream.on "close", ->
-			console.log("stream close")
-		stream.resume()
 
 
 
