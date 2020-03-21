@@ -170,6 +170,8 @@ generate_button.onclick = ->
 				message = "Didn't find enough tracks to sample from."
 			else
 				message = "Didn't find enough tracks to sample from, and didn't find a midi track to base the structure off of."
+		if socket.disconnected
+			message = "Offline. Server access needed to fetch sound sources."
 		update collecting: false
 		alert message
 		song_status.textContent = "Failed"
