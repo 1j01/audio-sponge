@@ -213,15 +213,33 @@ generate_button.onclick = ->
 
 		update collecting: false
 		song_status.textContent = "Generating..."
+
+		song = null
+		tid = null
+		stop_generating = ->
+			console.trace "stop_generating", song_id
+			console.log {tid, "cancel_button.parentElement": cancel_button.parentElement, song}
+			mediaRecorder.stop()
+			song.disconnect()
+			song = null
+			clearTimeout tid
+			cancel_button.remove()
+
+		cancel_button = document.createElement("button")
+		cancel_button.onclick = stop_generating
+		cancel_button.textContent = "Stop"
+		song_status.appendChild(cancel_button)
+
 		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
 		destination = window.audioContext.createMediaStreamDestination()
 		mediaRecorder = new MediaRecorder(destination.stream)
 		mediaRecorder.start()
 
-		song = new Song([audio_buffers...], midi_array_buffer, ()-> mediaRecorder.stop())
-
+		song = new Song([audio_buffers...], midi_array_buffer)
 		song.connect(destination)
+		end_time = song.schedule()
+		tid = setTimeout(stop_generating, end_time * 1000)
 
 		song_output_audio.srcObject = destination.stream
 		song_output_audio.play()
@@ -232,6 +250,7 @@ generate_button.onclick = ->
 
 		mediaRecorder.onstop = (event)->
 			blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' })
+			chunks = null
 			blob_url = URL.createObjectURL(blob)
 
 			currentTime = song_output_audio.currentTime
