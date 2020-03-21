@@ -6,9 +6,25 @@ async = require "async"
 shuffle = require "./shuffle"
 Source = require "./Source"
 
-# TODO: fallback to https://bitmidi.com/random
-# and other ways of getting midi
-# like some local static set of them if nothing else
+# TODO: other ways of getting midi
+# like a local folder of midi files
+
+scrape_bitmidi_track_page = (track_page_url, callback)->
+	request track_page_url, (error, response, body)->
+		return callback(error) if error
+
+		$ = cheerio.load(body)
+
+		track_name = $("main h1").text()
+		track_attribution =
+			name: track_name
+			link: track_page_url
+			provider: "BitMidi"
+		download_link_href = $("a[href$='.mid'], a[download]").attr("href")
+		stream_url = new URL(download_link_href, track_page_url).href
+
+		callback(null, new Source(stream_url, track_attribution))
+
 
 module.exports = (query, track_callback, done_callback)->
 
@@ -27,6 +43,28 @@ module.exports = (query, track_callback, done_callback)->
 
 		links_to_track_pages = $("a[href$='-mid']")
 
+		if links_to_track_pages.length is 0
+			console.log "[BM] Didn't find any MIDIs for \"#{query}\", using random MIDI"
+			request({url: "https://bitmidi.com/random", followRedirect: no}, (error, response, body)->
+				if error
+					console.error "[BM] Error getting random MIDI from BitMidi:", error
+					done_callback()
+					return
+				
+				track_page_url = new URL(response.headers.location, "https://bitmidi.com/").href
+				console.log "[BM] /random redirected to:", track_page_url
+
+				scrape_bitmidi_track_page(track_page_url, (error, source)->
+					if error
+						console.error "[BM] Error scraping random MIDI from BitMidi:", error
+						done_callback()
+						return
+					track_callback(source)
+					done_callback()
+				)
+			)
+			return
+
 		console.log "[BM] Found #{links_to_track_pages.length} tracks"
 
 		async.eachLimit(
@@ -35,26 +73,25 @@ module.exports = (query, track_callback, done_callback)->
 			(element, onwards)->
 				# NOTE: MUST not call callback herein syncronously!
 				# An error in the callback would be caught by `async` and lead to confusion.
+
 				track_page_link_href = $(element).attr("href")
 				track_page_url = new URL(track_page_link_href, url).href
-				track_name = $(element).find("h2").text()
-				track_attribution =
-					name: track_name
-					link: track_page_url
-					provider: "BitMidi"
+
 				request(track_page_url, (error, response, body)->
 					if error
-						# track_callback(error)
 						console.error(error)
 						onwards()
 						return
-					track_page_$ = cheerio.load(body)
-					download_link_href = track_page_$("a[href$='.mid'], a[download]").attr("href")
-					stream_url = new URL(download_link_href, track_page_url).href
-
-					# track_callback(null, stream_url, track_attribution)
-					track_callback(new Source(stream_url, track_attribution))
-					onwards()
+					track_page_link_href = $(element).attr("href")
+					track_page_url = new URL(track_page_link_href, url).href
+					scrape_bitmidi_track_page(track_page_url, (error, source)->
+						if error
+							console.error "[BM] Error scraping BitMidi track page:", error
+							onwards()
+							return
+						track_callback(source)
+						onwards()
+					)
 				)
 			(err)->
 				console.error "[BM] Error:", err if err
