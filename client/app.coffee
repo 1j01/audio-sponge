@@ -125,9 +125,18 @@ generate_button.onclick = ->
 	songs_output_ul.prepend(song_output_li)
 
 	audio_buffers = []
+	midi_array_buffer = null
 
-	sound_search {query, song_id, midi: true}, (file_array_buffer, metadata)->
+	num_audio_buffers_target = 5
+
+	cancel_getting_midi = sound_search {query, song_id, midi: true}, (file_array_buffer, metadata)->
 		console.log "found a midi:", {file_array_buffer, metadata}
+		midi_array_buffer ?= file_array_buffer
+		check_sources_ready(num_audio_buffers_target)
+		metadatas_used.push(metadata) if midi_array_buffer is file_array_buffer
+		# actually,
+		cancel_getting_midi()
+		# and then we don't really need the ?= and if above, but whatever
 	
 	cancel_getting_audio = sound_search {query, song_id}, (file_array_buffer, metadata)->
 		console.log "found a sound:", {file_array_buffer, metadata}
@@ -137,16 +146,24 @@ generate_button.onclick = ->
 				audio_buffers.push(audio_buffer)
 				metadatas_used.push(metadata)
 				console.log "collected #{audio_buffers.length} audio buffers so far"
-				if audio_buffers.length is 5
-					got_audio_buffers()
+				check_sources_ready(num_audio_buffers_target)
 			(error)-> console.warn(error)
 		)
 
-	setTimeout ->
+	cancel = ->
+		cancel_getting_midi()
 		cancel_getting_audio()
-		if audio_buffers.length > 0
-			got_audio_buffers()
-		else
+
+	check_sources_ready = (min_audio_buffers)->
+		if audio_buffers.length >= min_audio_buffers
+			if midi_array_buffer
+				sources_ready()
+				return true
+		return false
+
+	setTimeout ->
+		cancel()
+		if not check_sources_ready(1)
 			update collecting: false
 			alert "Did't find enough tracks to sample from."
 			song_status.textContent = "Failed"
@@ -169,7 +186,7 @@ generate_button.onclick = ->
 	# 				console.log("collected #{audio_buffers.length} audio buffers so far")
 	# 				if audio_buffers.length is target
 	# 					console.log("reached target of #{target} audio buffers")
-	# 					got_audio_buffers()
+	# 					sources_ready()
 	# 				if audio_buffers.length > target
 	# 					console.log("extraneous audio buffer collected (#{audio_buffers.length} / #{target})")
 	# 			console.log("collected #{audio_buffers.length} audio buffers so far, plus #{active} active requests; target: #{target}")
@@ -182,7 +199,7 @@ generate_button.onclick = ->
 	# 	get_one()
 	
 	already_started = false
-	got_audio_buffers = ->
+	sources_ready = ->
 		return if already_started
 		already_started = true
 
@@ -232,6 +249,7 @@ provider_to_icon =
 	"bandcamp": "icon-bandcamp"
 	"lastfm": "icon-lastfm"
 	"opengameart": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
+	"bitmidi": "icon-globe" # TODO: specific icon? but it's not very midi-indicative I feel
 
 provider_to_acquisition_method_description =
 	"filesystem": "Via the filesystem"
@@ -241,6 +259,7 @@ provider_to_acquisition_method_description =
 	# "lastfm": "Via the Last.fm API"
 	# "napster": "Via the Napster API"
 	"opengameart": "Scraped from OpenGameArt.org"
+	"bitmidi": "Scraped from BitMidi.com"
 
 show_attribution = (metadatas, song_id)->
 	attribution_links_details = document.createElement("details")

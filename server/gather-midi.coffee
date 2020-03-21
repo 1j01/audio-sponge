@@ -4,6 +4,7 @@ cheerio = require "cheerio"
 request = require "request"
 async = require "async"
 shuffle = require "./shuffle"
+Source = require "./Source"
 
 # TODO: fallback to https://bitmidi.com/random
 # and other ways of getting midi
@@ -43,13 +44,16 @@ module.exports = (query, track_callback, done_callback)->
 					provider: "BitMidi"
 				request(track_page_url, (error, response, body)->
 					if error
-						track_callback(error)
+						# track_callback(error)
+						console.error(error)
 						onwards()
 						return
 					track_page_$ = cheerio.load(body)
-					stream_url = track_page_$("a[href$='.mid'], a[download]").attr("href")
+					download_link_href = track_page_$("a[href$='.mid'], a[download]").attr("href")
+					stream_url = new URL(download_link_href, track_page_url).href
 
-					track_callback(null, stream_url, track_attribution)
+					# track_callback(null, stream_url, track_attribution)
+					track_callback(new Source(stream_url, track_attribution))
 					onwards()
 				)
 			(err)->
