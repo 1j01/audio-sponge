@@ -127,12 +127,10 @@ generate_button.onclick = ->
 	audio_buffers = []
 	midi_array_buffer = null
 
-	num_audio_buffers_target = 5
-
 	cancel_getting_midi = sound_search {query, song_id, midi: true}, (file_array_buffer, metadata)->
 		console.log "found a midi:", {file_array_buffer, metadata}
 		midi_array_buffer ?= file_array_buffer
-		check_sources_ready(num_audio_buffers_target)
+		check_sources_ready()
 		metadatas_used.push(metadata) if midi_array_buffer is file_array_buffer
 		# actually,
 		cancel_getting_midi()
@@ -146,7 +144,7 @@ generate_button.onclick = ->
 				audio_buffers.push(audio_buffer)
 				metadatas_used.push(metadata)
 				console.log "collected #{audio_buffers.length} audio buffers so far"
-				check_sources_ready(num_audio_buffers_target)
+				check_sources_ready()
 			(error)-> console.warn(error)
 		)
 
@@ -154,20 +152,28 @@ generate_button.onclick = ->
 		cancel_getting_midi()
 		cancel_getting_audio()
 
-	check_sources_ready = (min_audio_buffers)->
-		if audio_buffers.length >= min_audio_buffers
+	check_sources_ready = ->
+		if audio_buffers.length >= 5
 			if midi_array_buffer
 				sources_ready()
-				return true
-		return false
 
 	setTimeout ->
 		cancel()
-		if not check_sources_ready(1)
-			update collecting: false
-			alert "Did't find enough tracks to sample from."
-			song_status.textContent = "Failed"
-			song_output_li.classList.add("failed")
+		if audio_buffers.length >= 5
+			if midi_array_buffer
+				sources_ready()
+				return
+			else
+				message = "Didn't find a midi track to base the structure off of."
+		else
+			if midi_array_buffer
+				message = "Didn't find enough tracks to sample from."
+			else
+				message = "Didn't find enough tracks to sample from, and didn't find a midi track to base the structure off of."
+		update collecting: false
+		alert message
+		song_status.textContent = "Failed"
+		song_output_li.classList.add("failed")
 	, 1000 * 10
 
 	# target = 5
