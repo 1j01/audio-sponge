@@ -30,7 +30,7 @@ io.on "connection", (socket)->
 		gather_sources {query, midi}, (new_source)->
 			sources.push(new_source)
 
-			if sources.length is 5
+			if sources.length is (if midi then 1 else 5)
 				sources.forEach (source)->
 					socket.emit("sound-metadata:#{query_id}", source.metadata)
 					{sound_id} = source.metadata
