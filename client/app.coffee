@@ -159,7 +159,7 @@ generate_button.onclick = ->
 
 	setTimeout ->
 		cancel()
-		if audio_buffers.length >= 5
+		if audio_buffers.length >= 1
 			if midi_array_buffer
 				sources_ready()
 				return
