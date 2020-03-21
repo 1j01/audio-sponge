@@ -35,7 +35,7 @@ class @Song
 				@source_samples.push(sample)
 			# console.log("#{@source_samples.length} source_samples")
 
-		console.log @midi = MidiParser.parse(new Uint8Array(midi_array_buffer))
+		console.log @midi = new Midi(midi_array_buffer)
 
 		@context = window.audioContext
 
@@ -111,15 +111,13 @@ class @Song
 		# 	song_over()
 		# , scheduled_length * 1000 + 200
 
-		# TODO: ticks or whatever vs seconds 
 		max_time = 0
-		for track, track_index in @midi.track
-			absolute_time = 0
-			for event in track.event
-				absolute_time += event.deltaTime
-				if event.type is 9
-					add_beat(track_index, absolute_time)
-			max_time = Math.max(max_time, absolute_time)
+		for track, track_index in @midi.tracks
+			for note in track.notes
+				# (note.name, note.duration, note.time, note.velocity)
+				start_time = schedule_start_time + note.time
+				add_beat(track_index, start_time)
+				max_time = Math.max(max_time, note.time)
 
 		setTimeout =>
 			song_over()
