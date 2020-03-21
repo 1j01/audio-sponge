@@ -116,7 +116,8 @@ class @Song
 			for note in track.notes
 				# (note.name, note.duration, note.time, note.velocity)
 				start_time = schedule_start_time + note.time
-				add_beat(track_index, start_time)
+				# add_beat(track_index + (note.midi % 5), start_time)
+				add_beat(note.midi % 12, start_time)
 				max_time = Math.max(max_time, note.time)
 
 		setTimeout =>
