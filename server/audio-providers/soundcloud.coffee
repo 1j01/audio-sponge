@@ -28,7 +28,9 @@ module.exports.search = (query, track_callback, done_callback)->
 					}
 					provider: "soundcloud"
 				}
+				console.log "[SC] process.nextTick then track_callback"
 				process.nextTick => # avoid synchronous callback!
+					console.log "[SC] track_callback"
 					track_callback(track.stream_url, attribution)
 					setTimeout =>
 						callback null

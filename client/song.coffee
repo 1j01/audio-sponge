@@ -26,7 +26,7 @@ findSamplesFromAudioBuffer = (audio_buffer, sample_callback)->
 		# metadata.number_of_samples[this particular source] += 1
 
 class @Song
-	constructor: (audio_buffers, song_over)->
+	constructor: (audio_buffers, midi_array_buffer, song_over)->
 
 		# @sources = []
 		@source_samples = []
@@ -34,6 +34,8 @@ class @Song
 			findSamplesFromAudioBuffer audio_buffer, (sample)=>
 				@source_samples.push(sample)
 			# console.log("#{@source_samples.length} source_samples")
+
+		console.log @midi = MidiParser.parse(new Uint8Array(midi_array_buffer))
 
 		@context = window.audioContext
 
@@ -94,21 +96,34 @@ class @Song
 		# TODO: phase in and out layers and their sources
 		# TODO: apply effects to tracks, especially reverb, but also random, crazy DSP
 
-		rhythm = new Rhythm
-		# console.log rhythm.toString()
-		beats = rhythm.getBeats()
-		scheduled_length = 0
-		for super_measure_i in [0...4]
-			shuffle(beat_audio_buffers)
-			for beat in beats
-				start_time = schedule_start_time + (beat.time + super_measure_i) / bps
-				add_beat(beat.type, start_time)
-			scheduled_length += 1 / bps
-		
+		# rhythm = new Rhythm
+		# # console.log rhythm.toString()
+		# beats = rhythm.getBeats()
+		# scheduled_length = 0
+		# for super_measure_i in [0...4]
+		# 	shuffle(beat_audio_buffers)
+		# 	for beat in beats
+		# 		start_time = schedule_start_time + (beat.time + super_measure_i) / bps
+		# 		add_beat(beat.type, start_time)
+		# 	scheduled_length += 1 / bps
+		#
+		# setTimeout =>
+		# 	song_over()
+		# , scheduled_length * 1000 + 200
+
+		# TODO: ticks or whatever vs seconds 
+		max_time = 0
+		for track, track_index in @midi.track
+			absolute_time = 0
+			for event in track.event
+				absolute_time += event.deltaTime
+				if event.type is 9
+					add_beat(track_index, absolute_time)
+			max_time = Math.max(max_time, absolute_time)
 
 		setTimeout =>
 			song_over()
-		, scheduled_length * 1000 + 200
+		, max_time * 1000 + 1000
 
 		###
 		# TODO: simplify the following to use a single setTimeout loop

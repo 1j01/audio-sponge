@@ -217,7 +217,7 @@ generate_button.onclick = ->
 		mediaRecorder = new MediaRecorder(destination.stream)
 		mediaRecorder.start()
 
-		song = new Song([audio_buffers...], ()-> mediaRecorder.stop())
+		song = new Song([audio_buffers...], midi_array_buffer, ()-> mediaRecorder.stop())
 
 		song.connect(destination)
 
