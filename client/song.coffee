@@ -105,5 +105,8 @@ class @Song
 				# add_beat(track_index + (note.midi % 5), start_time)
 				add_beat(note.midi % 12, start_time)
 				max_time = Math.max(max_time, note.time)
+			break if track.notes.length > 0 # only do one track...
+			# I'm wondering if there might be performance implications for scheduling sounds out of order
+			# or just having lots of notes scheduled
 
 		return max_time + 1 # one extra second for sounds to finish 
