@@ -106,7 +106,7 @@ generate_button.onclick = ->
 	metadatas_used = []
 
 	query = keywords_input.value
-	song_id = sanitizeFileName("song-#{generateId(6)}-#{query}").replace(/\s/, "-")
+	song_id = sanitizeFileName("song-#{generateId(6)}-#{query}").replace(/\s/g, "-")
 
 	song_output_li = document.createElement("li")
 	song_output_li.className = "song"
