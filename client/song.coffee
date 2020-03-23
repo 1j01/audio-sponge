@@ -91,7 +91,7 @@ class @Song
 				# or granular synthesis, which would have envelopes, lots of envelopes..
 				buffer_source = context.createBufferSource()
 				buffer_source.buffer = beat_audio_buffer
-				if not is_percussion
+				unless is_percussion
 					# assuming all samples randomly happen to be tuned to 440 Hz or something
 					buffer_source.playbackRate.value = Math.pow(2, midi_note_val/12 - 5)
 				buffer_source.connect(@pre_global_fx_gain)
@@ -104,13 +104,17 @@ class @Song
 		# TODO: apply effects to tracks, especially reverb, but also random, crazy DSP
 
 		max_time = 0
+		did_melody_tracks = 0
 		for track, track_index in @midi.tracks
-			for note in track.notes
-				# note has {name, duration, time, velocity}
-				start_time = schedule_start_time + note.time
-				# Channel 10 is (coded 9) is reserved for percussion. Channel 11 (coded 10) may be percussion.
-				add_beat(note.midi, (track.channel in [9, 10]), track_index, start_time)
-				max_time = Math.max(max_time, note.time)
+			# Channel 10 is (coded 9) is reserved for percussion. Channel 11 (coded 10) may be percussion.
+			is_percussion = (track.channel in [9, 10])
+			if is_percussion or did_melody_tracks < 2
+				for note in track.notes
+					# note has {name, duration, time, velocity}
+					start_time = schedule_start_time + note.time
+					add_beat(note.midi, is_percussion, track_index, start_time)
+					max_time = Math.max(max_time, note.time)
+					did_melody_tracks += 1 unless is_percussion
 			# break if track.notes.length > 0 # only do one track...
 			# I'm wondering if there might be performance implications for scheduling sounds out of order
 			# or just having lots of notes scheduled
