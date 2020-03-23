@@ -131,7 +131,7 @@ generate_button.onclick = ->
 	midi_array_buffer = null
 
 	cancel_getting_midi = sound_search {query, song_id, midi: true}, (file_array_buffer, metadata)->
-		console.log "found a midi:", {file_array_buffer, metadata}
+		console.log "Got a midi file", metadata
 		midi_array_buffer ?= file_array_buffer
 		check_sources_ready()
 		metadatas_used.push(metadata) if midi_array_buffer is file_array_buffer
@@ -139,14 +139,16 @@ generate_button.onclick = ->
 		cancel_getting_midi()
 		# and then we don't really need the ?= and if above, but whatever
 	
+	canceled = false
 	cancel_getting_audio = sound_search {query, song_id}, (file_array_buffer, metadata)->
-		console.log "found a sound:", {file_array_buffer, metadata}
+		console.log "Got a sound file (decoding...)", metadata
 		
 		audioContext.decodeAudioData(file_array_buffer).then(
 			(audio_buffer)->
+				return if canceled
 				audio_buffers.push(audio_buffer)
 				metadatas_used.push(metadata)
-				console.log "collected #{audio_buffers.length} audio buffers so far"
+				console.log "Collected #{audio_buffers.length} audio buffers so far"
 				check_sources_ready()
 			(error)-> console.warn(error)
 		)
@@ -154,6 +156,7 @@ generate_button.onclick = ->
 	cancel = ->
 		cancel_getting_midi()
 		cancel_getting_audio()
+		canceled = true
 
 	check_sources_ready = ->
 		if audio_buffers.length >= 5
@@ -222,8 +225,8 @@ generate_button.onclick = ->
 		stop_generating = ->
 			console.trace "stop_generating", song_id
 			console.log {tid, "cancel_button.parentElement": cancel_button.parentElement, song}
-			mediaRecorder.stop()
-			song.output.disconnect()
+			mediaRecorder?.stop()
+			song?.output.disconnect()
 			song = null
 			clearTimeout tid
 			cancel_button.remove()
@@ -235,11 +238,20 @@ generate_button.onclick = ->
 
 		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
+		try 
+			song = new Song([audio_buffers...], midi_array_buffer)
+		catch error
+			# to handle bad midi file at least
+			console.error error
+			stop_generating()
+			song_status.textContent = "Failed"
+			song_output_li.classList.add("failed")
+			return
+
 		destination = window.audioContext.createMediaStreamDestination()
 		mediaRecorder = new MediaRecorder(destination.stream)
 		mediaRecorder.start()
 
-		song = new Song([audio_buffers...], midi_array_buffer)
 		song.output.connect(destination)
 		end_time = song.schedule()
 		tid = setTimeout(stop_generating, end_time * 1000)

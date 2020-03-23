@@ -39,7 +39,7 @@ io.on "connection", (socket)->
 					stream.on "data", on_data = (data)->
 						socket.emit("sound-data:#{sound_id}", data)
 					stream.on "end", on_end = ->
-						console.log "sound-data-end:#{sound_id}", source.uri
+						console.log "sent audio file", source.uri
 						socket.emit("sound-data-end:#{sound_id}")
 						stream.off "data", on_data # not sure this is needed or works how i want it
 						stream.off "error", on_error # not sure this is needed or works how i want it

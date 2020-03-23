@@ -10,7 +10,7 @@ Source = require "./Source"
 # like a local folder of midi files
 
 scrape_bitmidi_track_page = (track_page_url, callback)->
-	console.log("[BM] scrape track page:", track_page_url)
+	console.log("[BM] Scraping track page:", track_page_url)
 	request track_page_url, (error, response, body)->
 		return callback(error) if error
 
@@ -23,7 +23,7 @@ scrape_bitmidi_track_page = (track_page_url, callback)->
 			provider: "BitMidi"
 		download_link_href = $("a[href$='.mid'], a[download]").attr("href")
 		stream_url = new URL(download_link_href, track_page_url).href
-		console.log("[BM] scraped track page, got", stream_url, track_attribution)
+		console.log("[BM] Got info for \"#{track_name}\"")
 
 		callback(null, new Source(stream_url, track_attribution))
 
