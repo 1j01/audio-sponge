@@ -1,7 +1,10 @@
+generate_form = document.querySelector(".generate-form")
 keywords_input = document.querySelector(".keywords-input")
 generate_button = document.querySelector(".generate-button")
 songs_output_ul = document.querySelector(".songs-output")
 status_indicator = document.querySelector(".status-indicator")
+
+generate_form.onsubmit = (event)-> event.preventDefault()
 
 state = {}
 update = (new_state)->
