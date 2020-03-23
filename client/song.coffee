@@ -119,4 +119,4 @@ class @Song
 			# I'm wondering if there might be performance implications for scheduling sounds out of order
 			# or just having lots of notes scheduled
 
-		return max_time + 1 # one extra second for sounds to finish 
+		return max_time + 3 # including extra time for sounds to finish 
