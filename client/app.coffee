@@ -292,6 +292,8 @@ provider_to_icon =
 	"lastfm": "icon-lastfm"
 	"opengameart": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
 	"bitmidi": "icon-globe" # TODO: specific icon? but it's not very midi-indicative I feel
+	"duckduckgo": "icon-globe"
+	"bing": "icon-globe"
 
 provider_to_acquisition_method_description =
 	"filesystem": "Via the filesystem"
@@ -302,6 +304,8 @@ provider_to_acquisition_method_description =
 	# "napster": "Via the Napster API"
 	"opengameart": "Scraped from OpenGameArt.org"
 	"bitmidi": "Scraped from BitMidi.com"
+	"duckduckgo": "Via DuckDuckGo results (with filetype:mp3 parameter)"
+	"bing": "Via Bing results (with filetype:mp3 parameter)"
 
 show_attribution = (metadatas, song_id)->
 	attribution_links_details = document.createElement("details")

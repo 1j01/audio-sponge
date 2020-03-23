@@ -20,7 +20,7 @@ scrape_bitmidi_track_page = (track_page_url, callback)->
 		track_attribution =
 			name: track_name
 			link: track_page_url
-			provider: "BitMidi"
+			provider: "bitmidi"
 		download_link_href = $("a[href$='.mid'], a[download]").attr("href")
 		stream_url = new URL(download_link_href, track_page_url).href
 		console.log("[BM] Got info for \"#{track_name}\"")
