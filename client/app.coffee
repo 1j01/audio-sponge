@@ -223,7 +223,7 @@ generate_button.onclick = ->
 			console.trace "stop_generating", song_id
 			console.log {tid, "cancel_button.parentElement": cancel_button.parentElement, song}
 			mediaRecorder.stop()
-			song.disconnect()
+			song.output.disconnect()
 			song = null
 			clearTimeout tid
 			cancel_button.remove()
@@ -240,7 +240,7 @@ generate_button.onclick = ->
 		mediaRecorder.start()
 
 		song = new Song([audio_buffers...], midi_array_buffer)
-		song.connect(destination)
+		song.output.connect(destination)
 		end_time = song.schedule()
 		tid = setTimeout(stop_generating, end_time * 1000)
 

@@ -39,22 +39,24 @@ class @Song
 
 		@context = window.audioContext
 
-		# @chorus = new Chorus(@context)
-		# @chorus.output.connect(@context.destination)
-
 		# TODO: maybe add a limiter to avoid clipping in a more robust way than just gain reduction
 		# see https://webaudiotech.com/sites/limiter_comparison/
 		@pre_global_fx_gain = @context.createGain()
 		# @pre_global_fx_gain.connect(@chorus.input)
 		@pre_global_fx_gain.gain.setValueAtTime(0.1, 0) # avoid clipping!
 
-		@pre_global_fx = @pre_global_fx_gain
+		@post_global_fx_gain = @context.createGain()
 
-	connect: (destination)->
-		@pre_global_fx_gain.connect(destination)
+		@output = @post_global_fx_gain
 
-	disconnect: (destination)->
-		@pre_global_fx_gain.disconnect(destination)
+		# @chorus = new Chorus(@context)
+		# @chorus.output
+
+		@reverb = new SimpleReverb(@context)
+
+		@pre_global_fx_gain.connect(@reverb.input)
+		@pre_global_fx_gain.connect(@post_global_fx_gain) # dry
+		@reverb.output.connect(@post_global_fx_gain) # wet
 
 	schedule: ()->
 		{context} = @
@@ -74,7 +76,7 @@ class @Song
 
 				gain = context.createGain()
 				gain.gain.value = 0.3
-				gain.connect(@pre_global_fx)
+				gain.connect(@pre_global_fx_gain)
 
 				oscillator = context.createOscillator()
 				oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12)
@@ -88,7 +90,7 @@ class @Song
 				# or granular synthesis, which would have envelopes, lots of envelopes..
 				buffer_source = context.createBufferSource()
 				buffer_source.buffer = beat_audio_buffer
-				buffer_source.connect(@pre_global_fx)
+				buffer_source.connect(@pre_global_fx_gain)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
 
