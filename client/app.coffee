@@ -182,7 +182,7 @@ generate_button.onclick = ->
 		alert message
 		song_status.textContent = "Failed"
 		song_output_li.classList.add("failed")
-	, 1000 * 10
+	, 1000 * 20
 
 	# target = 5
 	# active = 0
