@@ -44,7 +44,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "cheerio": "^1.0.0-rc.2",
-    "coffeescript": "^2.1.1",
+    "coffeescript": "2.5.1",
     "express": "^4.16.2",
     "fsu": "^1.0.4",
     "glob": "^7.1.2",
