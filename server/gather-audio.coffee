@@ -9,12 +9,12 @@ get_env_var = require "./get-env-var"
 
 net_enabled = true
 
-OGA_enabled = true
+OGA_enabled = false
 DDG_enabled = true
 bing_enabled = true
 
 soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
-soundcloud_enabled = soundcloud_client_id?
+soundcloud_enabled = false # soundcloud_client_id?
 
 FS_audio_glob = get_env_var "AUDIO_SOURCE_FILES_GLOB"
 FS_enabled = false #FS_audio_glob?
