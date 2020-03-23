@@ -93,7 +93,7 @@ class @Song
 				buffer_source.buffer = beat_audio_buffer
 				if not is_percussion
 					# assuming all samples randomly happen to be tuned to 440 Hz or something
-					buffer_source.playbackRate.value = Math.pow(2, midi_note_val/12)
+					buffer_source.playbackRate.value = Math.pow(2, midi_note_val/12 - 5)
 				buffer_source.connect(@pre_global_fx_gain)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
