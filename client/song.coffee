@@ -35,7 +35,7 @@ class @Song
 				@source_samples.push(sample)
 			# console.log("#{@source_samples.length} source_samples")
 
-		console.log @midi = new Midi(midi_array_buffer)
+		@midi = new Midi(midi_array_buffer)
 
 		@context = window.audioContext
 
@@ -67,7 +67,8 @@ class @Song
 
 		bpm = 128 / 4
 		bps = bpm / 60
-		add_beat = (beat_type_index, start_time)=>
+		add_beat = (midi_note_val, is_percussion, variation, start_time)=>
+			beat_type_index = if is_percussion then midi_note_val % beat_audio_buffers.length else variation
 			beat_audio_buffer = beat_audio_buffers[beat_type_index]
 			if not beat_audio_buffer
 				console.error "Not enough beat types yet, using an oscillator; wanted: beat type #{beat_type_index} out of #{beat_audio_buffers.length}"
@@ -79,7 +80,7 @@ class @Song
 				gain.connect(@pre_global_fx_gain)
 
 				oscillator = context.createOscillator()
-				oscillator.frequency.value = 440 * Math.pow(2, beat_type_index/12)
+				oscillator.frequency.value = 440 * Math.pow(2, midi_note_val/12)
 				oscillator.detune.value = Math.random() * 10
 				oscillator.connect(gain)
 				oscillator.start(start_time)
@@ -90,6 +91,9 @@ class @Song
 				# or granular synthesis, which would have envelopes, lots of envelopes..
 				buffer_source = context.createBufferSource()
 				buffer_source.buffer = beat_audio_buffer
+				if not is_percussion
+					# assuming all samples randomly happen to be tuned to 440 Hz or something
+					buffer_source.playbackRate.value = Math.pow(2, midi_note_val/12)
 				buffer_source.connect(@pre_global_fx_gain)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
@@ -102,12 +106,12 @@ class @Song
 		max_time = 0
 		for track, track_index in @midi.tracks
 			for note in track.notes
-				# (note.name, note.duration, note.time, note.velocity)
+				# note has {name, duration, time, velocity}
 				start_time = schedule_start_time + note.time
-				# add_beat(track_index + (note.midi % 5), start_time)
-				add_beat(note.midi % 12, start_time)
+				# Channel 10 is (coded 9) is reserved for percussion. Channel 11 (coded 10) may be percussion.
+				add_beat(note.midi, (track.channel in [9, 10]), track_index, start_time)
 				max_time = Math.max(max_time, note.time)
-			break if track.notes.length > 0 # only do one track...
+			# break if track.notes.length > 0 # only do one track...
 			# I'm wondering if there might be performance implications for scheduling sounds out of order
 			# or just having lots of notes scheduled
 
