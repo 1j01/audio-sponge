@@ -21,7 +21,7 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
   (TODO: fix horrible performance problems)
 
 * Lets you download audio `.ogg` files and attribution `.html` files (with related filenames so you can keep them together easily)
-  (TODO: embed attribution in audio file metadata, ideally.)
+  (TODO: ideally, embed attribution information in audio file metadata. TODO: track number of samples per source and don't show sources where no samples were used (as can happen))
 
 ## Project Story
 
@@ -76,6 +76,23 @@ I think it would be a lot cooler to use **video** for the sources.
   - reverb convolution is applied to pixels over time, to produce a visual echo
   - bit crush = reduce bitrate of video
   - other things could shift color channels, skew the video, etc.
+- Use closed caption data and speech recognition to find where words are uttered, and combine them together into sentences/lyrics
+  - This way you could search for a famous line in a movie, and get it to sample that actual line and not just that scene
+  - If there aren't (good) results for the whole phrase the user enters, search for sub-phrases and words and try to find where those are uttered in videos, to splice them together in a Frankenstein's monstrosity
+  - Just generally sampling from whole words probably makes things more interesting/pleasant, if we can do at least word boundary detection 
+
+Also, it would be good to make song generation reproducible, and maybe export to a known DAW / video editor format for human editing.
+
+Externalities for reproducibility:
+- Search is completely unreliable - new content appears, search algorithms change etc. - but the results can be simply cached
+- Fetching URLs is unreliable, but audio/video content is *usually* static
+  - Internet access can be unavailable
+  - Videos can be taken down
+  - Sites can go down
+  - Videos can be edited, which is likely to ruin timecodes
+  - [Content-addressable storage](https://en.wikipedia.org/wiki/Content-addressable_storage) would be better, but might not be practical
+  - Caching media can work but it's a lot heavier than a list of search results; video can take up a lot of space
+- (Random decsisions can be made pseudorandom easily)
 
 ## Project Structure
 
