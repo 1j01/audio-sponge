@@ -1,5 +1,7 @@
 # Procedural Song Generator
 
+[Try it out here.](https://audio-sponge-vsbuyfiwea.now.sh/)
+
 Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as such, as music - that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as: music.)
 
 ## What it does
