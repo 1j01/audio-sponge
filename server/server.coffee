@@ -41,12 +41,12 @@ io.on "connection", (socket)->
 					stream.on "end", on_end = ->
 						console.log "sent audio file", source.uri
 						socket.emit("sound-data-end:#{sound_id}")
-						stream.off "data", on_data # not sure this is needed or works how i want it
-						stream.off "error", on_error # not sure this is needed or works how i want it
+						stream.removeListener "data", on_data # not sure this is needed or works how i want it
+						stream.removeListener "error", on_error # not sure this is needed or works how i want it
 					stream.on "error", on_error = (error)->
 						console.log "error", sound_id, error
-						stream.off "data", on_data # not sure this is needed or works how i want it
-						stream.off "end", on_end # not sure this is needed or works how i want it
+						stream.removeListener "data", on_data # not sure this is needed or works how i want it
+						stream.removeListener "end", on_end # not sure this is needed or works how i want it
 
 setInterval ->
 	mem = process.memoryUsage().heapUsed
