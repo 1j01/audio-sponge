@@ -138,9 +138,12 @@ generate_button.onclick = ->
 
 	cancel_getting_midi = sound_search {query, song_id, midi: true}, on_progress, (file_array_buffer, metadata)->
 		console.log "Got a midi file", metadata
+
 		midi_array_buffer ?= file_array_buffer
-		check_sources_ready()
 		metadatas_used.push(metadata) if midi_array_buffer is file_array_buffer
+
+		check_sources_ready()
+		
 		# actually,
 		cancel_getting_midi()
 		# and then we don't really need the ?= and if above, but whatever
