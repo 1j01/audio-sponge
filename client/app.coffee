@@ -68,7 +68,7 @@ sanitizeFileName = (input, replacement="")->
 		.slice(0, 255)
 
 
-sound_search = ({query, song_id, midi}, callback)->
+sound_search = ({query, song_id, midi}, on_progress, callback)->
 	query_id = "#{if midi then "midi" else "sounds"}-for-#{song_id}"
 
 	metadatas_received = []
@@ -79,6 +79,7 @@ sound_search = ({query, song_id, midi}, callback)->
 		chunk_array_buffers = []
 		socket.on "sound-data:#{sound_id}", (array_buffer)->
 			chunk_array_buffers.push(array_buffer)
+			on_progress()
 		socket.once "sound-data-end:#{sound_id}", ->
 			socket.off "sound-data:#{sound_id}"
 			file_array_buffer = concatArrayBuffers(chunk_array_buffers)
@@ -129,8 +130,13 @@ generate_button.onclick = ->
 
 	audio_buffers = []
 	midi_array_buffer = null
+	collection_tid = null
 
-	cancel_getting_midi = sound_search {query, song_id, midi: true}, (file_array_buffer, metadata)->
+	on_progress = ->
+		clearTimeout(collection_tid)
+		collection_tid = setTimeout collection_timed_out, 1000 * 10
+
+	cancel_getting_midi = sound_search {query, song_id, midi: true}, on_progress, (file_array_buffer, metadata)->
 		console.log "Got a midi file", metadata
 		midi_array_buffer ?= file_array_buffer
 		check_sources_ready()
@@ -140,7 +146,7 @@ generate_button.onclick = ->
 		# and then we don't really need the ?= and if above, but whatever
 	
 	canceled = false
-	cancel_getting_audio = sound_search {query, song_id}, (file_array_buffer, metadata)->
+	cancel_getting_audio = sound_search {query, song_id}, on_progress, (file_array_buffer, metadata)->
 		console.log "Got a sound file (decoding...)", metadata
 		
 		audioContext.decodeAudioData(file_array_buffer).then(
@@ -157,13 +163,14 @@ generate_button.onclick = ->
 		cancel_getting_midi()
 		cancel_getting_audio()
 		canceled = true
+		clearTimeout(collection_tid)
 
 	check_sources_ready = ->
 		if audio_buffers.length >= 5
 			if midi_array_buffer
 				sources_ready()
 
-	setTimeout ->
+	collection_timed_out = ->
 		cancel()
 		if audio_buffers.length >= 1
 			if midi_array_buffer
@@ -182,7 +189,9 @@ generate_button.onclick = ->
 		alert message
 		song_status.textContent = "Failed"
 		song_output_li.classList.add("failed")
-	, 1000 * 10
+	
+	clearTimeout collection_tid
+	collection_tid = setTimeout collection_timed_out, 1000 * 10
 
 	# target = 5
 	# active = 0
