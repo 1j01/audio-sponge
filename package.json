@@ -36,10 +36,7 @@
     "am"
   ],
   "scripts": {
-    "start": "zoo coffee server/server.coffee",
-    "now-start": "coffee server/server.coffee",
-    "deploy": "now --public --dotenv production.env --no-clipboard",
-    "deploy-official": "npm run deploy && now alias https://station.now.sh/ && now remove audio-sponge --safe --yes"
+    "start": "zoo coffee server/server.coffee"
   },
   "dependencies": {
     "async": "^2.6.0",

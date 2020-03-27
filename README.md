@@ -1,6 +1,6 @@
 # Procedural Song Generator
 
-[Try it out here.](https://audio-sponge-vsbuyfiwea.now.sh/)
+[Try it out here.](https://audio-sponge.herokuapp.com/)
 
 Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as such, as music - that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as: music.)
 
@@ -124,13 +124,17 @@ AUDIO_SOURCE_FILES_GLOB=C:\Users\Isaiah\Music\**\*.mp3
 It must be a full path. `%` or `$` variables are NOT supported.
 Uses [glob syntax](https://www.npmjs.com/package/glob#glob-primer).
 
-## Deployment
+## Deployment Notes
 
-You can deploy to [△ Now](https://zeit.co/now) with `npm run deploy`
+Deployed to Heroku automatically when pushing to master.
 
-(First install Now with `npm i -g now`)
+Production env vars are configured in the Heroku UI.
 
-For configuration, copy `template.env` or `.env` to a new file called `production.env`
+https://audio-sponge.herokuapp.com/
+
+```
+heroku logs --app audio-sponge --tail
+```
 
 <!--
 ## Are these songs?
