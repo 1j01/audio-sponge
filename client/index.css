@@ -13,6 +13,14 @@ body {
 	text-align: center;
 	padding: 5px; /* don't allow margin of h1 to affect body */
 }
+.disclaimer {
+	/* background: #a00; */
+	/* color: white; */
+	background: yellow;
+	color: black;
+	font-weight: bold;
+	padding: 5px;
+}
 code.block {
 	display: block;
 	white-space: pre-wrap;
