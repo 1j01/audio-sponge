@@ -53,6 +53,12 @@ module.exports = (query, track_callback, done_callback)->
 					done_callback()
 					return
 				
+				if not response.headers.location
+					info = (try cheerio.load(body)("main h1, h1, title").first().text()) or body
+					console.error "[BM] Error getting random MIDI from BitMidi: no Location header for redirect from /random; #{info}"
+					done_callback()
+					return
+
 				track_page_url = new URL(response.headers.location, "https://bitmidi.com/").href
 				console.log "[BM] /random redirected to:", track_page_url
 
