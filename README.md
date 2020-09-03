@@ -129,7 +129,7 @@ Copy `template.env` to a new file called simply `.env`
 
 ### YouTube
 
-To enable the YouTube provider, add a `YOUTUBE_API_ID` key the `.env` file.
+To enable the YouTube provider, add a `YOUTUBE_API_KEY` key the `.env` file.
 [You'll need to get an API ID.](https://console.developers.google.com/apis/credentials)
 
 ### FileSystem

@@ -9,8 +9,8 @@ get_env_var = require "./get-env-var"
 
 net_enabled = true
 
-youtube_api_id = get_env_var "YOUTUBE_API_KEY"
-youtube_enabled = youtube_api_id?
+youtube_api_key = get_env_var "YOUTUBE_API_KEY"
+youtube_enabled = youtube_api_key?
 
 FS_audio_glob = get_env_var "FILESYSTEM_GLOB"
 FS_enabled = false #FS_audio_glob?
@@ -21,7 +21,7 @@ if not net_enabled
 
 if youtube_enabled
 	YT = require "./audio-providers/youtube"
-	YT.init(id: youtube_api_id)
+	YT.init(key: youtube_api_key)
 
 if FS_enabled
 	FS = require "./audio-providers/filesystem"

@@ -52,7 +52,7 @@
     "request": "^2.88.2",
     "socket.io": "2.3.0",
     "throttle": "^1.0.3",
-    "youtube-api-search-reloaded": "^3.0.1",
+    "youtube-api-v3-search": "^1.2.1",
     "ytdl-core": "^3.2.2",
     "zoo": "^0.1.10"
   }

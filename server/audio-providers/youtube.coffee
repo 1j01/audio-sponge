@@ -1,5 +1,5 @@
 async = require "async"
-YoutubeSearch = require "youtube-api-search-reloaded"
+searchYoutube = require "youtube-api-v3-search"
 shuffle = require "../shuffle"
 
 # {
@@ -36,7 +36,9 @@ shuffle = require "../shuffle"
 # 	videoType
 # }
 
+youtube_api_key = null
 module.exports.init = (options)->
+	youtube_api_key = options.key
 
 module.exports.search = (query, track_callback, done_callback)->
 	console.log "[YT] Searching YouTube for \"#{query}\""
@@ -52,9 +54,10 @@ module.exports.search = (query, track_callback, done_callback)->
 		videoSyndicated: "true"
 		q: query
 	}
-	YoutubeSearch(params)
+	searchYoutube(youtube_api_key, params)
 	.then(
-		(tracks)=>
+		(data)=>
+			console.log data
 			tracks = tracks.filter((track)-> track.streamable)
 
 			console.log "[YT] Found #{tracks.length} tracks"
