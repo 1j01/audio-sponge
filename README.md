@@ -127,16 +127,16 @@ MIT licensed, see [LICENSE](LICENSE).
 
 Copy `template.env` to a new file called simply `.env`
 
-### SoundCloud
+### YouTube
 
-To enable the SoundCloud audio provider, add a `SOUNDCLOUD_CLIENT_ID` key the `.env` file.
-[You'll need to get a client ID somehow.](https://stackoverflow.com/questions/40992480/getting-a-soundcloud-api-client-id)
+To enable the YouTube provider, add a `YOUTUBE_API_ID` key the `.env` file.
+[You'll need to get an API ID.](https://console.developers.google.com/apis/credentials)
 
 ### FileSystem
 
-To enable the filesystem audio provider, set `FS_enabled` to `true` in `gather-audio.coffee`, and add an `AUDIO_SOURCE_FILES_GLOB` key the `.env` file, e.g.
+To enable the filesystem provider, set `FS_enabled` to `true` in `gather-audio.coffee`, and add an `FILESYSTEM_GLOB` key the `.env` file, e.g.
 ```
-AUDIO_SOURCE_FILES_GLOB=C:\Users\Isaiah\Music\**\*.mp3
+FILESYSTEM_GLOB=C:\Users\Isaiah\Music\**\*.mp3
 ```
 It must be a full path. `%` or `$` variables are NOT supported.
 Uses [glob syntax](https://www.npmjs.com/package/glob#glob-primer).

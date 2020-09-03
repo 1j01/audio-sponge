@@ -4,9 +4,9 @@ glob = require "glob"
 mm = require "music-metadata"
 shuffle = require "../shuffle"
 
-module.exports.glob = (audio_glob, track_callback, done_callback)->
-	console.log "[FS] Globbing the filesystem for:", audio_glob
-	glob audio_glob, (err, files)=>
+module.exports.glob = (glob_string, track_callback, done_callback)->
+	console.log "[FS] Globbing the filesystem for:", glob_string
+	glob glob_string, (err, files)=>
 		if err
 			console.error "[FS] Error globbing the filesystem:", err if err
 			done_callback()

@@ -3,27 +3,25 @@ shuffle = require "./shuffle"
 Source = require "./Source"
 
 # ---------------------
-# Setup audio providers
+# Setup providers
 # ---------------------
 get_env_var = require "./get-env-var"
 
 net_enabled = true
 
-OGA_enabled = true
+youtube_api_id = get_env_var "YOUTUBE_API_KEY"
+youtube_enabled = youtube_api_id?
 
-soundcloud_client_id = get_env_var "SOUNDCLOUD_CLIENT_ID"
-soundcloud_enabled = soundcloud_client_id?
-
-FS_audio_glob = get_env_var "AUDIO_SOURCE_FILES_GLOB"
+FS_audio_glob = get_env_var "FILESYSTEM_GLOB"
 FS_enabled = false #FS_audio_glob?
 
 if not net_enabled
-	soundcloud_enabled = false
+	youtube_enabled = false
 	OGA_enabled = false
 
-if soundcloud_enabled
-	soundcloud = require "./audio-providers/soundcloud"
-	soundcloud.init(id: soundcloud_client_id)
+if youtube_enabled
+	YT = require "./audio-providers/youtube"
+	YT.init(id: youtube_api_id)
 
 if FS_enabled
 	FS = require "./audio-providers/filesystem"
@@ -41,22 +39,12 @@ module.exports = (query, new_source_callback)->
 	on_new_source = (stream_url, attribution)=>
 		new_source_callback new Source stream_url, attribution
 
-	if soundcloud_enabled
+	if youtube_enabled
 		# query = randomWords(1).join(" ")
 		# TODO: named arguments
-		soundcloud.search query, on_new_source, ()=>
-			console.log "[SC] Done collecting track metadata from search"
+		YT.search query, on_new_source, ()=>
+			console.log "[YT] Done collecting track metadata from search"
 
-	if OGA_enabled
-		# query = randomWords(5).join(" OR ")
-		# TODO: named arguments
-		OGA.search query,
-			(err, stream_url, attribution)=>
-				return console.error "[OGA] Error fetching track metadata:", err if err
-				on_new_source(stream_url, attribution)
-			()=>
-				console.log "[OGA] Done collecting track metadata from search"
-	
 	if FS_enabled
 		# TODO: named arguments
 		FS.glob FS_audio_glob,
