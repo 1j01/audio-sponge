@@ -79,7 +79,8 @@ module.exports.search = (query, track_callback, done_callback)->
 						provider: "youtube"
 					}
 					console.log "getYoutubeSubtitles"
-					getYoutubeSubtitles(item.id.videoId, {type: 'either'})
+					# TODO: type: "either" (not implemented by this module)
+					getYoutubeSubtitles(item.id.videoId, {type: 'nonauto'})
 					.then(
 						(subtitles)=>
 							console.log("[YT] Got subtitles:", subtitles)
