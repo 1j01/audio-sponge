@@ -58,27 +58,29 @@ module.exports.search = (query, track_callback, done_callback)->
 	.then(
 		(data)=>
 			console.log data
-			tracks = tracks.filter((track)-> track.streamable)
+			items = data.items.filter((searchResult)-> searchResult.snippet.liveBroadcastContent is "none")
+			{items} = data
 
-			console.log "[YT] Found #{tracks.length} tracks"
+			console.log "[YT] Found #{items.length} videos"
 
-			async.eachLimit shuffle(tracks), 2,
-				(track, callback)=>
+			async.eachLimit shuffle(items), 2,
+				(item, callback)=>
+					console.log item
 					# NOTE: MUST not call callback herein syncronously!
 					# An error in the callback would be caught by `async` and lead to confusion.
 					attribution = {
-						link: track.permalink_url
-						name: track.title
+						link: "https://www.youtube.com/watch?v=#{item.id.videoId}"
+						name: item.snippet.title
 						author: {
-							name: track.user.username
-							link: track.user.permalink_url
+							name: item.snippet.channelTitle
+							link: "https://www.youtube.com/channel/#{item.snippet.channelId}"
 						}
 						provider: "youtube"
 					}
 					console.log "[YT] process.nextTick then track_callback"
 					process.nextTick => # avoid synchronous callback!
 						console.log "[YT] track_callback"
-						track_callback(track.stream_url, attribution)
+						track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
 						setTimeout =>
 							callback null
 						, 500 # TODO: does this actually help?
