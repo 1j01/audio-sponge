@@ -1,5 +1,6 @@
 async = require "async"
 searchYoutube = require "youtube-api-v3-search"
+getYoutubeSubtitles = require "@joegesualdo/get-youtube-subtitles-node"
 shuffle = require "../shuffle"
 
 # {
@@ -77,13 +78,19 @@ module.exports.search = (query, track_callback, done_callback)->
 						}
 						provider: "youtube"
 					}
-					console.log "[YT] process.nextTick then track_callback"
-					process.nextTick => # avoid synchronous callback!
-						console.log "[YT] track_callback"
-						track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
-						setTimeout =>
-							callback null
-						, 500 # TODO: does this actually help?
+					console.log "getYoutubeSubtitles"
+					getYoutubeSubtitles(item.id.videoId, {type: 'either'})
+					.then(
+						(subtitles)=>
+							console.log("[YT] Got subtitles:", subtitles)
+							track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
+							setTimeout =>
+								callback null
+							, 500 # TODO: does this actually help?
+						(err)=>
+							console.log "[YT] Failed to get subtitles:", err
+							callback(err)
+					)
 				(err)=>
 					# FIXME: catches errors within track_callback
 					console.error "[YT] Error:", err if err
