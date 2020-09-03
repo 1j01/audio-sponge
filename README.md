@@ -30,19 +30,19 @@ I started this project with the goal of making an infinite everchanging generati
 I managed to make something, but before getting to making it sound good, I ran into some problems:
 1. I couldn't deploy to heroku (or many other free services) and just have it stream an audio file like a radio station - heroku would cut off the response at [30s](https://devcenter.heroku.com/articles/request-timeout). I would have to use websockets or something to stream, or rearchetect it so it does the audio generation on the client.
 2. Streaming audio is not too difficult to get working, but harder to get scalable. The way I implemented it it could stream to multiple clients (cool), but if a client paused the stream, the server would indefinitely buffer audio for that client. You could litertally DOS it by pausing the stream and waiting. ShoutCast/IceCast would be better (but they would work better with discrete songs...)
-3. Installing native dependencies is hard. I had gone with Node.js so I could use the somewhat familiar-to-me Web Audio API (also so I could possibly transition to doing it on the client)
-4. While listening to the stream, if I heard something I liked, I couldn't easily save it. I had to already have been recording the system audio and then pause and cut that.
+3. Installing native dependencies is hard. I had gone with Node.js so I could use the somewhat familiar-to-me Web Audio API (also so I could possibly transition to doing it on the client). I tried at least two implementations of the Web Audio API for Node.js but they came with problems installing native dependencies and/or lacked features I wanted (to make fun audio effects in the future).
+4. While listening to the stream, if I heard something I liked, I couldn't easily save it. I had to already have been recording the system audio and then pause and cut that (somewhat arbitrarily) and save it.
 5. I wanted to do visualization on the client, but this would mean meticulously marshalling data between the server and client, and keeping it SYNCED with the audio stream. This would be a RIDICULOUSLY complicated way to approach this problem.
-6. I wanted to accept search terms on the client, but if it just fed into a public audio stream, trolling/modernation would be a concern. (Also if you *wanted* to try generating something you'd like to keep private, ~~there wouldn't be a space for that~~ you'd have to set up the whole dev environment.)
+6. I wanted to accept search terms on the client, but if it just fed into a public audio stream, modernation would be a concern. (Also if you *wanted* to try generating something you'd like to keep private, you'd have to set up the whole dev environment, which is prohibitive for non-techies.)
 
 So I decided to rewrite it to generate individual songs.  
 
-I did that, and I made a reasonably nice looking UI, and I made it so you can enter search terms for creative control over the output, and I made it show attribution per song, instead of the long list of attribution for a pool of sounds that it might be using which didn't correspond much to what you were hearing.  
+I did that, and I made a reasonably nice looking UI, and I made it so you can enter search terms for creative control over the output, and I made it show attribution per song, instead of the long list of attribution for a pool of sounds that it *might* be using which didn't correspond much to what you were hearing.  
 I made it use MIDI files as a basis for song structure - perhaps it will only create "covers" of songs, but I'm fine with that.
 
-But just as I thought I had a good basis to work from and was ready to start doing the creative work of trying to make it sound good/interesting a significant amount of the time, I ran into performance problems.  
+But just as I thought I had a good basis to work from and was ready to start doing the creative work of trying to make it sound good/interesting (reasonably often, rather than very occasionally), I ran into performance problems.  
 With more complex MIDI files, it would lag and stutter the audio, which made it very unpleasant to listen to.  
-You could pause it and wait for it to finish, and playing it back it would sound fine, but if you downloaded and played it in VLC, it would actually include the stuttering.
+You could pause it and wait for it to finish, and playing it back it would sound fine, but if you downloaded and played it in VLC, it would actually include the stuttering. (This behavior depends on the browser.)  
 So not only is it painful to listen to, it's inconsistent, and can give you a false sense of sonic security.
 You might save something and then come back to it months later and be like, "I thought this one sounded really cool! This sounds like shit...",
 or going thru a collection, maybe just "this is a bad one, *delete*."  
@@ -67,8 +67,8 @@ I think it would be a lot cooler to use **video** for the sources.
 - I've had this idea of pairing audio effects with corresponding video effects, like:
   - a muffling sound with a blur
   - volume = opacity
-    - fading in when fading in
-    - fading out when fading out
+    - fading in = fading in
+    - fading out = fading out
   - a grunge effect = increased contrast maybe
   - pitch could be indicated with Y position, or with scaling (lower = larger, higher = smaller)
   - delay = delay
@@ -77,9 +77,9 @@ I think it would be a lot cooler to use **video** for the sources.
   - bit crush = reduce bitrate of video
   - other things could shift color channels, skew the video, etc.
 - Use closed caption data and speech recognition to find where words are uttered, and combine them together into sentences/lyrics
-  - This way you could search for a famous line in a movie, and get it to sample that actual line and not just that scene
-  - If there aren't (good) results for the whole phrase the user enters, search for sub-phrases and words and try to find where those are uttered in videos, to splice them together in a Frankenstein's monstrosity
-  - Just generally sampling from whole words probably makes things more interesting/pleasant, if we can do at least word boundary detection 
+  - This way you could search for a famous line in a movie, and get it to sample that actual line (and not just that scene)
+  - If there aren't (good) results for the whole phrase the user enters, search for sub-phrases and words and try to find where those are uttered in videos, to splice them together in a video collage
+  - Just generally sampling from whole words probably makes things more interesting/pleasant, if we can do at least word boundary detection (i.e. non-semantic speech recognition/detection) 
 
 Also, it would be good to make song generation reproducible, and maybe export to a known DAW / video editor format for human editing.
 
@@ -92,7 +92,7 @@ Externalities for reproducibility:
   - Videos can be edited, which is likely to ruin timecodes
   - [Content-addressable storage](https://en.wikipedia.org/wiki/Content-addressable_storage) would be better, but might not be practical
   - Caching media can work but it's a lot heavier than a list of search results; video can take up a lot of space
-- (Random decsisions can be made pseudorandom easily)
+- Random decisions can be made pseudorandom easily (with a seeded PRNG)
 
 ## Project Structure
 
