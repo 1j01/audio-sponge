@@ -136,7 +136,7 @@ To enable the YouTube provider, add a `YOUTUBE_API_KEY` key the `.env` file.
 
 To enable the filesystem provider, set `FS_enabled` to `true` in `gather-audio.coffee`, and add an `FILESYSTEM_GLOB` key the `.env` file, e.g.
 ```
-FILESYSTEM_GLOB=C:\Users\Isaiah\Music\**\*.mp3
+FILESYSTEM_GLOB=C:\Users\Whomst\Videos\**\*.mp4
 ```
 It must be a full path. `%` or `$` variables are NOT supported.
 Uses [glob syntax](https://www.npmjs.com/package/glob#glob-primer).

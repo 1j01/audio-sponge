@@ -25,9 +25,6 @@ if youtube_enabled
 
 if FS_enabled
 	FS = require "./audio-providers/filesystem"
-
-if OGA_enabled
-	OGA = require "./audio-providers/opengameart"
 # ---------------------
 
 module.exports = (query, new_source_callback)->

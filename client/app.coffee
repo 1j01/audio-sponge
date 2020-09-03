@@ -302,12 +302,14 @@ provider_to_icon =
 	"spotify": "icon-spotify"
 	"bandcamp": "icon-bandcamp"
 	"lastfm": "icon-lastfm"
+	"youtube": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
 	"opengameart": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
 	"bitmidi": "icon-globe" # TODO: specific icon? but it's not very midi-indicative I feel
 
 provider_to_acquisition_method_description =
 	"filesystem": "Via the filesystem"
 	"soundcloud": "Via the SoundCloud API"
+	"youtube": "Via YouTube"
 	# "spotify": "Via the Spotify API"
 	# "bandcamp": "Via the Bandcamp API"
 	# "lastfm": "Via the Last.fm API"

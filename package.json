@@ -39,7 +39,6 @@
     "start": "zoo coffee server/server.coffee"
   },
   "dependencies": {
-    "@joegesualdo/get-youtube-subtitles-node": "^0.1.0",
     "async": "^3.2.0",
     "cheerio": "^1.0.0-rc.3",
     "coffeescript": "2.5.1",
@@ -53,7 +52,7 @@
     "socket.io": "2.3.0",
     "throttle": "^1.0.3",
     "youtube-api-v3-search": "^1.2.1",
-    "ytdl-core": "^3.2.2",
+    "youtube-dl-ffmpeg-ffprobe-static": "^1.2.1",
     "zoo": "^0.1.10"
   }
 }
