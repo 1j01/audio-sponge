@@ -39,18 +39,18 @@
     "start": "zoo coffee server/server.coffee"
   },
   "dependencies": {
-    "async": "^2.6.0",
-    "cheerio": "^1.0.0-rc.2",
+    "async": "^3.2.0",
+    "cheerio": "^1.0.0-rc.3",
     "coffeescript": "2.5.1",
-    "express": "^4.16.2",
-    "fsu": "^1.0.4",
-    "glob": "^7.1.2",
-    "music-metadata": "^2.3.2",
+    "express": "^4.17.1",
+    "fsu": "^2.0.2",
+    "glob": "^7.1.6",
+    "music-metadata": "^7.0.2",
     "node-soundcloud": "0.0.6",
-    "random-words": "^1.1.0",
-    "request": "^2.87.0",
+    "random-words": "^1.1.1",
+    "request": "^2.88.2",
     "socket.io": "2.3.0",
     "throttle": "^1.0.3",
-    "zoo": "^0.1.9"
+    "zoo": "^0.1.10"
   }
 }
