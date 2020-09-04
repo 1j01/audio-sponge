@@ -134,7 +134,7 @@ generate_button.onclick = ->
 
 	on_progress = ->
 		clearTimeout(collection_tid)
-		collection_tid = setTimeout collection_timed_out, 1000 * 10
+		collection_tid = setTimeout collection_timed_out, 1000 * 60
 
 	cancel_getting_midi = sound_search {query, song_id, midi: true}, on_progress, (file_array_buffer, metadata)->
 		console.log "Got a midi file", metadata
@@ -194,7 +194,7 @@ generate_button.onclick = ->
 		song_output_li.classList.add("failed")
 	
 	clearTimeout collection_tid
-	collection_tid = setTimeout collection_timed_out, 1000 * 10
+	collection_tid = setTimeout collection_timed_out, 1000 * 60
 
 	# target = 5
 	# active = 0
