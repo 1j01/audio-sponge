@@ -150,11 +150,20 @@ generate_button.onclick = ->
 	
 	canceled = false
 	cancel_getting_audio = sound_search {query, song_id}, on_progress, (file_array_buffer, metadata)->
+		return if canceled
 		console.log "Got a sound file (decoding...)", metadata
 		
+		# TODO: is new Uint8Array necessary?
+		video_blob = new Blob([new Uint8Array(file_array_buffer)])
+		video_blob_uri = URL.createObjectURL(video_blob)
+		video = document.createElement("video")
+		song_audio_row.appendChild(video)
+		video.src = video_blob_uri
+
 		audioContext.decodeAudioData(file_array_buffer).then(
 			(audio_buffer)->
 				return if canceled
+				audio_buffer.video = video # HACK
 				audio_buffers.push(audio_buffer)
 				metadatas_used.push(metadata)
 				console.log "Collected #{audio_buffers.length} audio buffers so far"

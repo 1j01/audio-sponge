@@ -21,6 +21,8 @@ findSamplesFromAudioBuffer = (audio_buffer, sample_callback)->
 		duration = Math.max(0, duration - 0.01)
 		end = start + duration
 		new_audio_buffer = sliceAudioBuffer audio_buffer, start, end, window.audioContext
+		new_audio_buffer.video = audio_buffer.video # HACK
+		new_audio_buffer.startTimeInVideo = start # HACK
 
 		sample_callback(new_audio_buffer)
 		# metadata.number_of_samples[this particular source] += 1
@@ -97,6 +99,14 @@ class @Song
 				buffer_source.connect(@pre_global_fx_gain)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
+
+				# TODO: actually sync this with audio playback
+				setTimeout => # HACK
+					console.log beat_audio_buffer.startTimeInVideo
+					beat_audio_buffer.video.currentTime = beat_audio_buffer.startTimeInVideo
+					beat_audio_buffer.video.muted = true
+					beat_audio_buffer.video.play()
+				, (start_time - schedule_start_time) * 1000 # HACKity HACK
 
 		# TODO: visualize the rhythm
 		# TODO: layers of sound (i.e. tracks), with potentially different or similar/related rhythms for melody and percussion
