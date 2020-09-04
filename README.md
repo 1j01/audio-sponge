@@ -1,27 +1,27 @@
-# Procedural Song Generator
+# Video Sponge
 
-[Try it out here.](https://audio-sponge.herokuapp.com/)
+This is an experiment in creating video collages and procedurally generating music videos.
 
-Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as such, as music - that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as: music.)
+## Ideas
 
-## What it does
+* Generate or accept lyrics in UI, then search for videos online that contain the words and phrases of the lyrics and string them together in a video collage (using closed captions / subtitles and/or speech recognition)
 
-* Accepts search terms in the UI (e.g. "acapella", "coin collect", "grass sound effect")
+* Accept search terms for non-lyrical parts, or just sample other parts of the videos used (probably more economical, and more cohesive results, but sometimes you might want more variety or control)
 
-* Collects audio by searching SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources - maybe Napster, maybe Spotify, maybe general web search engines filtered to audio files (Bing and DuckDuckGo have `filetype:mp3` support but still need filtering to actual mp3 files).)
+* Use MIDI files for easily getting song structure information to work with. I've implemented this using BitMidi, and made it use search terms from the user, and fall back to a random MIDI if it doesn't find anything.
 
-* Gets a MIDI file from BitMidi (using search terms, falling back to a random MIDI if it doesn't find anything)
+* When finding samples, detect beats for percussion, detect pitch/harmonics for melody.
 
-* Takes random samples from the audio it collected (TODO: Detect beats for percussion, detect pitch/harmonics for melody)
+* Crazy random effects like randomly changing knobs on [this](https://googlechromelabs.github.io/web-audio-samples/archive/demos/wavetable-synth.html)
 
-* Uses a MIDI file for structure and plays the samples pitch shifted for the melody and left as is for the percussion, with some reverb.
-  (TODO: crazy random effects like randomly changing knobs on [this](https://googlechromelabs.github.io/web-audio-samples/archive/demos/wavetable-synth.html), maybe experiment with generating or modifying melody / rhythm, phasing in and out parts, ...)
+* Experiment with generating or modifying melody / rhythm, phasing in and out parts, automating effects rhythmically and long term
 
-* Starts playing while generating
-  (TODO: fix horrible performance problems)
+* Video effects that correspond to audio effects (audio-visual analogies)
+  - See below
 
-* Lets you download audio `.ogg` files and attribution `.html` files (with related filenames so you can keep them together easily)
-  (TODO: ideally, embed attribution information in audio file metadata. TODO: track number of samples per source and don't show sources where no samples were used (as can happen))
+* Download output videos and attribution `.html` files (with related filenames so you can keep them together easily). Embed attribution information in video file metadata. Track number of samples per source and don't show sources where no samples were used.
+
+* Export to a known video editor's project file format. This would probably be very limiting in the effects department, as I want to do a lot of custom effects. And it wouldn't be very portable.
 
 ## Project Story
 
@@ -73,9 +73,10 @@ I think it would be a lot cooler to use **video** for the sources.
   - pitch could be indicated with Y position, or with scaling (lower = larger, higher = smaller)
   - delay = delay
   - merging audio sources = simply averaging pixels, or perhaps something more additive
+    - so you might have a "dry" (original) signal and a "wet" (e.g. reverb'd) signal, mixed together in the audio graph based on an oscillator so the reverb (or whatever) fades in an out, and it would just by mixed together in the video graph and correspondingly fade in and out
   - reverb convolution is applied to pixels over time, to produce a visual echo
   - bit crush = reduce bitrate of video
-  - other things could shift color channels, skew the video, etc.
+  - other things could shift color channels, skew the video, or use novel shaders from shadertoy
 - Use closed caption data and speech recognition to find where words are uttered, and combine them together into sentences/lyrics
   - This way you could search for a famous line in a movie, and get it to sample that actual line (and not just that scene)
   - If there aren't (good) results for the whole phrase the user enters, search for sub-phrases and words and try to find where those are uttered in videos, to splice them together in a video collage
