@@ -98,8 +98,26 @@ module.exports.search = (query, track_callback, done_callback)->
 						provider: "youtube"
 					}
 					
-					youtube_dl_wrap.exec(["https://www.youtube.com/watch?v=#{item.id.videoId}",
-						"-f", "worst", "-o", "#{videos_folder}/%(id)s.%(ext)s", "--restrict-filenames"])
+					youtube_dl_wrap.exec([
+						"https://www.youtube.com/watch?v=#{item.id.videoId}"
+
+						"--format", "worst" # worst quality please! :)
+
+						"--output", "#{videos_folder}/%(id)s.%(ext)s"
+						"--restrict-filenames"
+						"--no-overwrites"
+
+						# TODO: which of these options are needed vs implied?
+						"--write-sub"
+						# "--write-auto-sub"
+						# "--all-subs"
+						"--sub-format", "vtt"
+						"--convert-subs", "vtt"
+
+						# "--extract-audio"
+
+						"--write-info-json"
+					])
 					.on("progress", (progress) => 
 						console.log(item.id.videoId, progress.percent, progress.totalSize, progress.currentSpeed, progress.eta)
 					)
@@ -121,7 +139,7 @@ module.exports.search = (query, track_callback, done_callback)->
 					done_callback() # regardless of error
 		(err)=>
 			if err
-				console.error "[YT] Error searching for tracks:", err if err
+				console.error "[YT] Error searching for videos:", err if err
 				done_callback()
 				return
 	)
