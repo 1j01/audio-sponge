@@ -4,7 +4,7 @@ glob = require "glob"
 async = require "async"
 search_youtube = require "youtube-api-v3-search"
 YoutubeDlWrap = require "youtube-dl-wrap"
-webvtt = require "node-webvtt"
+vtt_to_json = require "vtt-to-json"
 shuffle = require "../shuffle"
 
 videos_folder = path.join(__dirname, "../../videos")
@@ -143,21 +143,21 @@ module.exports.search = (query, track_callback, done_callback)->
 								if error
 									callback(error)
 									return
-								errored = false
-								try
-									# TODO: escape sequences are not handled
-									subtitles = webvtt.parse(vtt_content)
-								catch error
-									errored = true
-									console.log("[YT] Failed to parse subtitles file '#{vtt_file}'")
-									callback(new Error("Failed to parse subtitles file '#{vtt_file}': #{error}"))
-								if not errored
-									console.log("[YT] Subtitles:", JSON.stringify(subtitles))
-									# TODO: don't just assume mp4; maybe request transcoding to mp4
-									track_callback("#{videos_folder}/#{item.id.videoId}.mp4", attribution)
-									setTimeout =>
-										callback null
-									, 500 # TODO: does this actually help?
+								# TODO: this is async for no reason and doesn't allow text from other languages
+								# also, escape sequences are not handled
+								vtt_to_json(vtt_content)
+								.then(
+									(subtitles)=>
+										console.log("[YT] Subtitles:", JSON.stringify(subtitles))
+										# TODO: don't just assume mp4; maybe request transcoding to mp4
+										track_callback("#{videos_folder}/#{item.id.videoId}.mp4", attribution)
+										setTimeout =>
+											callback null
+										, 500 # TODO: does this actually help?
+									(error)=>
+										console.log("[YT] Failed to parse subtitles:", subtitles)
+										callback(error)
+								)
 							)
 						)
 					)

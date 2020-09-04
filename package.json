@@ -46,11 +46,11 @@
     "fsu": "^2.0.2",
     "glob": "^7.1.6",
     "music-metadata": "^7.0.2",
-    "node-webvtt": "^1.9.1",
     "random-words": "^1.1.1",
     "request": "^2.88.2",
     "socket.io": "2.3.0",
     "throttle": "^1.0.3",
+    "vtt-to-json": "^0.1.1",
     "youtube-api-v3-search": "^1.2.1",
     "youtube-dl-wrap": "^1.1.2",
     "zoo": "^0.1.10"
