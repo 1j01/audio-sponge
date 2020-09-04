@@ -82,7 +82,7 @@ module.exports.search = (query, track_callback, done_callback)->
 					}
 					
 					youtube_dl_wrap.exec(["https://www.youtube.com/watch?v=#{item.id.videoId}",
-						"-f", "best", "-o", "output.mp4"])
+						"-f", "worst", "-o", "%(title)s.%(ext)s", "--restrict-filenames"])
 					.on("progress", (progress) => 
 						console.log(item.id.videoId, progress.percent, progress.totalSize, progress.currentSpeed, progress.eta)
 					)
