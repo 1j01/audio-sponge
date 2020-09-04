@@ -117,10 +117,16 @@ MIT licensed, see [LICENSE](LICENSE).
 
 ## Development Setup
 
+Requirements:
+- [Git](https://git-scm.com/)
+- [Git LFS](https://git-lfs.github.com/)
+- [Node.js](https://nodejs.org) - best installed with [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows)
+- [Python](https://www.python.org/) available as `python` - can be installed with `sudo apt install python-is-python3` on Ubuntu
+
 1. [Clone the repository](https://help.github.com/articles/cloning-a-repository/)
-2. Install [Node.js](https://nodejs.org) if you don't have it already
-3. Run `npm i` in a terminal/command-prompt to install dependencies
-4. `npm start` to start the server
+2. Open a terminal/command-prompt in the project directory
+3. Run `npm i` to install dependencies
+4. Run `npm start` to start the server
 5. Wait for it to say "Listening on http://localhost:3901" and open that URL
 
 ## Configuration
