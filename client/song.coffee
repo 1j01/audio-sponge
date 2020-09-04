@@ -100,12 +100,20 @@ class @Song
 					buffer_source.playbackRate.value = Math.pow(2, midi_note_val/12 - 5)
 				buffer_source.connect(@pre_global_fx_gain)
 				buffer_source.start(start_time)
+				end_time = start_time + beat_audio_buffer.duration
 				# buffer_source.stop(start_time + 0.05)
 				@video_events.push({
+					type: "play"
 					video: beat_audio_buffer.video
 					startTimeInVideo: beat_audio_buffer.startTimeInVideo
-					startTimeInAudioContext: start_time
-					startTimeInAudioOutput: start_time - schedule_start_time
+					# timeInAudioContext: start_time
+					timeInAudioOutput: start_time - schedule_start_time
+				})
+				@video_events.push({
+					type: "pause"
+					video: beat_audio_buffer.video
+					# timeInAudioContext: end_time
+					timeInAudioOutput: end_time - schedule_start_time
 				})
 		# TODO: visualize the rhythm
 		# TODO: layers of sound (i.e. tracks), with potentially different or similar/related rhythms for melody and percussion

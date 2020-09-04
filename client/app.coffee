@@ -282,12 +282,13 @@ generate_button.onclick = ->
 			requestAnimationFrame(animate)
 			if not song_output_audio.paused and not song_output_audio.ended and song_output_audio.currentTime > 0
 				for video_event in song.video_events
-					if song_output_audio_time_at_last_raf <= video_event.startTimeInAudioOutput < song_output_audio.currentTime
-						# TODO: pause after sample
-						# if video_event.type is "play"
-						video_event.video.currentTime = video_event.startTimeInVideo
-						video_event.video.muted = true
-						video_event.video.play()
+					if song_output_audio_time_at_last_raf <= video_event.timeInAudioOutput < song_output_audio.currentTime
+						if video_event.type is "play"
+							video_event.video.currentTime = video_event.startTimeInVideo
+							video_event.video.muted = true
+							video_event.video.play()
+						if video_event.type is "pause"
+							video_event.video.pause()
 				song_output_audio_time_at_last_raf = song_output_audio.currentTime
 		animate()
 
