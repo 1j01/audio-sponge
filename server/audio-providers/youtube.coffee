@@ -1,9 +1,26 @@
+fs = require "fs"
 async = require "async"
 search_youtube = require "youtube-api-v3-search"
-youtube_dl_path = require("youtube-dl-ffmpeg-ffprobe-static").path
 YoutubeDlWrap = require("youtube-dl-wrap")
-youtube_dl_wrap = new YoutubeDlWrap(youtube_dl_path)
 shuffle = require "../shuffle"
+
+videos_folder = require("path").join(__dirname, "../../videos")
+bin_folder = require("path").join(__dirname, "../../bin")
+youtube_dl_file_name = if require("os").platform() is "win32" then "youtube-dl.exe" else "youtube-dl"
+youtube_dl_path = require("path").join(bin_folder, youtube_dl_file_name)
+# TODO: delay init until downloaded? or just make sure it always exists in the published version of this project
+if (not fs.existsSync(youtube_dl_path)) or process.env.REDOWNLOAD_YOUTUBE_DL is "1"
+	YoutubeDlWrap.downloadYoutubeDl(youtube_dl_path, "2020.07.28")
+	.then(
+		->
+			fs.chmodSync(youtube_dl_path, "755")
+			console.log("Downloaded youtube-dl")
+		(error)->
+			console.error("Failed to download youtube-dl:", error)
+	)
+
+youtube_dl_wrap = new YoutubeDlWrap(youtube_dl_path)
+
 
 # {
 # 	part,
@@ -82,7 +99,7 @@ module.exports.search = (query, track_callback, done_callback)->
 					}
 					
 					youtube_dl_wrap.exec(["https://www.youtube.com/watch?v=#{item.id.videoId}",
-						"-f", "worst", "-o", "%(id)s.%(ext)s", "--restrict-filenames"])
+						"-f", "worst", "-o", "#{videos_folder}/%(id)s.%(ext)s", "--restrict-filenames"])
 					.on("progress", (progress) => 
 						console.log(item.id.videoId, progress.percent, progress.totalSize, progress.currentSpeed, progress.eta)
 					)

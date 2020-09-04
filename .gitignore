@@ -1,7 +1,11 @@
 
 node_modules/
 temp/
+cache/
 output/
+videos/
+source-videos/
+output-videos/
 .env
 production.env
 
