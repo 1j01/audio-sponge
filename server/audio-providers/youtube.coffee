@@ -148,8 +148,9 @@ module.exports.search = (query, track_callback, done_callback)->
 								vtt_to_json(vtt_content)
 								.then(
 									(subtitles)=>
-										console.log("[YT] Subtitles:", subtitles)
-										track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
+										console.log("[YT] Subtitles:", JSON.stringify(subtitles))
+										# TODO: don't just assume mp4; maybe request transcoding to mp4
+										track_callback("#{videos_folder}/#{item.id.videoId}.mp4", attribution)
 										setTimeout =>
 											callback null
 										, 500 # TODO: does this actually help?

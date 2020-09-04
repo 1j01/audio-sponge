@@ -33,8 +33,8 @@ module.exports = (query, new_source_callback)->
 	# TODO: abstract "OR"-searching by using "a OR b" for OGA but multiple searches for SC
 	# so we can do searches for themes globally, and expose that to the user
 
-	on_new_source = (stream_url, attribution)=>
-		new_source_callback new Source stream_url, attribution
+	on_new_source = (file_path, attribution)=>
+		new_source_callback new Source file_path, attribution
 
 	if youtube_enabled
 		# query = randomWords(1).join(" ")
@@ -45,8 +45,8 @@ module.exports = (query, new_source_callback)->
 	if FS_enabled
 		# TODO: named arguments
 		FS.glob FS_audio_glob,
-			(err, stream_url, attribution)=>
+			(err, file_path, attribution)=>
 				return console.error "[FS] Error fetching track metadata:", err if err
-				on_new_source(stream_url, attribution)
+				on_new_source(file_path, attribution)
 			()=>
 				console.log "[FS] Done collecting track metadata from files"
