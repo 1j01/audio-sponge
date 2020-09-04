@@ -13,7 +13,7 @@ class Source
 		if uri.match(/^http[s]:/)
 			@uri = uri
 			# TODO: cache?
-			@createReadStream = -> request(uri, qs: client_id: process.env.SOUNDCLOUD_CLIENT_ID)
+			@createReadStream = -> request(uri)
 		else
 			file_path = uri
 			@uri = "file:///#{file_path}"

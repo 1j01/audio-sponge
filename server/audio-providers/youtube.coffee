@@ -1,6 +1,8 @@
 async = require "async"
-searchYoutube = require "youtube-api-v3-search"
-getYoutubeSubtitles = require "@joegesualdo/get-youtube-subtitles-node"
+search_youtube = require "youtube-api-v3-search"
+youtube_dl_path = require("youtube-dl-ffmpeg-ffprobe-static").path
+YoutubeDlWrap = require("youtube-dl-wrap")
+youtube_dl_wrap = new YoutubeDlWrap(youtube_dl_path)
 shuffle = require "../shuffle"
 
 # {
@@ -55,7 +57,7 @@ module.exports.search = (query, track_callback, done_callback)->
 		videoSyndicated: "true"
 		q: query
 	}
-	searchYoutube(youtube_api_key, params)
+	search_youtube(youtube_api_key, params)
 	.then(
 		(data)=>
 			console.log data
@@ -66,7 +68,7 @@ module.exports.search = (query, track_callback, done_callback)->
 
 			async.eachLimit shuffle(items), 2,
 				(item, callback)=>
-					console.log item
+					console.log "[YT] Video:", item
 					# NOTE: MUST not call callback herein syncronously!
 					# An error in the callback would be caught by `async` and lead to confusion.
 					attribution = {
@@ -78,19 +80,23 @@ module.exports.search = (query, track_callback, done_callback)->
 						}
 						provider: "youtube"
 					}
-					console.log "getYoutubeSubtitles"
-					# TODO: type: "either" (not implemented by this module)
-					getYoutubeSubtitles(item.id.videoId, {type: 'nonauto'})
-					.then(
-						(subtitles)=>
-							console.log("[YT] Got subtitles:", subtitles)
-							track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
-							setTimeout =>
-								callback null
-							, 500 # TODO: does this actually help?
-						(err)=>
-							console.log "[YT] Failed to get subtitles:", err
-							callback(err)
+					
+					youtube_dl_wrap.exec(["https://www.youtube.com/watch?v=#{item.id.videoId}",
+						"-f", "best", "-o", "output.mp4"])
+					.on("progress", (progress) => 
+						console.log(item.id.videoId, progress.percent, progress.totalSize, progress.currentSpeed, progress.eta)
+					)
+					.on("error", (exitCode, processError, stderr) => 
+						message = "youtube-dl exited with code #{exitCode}, process error: #{JSON.stringify(processError)}, stderr:\n#{stderr}"
+						console.error("[YT] #{message}")
+						callback(new Error(message))
+					)
+					.on("close", () =>
+						console.log("[YT] Got video")
+						track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
+						setTimeout =>
+							callback null
+						, 500 # TODO: does this actually help?
 					)
 				(err)=>
 					# FIXME: catches errors within track_callback

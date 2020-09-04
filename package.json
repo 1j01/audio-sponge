@@ -53,6 +53,7 @@
     "throttle": "^1.0.3",
     "youtube-api-v3-search": "^1.2.1",
     "youtube-dl-ffmpeg-ffprobe-static": "^1.2.1",
+    "youtube-dl-wrap": "^1.1.2",
     "zoo": "^0.1.10"
   }
 }
