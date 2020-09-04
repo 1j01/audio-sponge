@@ -275,6 +275,22 @@ generate_button.onclick = ->
 
 		song.output.connect(destination)
 		end_time = song.schedule()
+
+		song_output_audio_time_at_last_raf = song_output_audio.currentTime
+		# memory and CPU usage leak (keep looping since the audio could be played again)
+		animate = ->
+			requestAnimationFrame(animate)
+			if not song_output_audio.paused and not song_output_audio.ended and song_output_audio.currentTime > 0
+				for video_event in song.video_events
+					if song_output_audio_time_at_last_raf <= video_event.startTimeInAudioOutput < song_output_audio.currentTime
+						# TODO: pause after sample
+						# if video_event.type is "play"
+						video_event.video.currentTime = video_event.startTimeInVideo
+						video_event.video.muted = true
+						video_event.video.play()
+				song_output_audio_time_at_last_raf = song_output_audio.currentTime
+		animate()
+
 		tid = setTimeout(stop_generating, end_time * 1000)
 
 		song_output_audio.srcObject = destination.stream

@@ -39,6 +39,8 @@ class @Song
 
 		@midi = new Midi(midi_array_buffer)
 
+		@video_events = []
+
 		@context = window.audioContext
 
 		# TODO: maybe add a limiter to avoid clipping in a more robust way than just gain reduction
@@ -99,15 +101,12 @@ class @Song
 				buffer_source.connect(@pre_global_fx_gain)
 				buffer_source.start(start_time)
 				# buffer_source.stop(start_time + 0.05)
-
-				# TODO: actually sync this with audio playback
-				setTimeout => # HACK
-					console.log beat_audio_buffer.startTimeInVideo
-					beat_audio_buffer.video.currentTime = beat_audio_buffer.startTimeInVideo
-					beat_audio_buffer.video.muted = true
-					beat_audio_buffer.video.play()
-				, (start_time - schedule_start_time) * 1000 # HACKity HACK
-
+				@video_events.push({
+					video: beat_audio_buffer.video
+					startTimeInVideo: beat_audio_buffer.startTimeInVideo
+					startTimeInAudioContext: start_time
+					startTimeInAudioOutput: start_time - schedule_start_time
+				})
 		# TODO: visualize the rhythm
 		# TODO: layers of sound (i.e. tracks), with potentially different or similar/related rhythms for melody and percussion
 		# TODO: phase in and out layers and their sources
