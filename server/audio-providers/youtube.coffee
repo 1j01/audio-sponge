@@ -1,13 +1,16 @@
 fs = require "fs"
+path = require "path"
+glob = require "glob"
 async = require "async"
 search_youtube = require "youtube-api-v3-search"
-YoutubeDlWrap = require("youtube-dl-wrap")
+YoutubeDlWrap = require "youtube-dl-wrap"
+vtt_to_json = require "vtt-to-json"
 shuffle = require "../shuffle"
 
-videos_folder = require("path").join(__dirname, "../../videos")
-bin_folder = require("path").join(__dirname, "../../bin")
+videos_folder = path.join(__dirname, "../../videos")
+bin_folder = path.join(__dirname, "../../bin")
 youtube_dl_file_name = if require("os").platform() is "win32" then "youtube-dl.exe" else "youtube-dl"
-youtube_dl_path = require("path").join(bin_folder, youtube_dl_file_name)
+youtube_dl_path = path.join(bin_folder, youtube_dl_file_name)
 # TODO: delay init until downloaded? or just make sure it always exists in the published version of this project
 if (not fs.existsSync(youtube_dl_path)) or process.env.REDOWNLOAD_YOUTUBE_DL is "1"
 	YoutubeDlWrap.downloadYoutubeDl(youtube_dl_path, "2020.07.28")
@@ -111,7 +114,7 @@ module.exports.search = (query, track_callback, done_callback)->
 						"--write-sub"
 						# "--write-auto-sub"
 						# "--all-subs"
-						"--sub-format", "vtt"
+						# "--sub-format", "vtt" # hunch: this might limit to only downloading IF the format is provided directly
 						"--convert-subs", "vtt"
 
 						# "--extract-audio"
@@ -127,11 +130,35 @@ module.exports.search = (query, track_callback, done_callback)->
 						callback(new Error(message))
 					)
 					.on("close", () =>
-						console.log("[YT] Got video")
-						track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
-						setTimeout =>
-							callback null
-						, 500 # TODO: does this actually help?
+						console.log("[YT] Downloaded video and subtitles")
+						glob("#{videos_folder}/#{item.id.videoId}.*.vtt", (error, vtt_files)=>
+							if error
+								callback(error)
+								return
+							if vtt_files.length is 0
+								callback(new Error("No vtt subtitles files downloaded for video #{item.id.videoId}"))
+								return
+							vtt_file = vtt_files[0] # TODO: prefer English (en-GB, en-US, en...), since that's what speech recognition will favor probably (and what I know)? prefer actual language spoken in the video somehow?
+							fs.readFile(vtt_file, "utf8", (error, vtt_content)=>
+								if error
+									callback(error)
+									return
+								# TODO: this is async for no reason and doesn't allow text from other languages
+								# also, escape sequences are not handled
+								vtt_to_json(vtt_content)
+								.then(
+									(subtitles)=>
+										console.log("[YT] Subtitles:", subtitles)
+										track_callback("https://stream-youtube-video/#{item.id.videoId}", attribution)
+										setTimeout =>
+											callback null
+										, 500 # TODO: does this actually help?
+									(error)=>
+										console.log("[YT] Failed to parse subtitles:", subtitles)
+										callback(error)
+								)
+							)
+						)
 					)
 				(err)=>
 					# FIXME: catches errors within track_callback
