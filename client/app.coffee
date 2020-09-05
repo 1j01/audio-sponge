@@ -278,10 +278,11 @@ generate_button.onclick = ->
 
 		song_output_audio_time_at_last_raf = song_output_audio.currentTime
 		# memory and CPU usage leak (keep looping since the audio could be played again)
+		_song = song
 		animate = ->
 			requestAnimationFrame(animate)
 			if not song_output_audio.paused and not song_output_audio.ended and song_output_audio.currentTime > 0
-				for video_event in song.video_events
+				for video_event in _song.video_events
 					if song_output_audio_time_at_last_raf <= video_event.timeInAudioOutput < song_output_audio.currentTime
 						if video_event.type is "play"
 							video_event.video.currentTime = video_event.startTimeInVideo
@@ -291,6 +292,13 @@ generate_button.onclick = ->
 							video_event.video.pause()
 				song_output_audio_time_at_last_raf = song_output_audio.currentTime
 		animate()
+		stop_video = ->
+			for video_event in _song.video_events
+				video_event.video.pause()
+
+		song_output_audio.addEventListener("pause", stop_video)
+		song_output_audio.addEventListener("ended", stop_video)
+		song_output_audio.addEventListener("error", stop_video)
 
 		tid = setTimeout(stop_generating, end_time * 1000)
 
@@ -347,7 +355,7 @@ show_attribution = (metadatas, song_id)->
 	attribution_links_details = document.createElement("details")
 	attribution_links_summary = document.createElement("summary")
 	attribution_links_details.appendChild(attribution_links_summary)
-	attribution_links_summary.textContent = "Audio Sources"
+	attribution_links_summary.textContent = "Sources"
 	attribution_links_ul = document.createElement("ul")
 	attribution_links_ul.className = "attribution-links"
 	attribution_links_details.appendChild(attribution_links_ul)
