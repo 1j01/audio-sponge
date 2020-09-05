@@ -55,8 +55,9 @@ class @Rhythm
 test_getBeats = (input_root, expected_beats)->
 	r = new Rhythm
 	beats = r.getBeats(input_root)
-	# TODO or whatever
 	# require("assert").deepEqual(beats, expected_beats)
+	if JSON.stringify(beats) isnt JSON.stringify(expected_beats)
+		console.error "expected", JSON.stringify(beats), "to equal", JSON.stringify(expected_beats)
 
 test_getBeats([0, 1], [
 	{time: 0, type: 0}
