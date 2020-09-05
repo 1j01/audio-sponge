@@ -20,11 +20,11 @@ if not net_enabled
 	OGA_enabled = false
 
 if youtube_enabled
-	YT = require "./audio-providers/youtube"
+	YT = require "./providers/youtube"
 	YT.init(key: youtube_api_key)
 
 if FS_enabled
-	FS = require "./audio-providers/filesystem"
+	FS = require "./providers/filesystem"
 # ---------------------
 
 module.exports = (query, new_source_callback)->

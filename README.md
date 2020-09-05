@@ -103,7 +103,7 @@ The code is split into [`server/`](server/) and [`client/`](client/).
 
 [`server/server.coffee`](server/server.coffee) is the main entry point for the server.
 
-[`server/gather-audio.coffee`](server/gather-audio.coffee) collects audio sources, using several audio providers located in [`server/audio-providers/`](server/audio-providers))
+[`server/gather-video.coffee`](server/gather-video.coffee) collects video sources, using several video providers located in [`server/video-providers/`](server/video-providers))
 
 [`client/app.coffee`](client/app.coffee) is the main entry point for the client app.
 
@@ -138,7 +138,7 @@ To enable the YouTube provider, add a `YOUTUBE_API_KEY` key the `.env` file.
 
 ### FileSystem
 
-To enable the filesystem provider, set `FS_enabled` to `true` in `gather-audio.coffee`, and add an `FILESYSTEM_GLOB` key the `.env` file, e.g.
+To enable the filesystem provider, set `FS_enabled` to `true` in `gather-video.coffee`, and add an `FILESYSTEM_GLOB` key the `.env` file, e.g.
 ```
 FILESYSTEM_GLOB=C:\Users\Whomst\Videos\**\*.mp4
 ```

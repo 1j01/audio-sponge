@@ -1,7 +1,7 @@
 fs = require "fs"
 express = require "express"
 get_env_var = require "./get-env-var"
-gather_audio = require "./gather-audio"
+gather_video = require "./gather-video"
 gather_midi = require "./gather-midi"
 shuffle = require "./shuffle"
 
@@ -18,7 +18,7 @@ gather_sources = ({query, midi}, new_source_callback)->
 	if midi
 		gather_midi query, new_source_callback, ->
 	else
-		gather_audio query, new_source_callback
+		gather_video query, new_source_callback
 
 io.on "connection", (socket)->
 	console.log("a user connected")
@@ -39,7 +39,7 @@ io.on "connection", (socket)->
 					stream.on "data", on_data = (data)->
 						socket.emit("sound-data:#{sound_id}", data)
 					stream.on "end", on_end = ->
-						console.log "sent audio file", source.uri
+						console.log "sent file", source.uri
 						socket.emit("sound-data-end:#{sound_id}")
 						stream.removeListener "data", on_data # not sure this is needed or works how i want it
 						stream.removeListener "error", on_error # not sure this is needed or works how i want it
