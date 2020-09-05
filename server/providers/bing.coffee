@@ -2,7 +2,7 @@ rp = require('request-promise')
 cheerio = require('cheerio')
 querystring = require('querystring')
 
-module.exports = (query)->
+module.exports.search = (query)->
 
 	filters = [
 		"+filterui:msite-youtube.com"

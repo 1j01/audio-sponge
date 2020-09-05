@@ -15,13 +15,18 @@ youtube_enabled = youtube_api_key?
 FS_audio_glob = get_env_var "FILESYSTEM_GLOB"
 FS_enabled = false #FS_audio_glob?
 
+bing_enabled = true
+
 if not net_enabled
 	youtube_enabled = false
-	OGA_enabled = false
+	bing_enabled = false
 
 if youtube_enabled
 	YT = require "./providers/youtube"
 	YT.init(key: youtube_api_key)
+
+if bing_enabled
+	bing = require "./providers/bing"
 
 if FS_enabled
 	FS = require "./providers/filesystem"
@@ -40,6 +45,12 @@ module.exports = (query, new_source_callback)->
 		# query = randomWords(1).join(" ")
 		# TODO: named arguments
 		YT.search query, on_new_source, ()=>
+			console.log "[YT] Done collecting track metadata from search"
+
+	if bing_enabled
+		# query = randomWords(1).join(" ")
+		# TODO: named arguments
+		bing.search query, on_new_source, ()=>
 			console.log "[YT] Done collecting track metadata from search"
 
 	if FS_enabled
