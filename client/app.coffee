@@ -23,7 +23,7 @@ update = (new_state)->
 	generate_button.disabled = collecting
 	generate_button.value =
 		if collecting
-			"Collecting Sounds..."
+			"Collecting Videos..."
 		else
 			"Generate Song"
 
@@ -117,7 +117,7 @@ generate_button.onclick = ->
 	song_search_terms.onclick = -> keywords_input.value = query
 	song_status = document.createElement("div")
 	song_status.className = "song-status"
-	song_status.textContent = "Collecting sounds..."
+	song_status.textContent = "Collecting Videos..."
 	song_audio_row = document.createElement("div")
 	song_audio_row.className = "song-audio-row"
 	song_output_audio = document.createElement("audio")
