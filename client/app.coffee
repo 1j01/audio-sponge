@@ -252,8 +252,8 @@ generate_button.onclick = ->
 		song = null
 		tid = null
 		stop_generating = ->
-			console.trace "stop_generating", song_id
-			console.log {tid, "cancel_button.parentElement": cancel_button.parentElement, song}
+			# console.trace "stop_generating", song_id
+			# console.log {tid, "cancel_button.parentElement": cancel_button.parentElement, song}
 			mediaRecorder?.stop()
 			song?.output.disconnect()
 			song = null
