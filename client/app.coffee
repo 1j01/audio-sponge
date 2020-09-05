@@ -394,7 +394,21 @@ show_attribution = (metadatas, song_id)->
 		<!doctype html>
 		<html>
 			<head>
+				<meta charset="utf-8">
 				<title>Attribution</title>
+				<style>
+					.attribution-links {
+						text-align: left;
+						list-style-type: none;
+					}
+					.attribution-links li {
+						padding: 0.2em;
+					}
+					.provider-icon {
+						margin-right: 0.3em;
+						vertical-align: middle;
+					}
+				</style>
 			</head>
 			<body>
 				#{attribution_links_ul.outerHTML}
