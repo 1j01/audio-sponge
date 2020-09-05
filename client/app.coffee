@@ -128,6 +128,13 @@ generate_button.onclick = ->
 	song_output_li.appendChild(song_audio_row)
 	songs_output_ul.prepend(song_output_li)
 
+	song_output_canvas = document.createElement("canvas")
+	song_output_canvas.width = 640
+	song_output_canvas.height = 480
+	song_output_ctx = song_output_canvas.getContext("2d")
+	song_audio_row.appendChild(song_output_canvas)
+
+	source_videos = []
 	audio_buffers = []
 	midi_array_buffer = null
 	collection_tid = null
@@ -157,8 +164,9 @@ generate_button.onclick = ->
 		video_blob = new Blob([new Uint8Array(file_array_buffer)])
 		video_blob_uri = URL.createObjectURL(video_blob)
 		video = document.createElement("video")
-		song_audio_row.appendChild(video)
+		# song_audio_row.appendChild(video)
 		video.src = video_blob_uri
+		source_videos.push(video)
 
 		audioContext.decodeAudioData(file_array_buffer).then(
 			(audio_buffer)->
@@ -270,7 +278,9 @@ generate_button.onclick = ->
 			return
 
 		destination = window.audioContext.createMediaStreamDestination()
-		mediaRecorder = new MediaRecorder(destination.stream)
+		video_stream = song_output_canvas.captureStream(30)
+		video_stream.addTrack(destination.stream.getAudioTracks()[0])
+		mediaRecorder = new MediaRecorder(video_stream)
 		mediaRecorder.start()
 
 		song.output.connect(destination)
@@ -282,6 +292,7 @@ generate_button.onclick = ->
 		animate = ->
 			requestAnimationFrame(animate)
 			if not song_output_audio.paused and not song_output_audio.ended and song_output_audio.currentTime > 0
+				song_output_ctx.clearRect(0, 0, song_output_canvas.width, song_output_canvas.height)
 				for video_event in _song.video_events
 					if song_output_audio_time_at_last_raf <= video_event.timeInAudioOutput < song_output_audio.currentTime
 						if video_event.type is "play"
@@ -290,11 +301,14 @@ generate_button.onclick = ->
 							video_event.video.play()
 						if video_event.type is "pause"
 							video_event.video.pause()
+				for video, index in source_videos
+					if not video.paused and not video.ended and video.currentTime > 0
+						song_output_ctx.drawImage(video, index * 50, 0)
 				song_output_audio_time_at_last_raf = song_output_audio.currentTime
 		animate()
 		stop_video = ->
-			for video_event in _song.video_events
-				video_event.video.pause()
+			for video in source_videos
+				video.pause()
 
 		song_output_audio.addEventListener("pause", stop_video)
 		song_output_audio.addEventListener("ended", stop_video)
@@ -310,7 +324,7 @@ generate_button.onclick = ->
 			chunks.push(event.data)
 
 		mediaRecorder.onstop = (event)->
-			blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' })
+			blob = new Blob(chunks, { 'type' : 'video/webm' })
 			chunks = null
 			blob_url = URL.createObjectURL(blob)
 
@@ -326,7 +340,7 @@ generate_button.onclick = ->
 			song_download_link.className = "download-link"
 			song_download_link.textContent = "Download"
 			song_download_link.href = blob_url
-			song_download_link.download = "#{song_id}.ogg"
+			song_download_link.download = "#{song_id}.webm"
 			song_status.innerHTML = ""
 			song_status.appendChild(song_download_link)
 
