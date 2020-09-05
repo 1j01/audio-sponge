@@ -10,7 +10,7 @@ get_env_var = require "./get-env-var"
 net_enabled = true
 
 youtube_api_key = get_env_var "YOUTUBE_API_KEY"
-youtube_enabled = youtube_api_key?
+youtube_api_enabled = youtube_api_key?
 
 FS_audio_glob = get_env_var "FILESYSTEM_GLOB"
 FS_enabled = false #FS_audio_glob?
@@ -18,11 +18,11 @@ FS_enabled = false #FS_audio_glob?
 bing_enabled = true
 
 if not net_enabled
-	youtube_enabled = false
+	youtube_api_enabled = false
 	bing_enabled = false
 
-if youtube_enabled
-	YT = require "./providers/youtube"
+if youtube_api_enabled
+	YT = require "./providers/youtube-search-api"
 	YT.init(key: youtube_api_key)
 
 if bing_enabled
@@ -41,17 +41,17 @@ module.exports = (query, new_source_callback)->
 	on_new_source = (file_path, attribution)=>
 		new_source_callback new Source file_path, attribution
 
-	if youtube_enabled
+	if youtube_api_enabled
 		# query = randomWords(1).join(" ")
 		# TODO: named arguments
-		YT.search query, on_new_source, ()=>
-			console.log "[YT] Done collecting track metadata from search"
+		YT.searchAndDownload query, on_new_source, ()=>
+			console.log "[YT] Done"
 
 	if bing_enabled
 		# query = randomWords(1).join(" ")
 		# TODO: named arguments
-		bing.search query, on_new_source, ()=>
-			console.log "[YT] Done collecting track metadata from search"
+		bing.searchAndDownload query, on_new_source, ()=>
+			console.log "[bing] Done"
 
 	if FS_enabled
 		# TODO: named arguments
@@ -60,4 +60,4 @@ module.exports = (query, new_source_callback)->
 				return console.error "[FS] Error fetching track metadata:", err if err
 				on_new_source(file_path, attribution)
 			()=>
-				console.log "[FS] Done collecting track metadata from files"
+				console.log "[FS] Done"
