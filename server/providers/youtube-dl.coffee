@@ -58,7 +58,8 @@ module.exports = (videoId, callback)->
 				callback(error)
 				return
 			if vtt_files.length is 0
-				callback(new Error("No vtt subtitles files downloaded for video #{videoId}"))
+				# callback(new Error("No vtt subtitles files downloaded for video #{videoId}"))
+				callback(null, "#{videos_folder}/#{videoId}.mp4")
 				return
 			vtt_file = vtt_files[0] # TODO: prefer English (en-GB, en-US, en...), since that's what speech recognition will favor probably (and what I know)? prefer actual language spoken in the video somehow?
 			fs.readFile(vtt_file, "utf8", (error, vtt_content)=>
