@@ -80,7 +80,11 @@ module.exports.search = (query, track_callback, done_callback)->
 	search_youtube(youtube_api_key, params)
 	.then(
 		(data)=>
-			console.log data
+			if data.error
+				console.error "[YT] YouTube API returned error: #{JSON.stringify(data.error)}"
+				done_callback() # regardless of error
+				return
+			# console.log "[YT] Search results data:", data
 			items = data.items.filter((searchResult)-> searchResult.snippet.liveBroadcastContent is "none")
 			{items} = data
 
@@ -88,7 +92,8 @@ module.exports.search = (query, track_callback, done_callback)->
 
 			async.eachLimit shuffle(items), 2,
 				(item, callback)=>
-					console.log "[YT] Video:", item
+					# console.log "[YT] Video:", item
+					console.log "[YT] Video: #{item.id.videoId} (#{item.snippet.title})"
 					# NOTE: MUST not call callback herein syncronously!
 					# An error in the callback would be caught by `async` and lead to confusion.
 					attribution = {
@@ -122,7 +127,7 @@ module.exports.search = (query, track_callback, done_callback)->
 						"--write-info-json"
 					])
 					.on("progress", (progress) => 
-						console.log(item.id.videoId, progress.percent, progress.totalSize, progress.currentSpeed, progress.eta)
+						console.log(item.id.videoId, "#{progress.percent}%", progress.totalSize, progress.currentSpeed, progress.eta)
 					)
 					.on("error", (exitCode, processError, stderr) => 
 						message = "youtube-dl exited with code #{exitCode}, process error: #{JSON.stringify(processError)}, stderr:\n#{stderr}"
@@ -148,7 +153,7 @@ module.exports.search = (query, track_callback, done_callback)->
 								vtt_to_json(vtt_content)
 								.then(
 									(subtitles)=>
-										console.log("[YT] Subtitles:", JSON.stringify(subtitles))
+										# console.log("[YT] Subtitles:", JSON.stringify(subtitles))
 										# TODO: don't just assume mp4; maybe request transcoding to mp4
 										track_callback("#{videos_folder}/#{item.id.videoId}.mp4", attribution)
 										setTimeout =>
