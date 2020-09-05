@@ -136,24 +136,24 @@ generate_button.onclick = ->
 
 	source_videos = []
 	audio_buffers = []
-	midi_array_buffer = null
+	# midi_array_buffer = null
 	collection_tid = null
 
 	on_progress = ->
 		clearTimeout(collection_tid)
 		collection_tid = setTimeout collection_timed_out, 1000 * 60
 
-	cancel_getting_midi = sound_search {query, song_id, midi: true}, on_progress, (file_array_buffer, metadata)->
-		console.log "Got a midi file", metadata
+	# cancel_getting_midi = sound_search {query, song_id, midi: true}, on_progress, (file_array_buffer, metadata)->
+	# 	console.log "Got a midi file", metadata
 
-		midi_array_buffer ?= file_array_buffer
-		metadatas_used.push(metadata) if midi_array_buffer is file_array_buffer
+	# 	midi_array_buffer ?= file_array_buffer
+	# 	metadatas_used.push(metadata) if midi_array_buffer is file_array_buffer
 
-		check_sources_ready()
+	# 	check_sources_ready()
 		
-		# actually,
-		cancel_getting_midi()
-		# and then we don't really need the ?= and if above, but whatever
+	# 	# actually,
+	# 	cancel_getting_midi()
+	# 	# and then we don't really need the ?= and if above, but whatever
 	
 	canceled = false
 	cancel_getting_audio = sound_search {query, song_id}, on_progress, (file_array_buffer, metadata)->
@@ -180,29 +180,29 @@ generate_button.onclick = ->
 		)
 
 	cancel = ->
-		cancel_getting_midi()
+		# cancel_getting_midi()
 		cancel_getting_audio()
 		canceled = true
 		clearTimeout(collection_tid)
 
 	check_sources_ready = ->
 		if audio_buffers.length >= 5
-			if midi_array_buffer
+			# if midi_array_buffer
 				sources_ready()
 
 	collection_timed_out = ->
 		cancel()
 		if audio_buffers.length >= 1
-			if midi_array_buffer
+			# if midi_array_buffer
 				sources_ready()
 				return
-			else
-				message = "Didn't find a midi track to base the structure off of."
+			# else
+			# 	message = "Didn't find a midi track to base the structure off of."
 		else
-			if midi_array_buffer
+			# if midi_array_buffer
 				message = "Didn't find enough tracks to sample from."
-			else
-				message = "Didn't find enough tracks to sample from, and didn't find a midi track to base the structure off of."
+			# else
+			# 	message = "Didn't find enough tracks to sample from, and didn't find a midi track to base the structure off of."
 		if socket.disconnected
 			message = "Offline. Server access needed to fetch sound sources."
 		update collecting: false
@@ -268,9 +268,9 @@ generate_button.onclick = ->
 		song_output_li.appendChild(show_attribution(metadatas_used, song_id))
 
 		try 
-			song = new Song([audio_buffers...], midi_array_buffer)
+			# song = new Song([audio_buffers...], midi_array_buffer)
+			song = new Song([audio_buffers...])
 		catch error
-			# to handle bad midi file at least
 			console.error error
 			stop_generating()
 			song_status.textContent = "Failed"

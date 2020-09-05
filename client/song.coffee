@@ -37,7 +37,7 @@ class @Song
 				@source_samples.push(sample)
 			# console.log("#{@source_samples.length} source_samples")
 
-		@midi = new Midi(midi_array_buffer)
+		# @midi = new Midi(midi_array_buffer)
 
 		@video_events = []
 
@@ -121,19 +121,40 @@ class @Song
 		# TODO: apply effects to tracks, especially reverb, but also random, crazy DSP
 
 		max_time = 0
-		did_melody_tracks = 0
-		for track, track_index in @midi.tracks
-			# Channel 10 is (coded 9) is reserved for percussion. Channel 11 (coded 10) may be percussion.
-			is_percussion = (track.channel in [9, 10])
-			if is_percussion or did_melody_tracks < 2
-				for note in track.notes
-					# note has {name, duration, time, velocity}
-					start_time = schedule_start_time + note.time
-					add_beat(note.midi, is_percussion, track_index, start_time)
-					max_time = Math.max(max_time, note.time)
-					did_melody_tracks += 1 unless is_percussion
-			# break if track.notes.length > 0 # only do one track...
-			# I'm wondering if there might be performance implications for scheduling sounds out of order
-			# or just having lots of notes scheduled
+		# did_melody_tracks = 0
+		# for track, track_index in @midi.tracks
+		# 	# Channel 10 (coded 9) is reserved for percussion. Channel 11 (coded 10) may be percussion.
+		# 	is_percussion = (track.channel in [9, 10])
+		# 	if is_percussion or did_melody_tracks < 2
+		# 		for note in track.notes
+		# 			# note has {name, duration, time, velocity}
+		# 			start_time = schedule_start_time + note.time
+		# 			add_beat(note.midi, is_percussion, track_index, start_time)
+		# 			max_time = Math.max(max_time, note.time)
+		# 			did_melody_tracks += 1 unless is_percussion
+		# 	# break if track.notes.length > 0 # only do one track...
+		# 	# I'm wondering if there might be performance implications for scheduling sounds out of order
+		# 	# or just having lots of notes scheduled
 
+		schedule_section = ({rhythm}, section_index, section_duration, schedule_start_time)->
+			for beat in rhythm.getBeats()
+				add_beat(beat.type, true, null, beat.time * section_duration + schedule_start_time)
+
+		abc_sections =
+			for letter in "ABC"
+				rhythm: new Rhythm()
+		
+		n_sections = Math.floor(Math.random() * 10 + 1)
+		t = schedule_start_time
+		for section_index in [0..n_sections]
+			section_duration = 1 * (if Math.random() < 0.1 then 2 else if Math.random() < 0.1 then 1.5 else 1)
+			schedule_section(abc_sections[Math.floor(Math.random() * abc_sections.length)], section_index, section_duration, t)
+			if Math.random() < 0.3
+				schedule_section(abc_sections[Math.floor(Math.random() * abc_sections.length)], section_index, section_duration, t)
+			if Math.random() < 0.3
+				schedule_section(rhythm: new Rhythm(), section_index, section_duration, t)
+			t += section_duration
+		
+		max_time = t - schedule_start_time
+		
 		return max_time + 3 # including extra time for sounds to finish 
