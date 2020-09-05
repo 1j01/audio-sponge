@@ -344,15 +344,6 @@ generate_button.onclick = ->
 			song_status.innerHTML = ""
 			song_status.appendChild(song_download_link)
 
-provider_to_icon =
-	"filesystem": "icon-folder"
-	"soundcloud": "icon-soundcloud"
-	"spotify": "icon-spotify"
-	"bandcamp": "icon-bandcamp"
-	"lastfm": "icon-lastfm"
-	"youtube": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
-	"opengameart": "icon-globe" # TODO: specific icon (probably ditch this font icon business, and use favicons)
-	"bitmidi": "icon-globe" # TODO: specific icon? but it's not very midi-indicative I feel
 
 provider_to_acquisition_method_description =
 	"filesystem": "Via the filesystem"
@@ -375,8 +366,11 @@ show_attribution = (metadatas, song_id)->
 	attribution_links_details.appendChild(attribution_links_ul)
 	for metadata in metadatas
 		li = document.createElement("li")
-		provider_icon = document.createElement("i")
-		provider_icon.className = (provider_to_icon[metadata.provider] ? "icon-file-audio") + " provider-icon"
+		provider_icon = document.createElement("img")
+		provider_icon.width = 16
+		provider_icon.height = 16
+		provider_icon.src = new URL(metadata.link).origin + "/favicon.ico"
+		provider_icon.className = "provider-icon"
 		provider_icon.title = provider_to_acquisition_method_description[metadata.provider] ? "Procured somehow, probably"
 		li.appendChild(provider_icon)
 		track_link = document.createElement("a")

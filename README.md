@@ -109,9 +109,6 @@ The code is split into [`server/`](server/) and [`client/`](client/).
 
 [`client/song.coffee`](client/song.coffee) generates the songs.
 
-[Fontello](http://fontello.com/) is currently used for some icons representing the audio providers but this could change to using favicons and be simpler.
-Workflow: drag [`config.json`](client/fontello/config.json) to Fontello, update font, download zip and replace [`fontello/`](client/fontello/)
-
 ## License
 
 MIT licensed, see [LICENSE](LICENSE).

@@ -117,7 +117,8 @@ summary {
 	padding: 0.2em;
 }
 .provider-icon {
-	margin-right: 0.2em;
+	margin-right: 0.3em;
+	vertical-align: middle;
 }
 
 .status-indicator {
