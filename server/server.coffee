@@ -28,11 +28,11 @@ io.on "connection", (socket)->
 	socket.on "sound-search", ({query, midi, query_id})->
 		sources = []
 		gather_sources {query, midi}, (new_source)->
+			socket.emit("sound-metadata:#{query_id}", new_source.metadata)
 			sources.push(new_source)
 
 			if sources.length is (if midi then 1 else 5)
 				sources.forEach (source)->
-					socket.emit("sound-metadata:#{query_id}", source.metadata)
 					{sound_id} = source.metadata
 
 					stream = source.createReadStream()
