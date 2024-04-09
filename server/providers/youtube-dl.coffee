@@ -36,8 +36,8 @@ module.exports = (videoId, callback)->
 		"--no-overwrites"
 
 		# TODO: which of these options are needed vs implied?
-		"--write-sub"
-		# "--write-auto-sub"
+		"--write-subs"
+		# "--write-auto-subs"
 		# "--all-subs"
 		# "--sub-format", "vtt" # hunch: this might limit to only downloading IF the format is provided directly
 		"--convert-subs", "vtt"
@@ -49,8 +49,8 @@ module.exports = (videoId, callback)->
 	.on("progress", (progress) => 
 		console.log(videoId, "#{progress.percent}%", progress.totalSize, progress.currentSpeed, progress.eta)
 	)
-	.on("error", (exitCode, processError, stderr) => 
-		message = "yt-dlp exited with code #{exitCode}, process error: #{JSON.stringify(processError)}, stderr:\n#{stderr}"
+	.on("error", (error) => 
+		message = "yt-dlp failed to download #{videoId} - got error: #{error}"
 		console.error("[YT-DLP] #{message}")
 		callback(new Error(message))
 	)
