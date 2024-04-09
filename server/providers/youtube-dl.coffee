@@ -2,28 +2,31 @@ fs = require "fs"
 path = require "path"
 glob = require "glob"
 async = require "async"
-YoutubeDlWrap = require "youtube-dl-wrap"
+YTDlpWrap = require("yt-dlp-wrap-plus").default
 vtt_to_json = require "vtt-to-json"
 
 videos_folder = path.join(__dirname, "../../videos")
 bin_folder = path.join(__dirname, "../../bin")
-youtube_dl_file_name = if require("os").platform() is "win32" then "youtube-dl.exe" else "youtube-dl"
-youtube_dl_path = path.join(bin_folder, youtube_dl_file_name)
+yt_dlp_file_name = if require("os").platform() is "win32" then "yt-dlp.exe" else "yt-dlp"
+yt_dlp_path = path.join(bin_folder, yt_dlp_file_name)
+
+fs.mkdirSync(videos_folder, {recursive: true})
+fs.mkdirSync(bin_folder, {recursive: true})
 # TODO: delay init until downloaded? or just make sure it always exists in the published version of this project
-if (not fs.existsSync(youtube_dl_path)) or process.env.REDOWNLOAD_YOUTUBE_DL is "1"
-	YoutubeDlWrap.downloadYoutubeDl(youtube_dl_path, "2020.07.28")
+if (not fs.existsSync(yt_dlp_path)) or process.env.REDOWNLOAD_yt_dlp is "1"
+	YTDlpWrap.downloadFromGithub(yt_dlp_path)
 	.then(
 		->
-			fs.chmodSync(youtube_dl_path, "755")
-			console.log("Downloaded youtube-dl")
+			fs.chmodSync(yt_dlp_path, "755")
+			console.log("Downloaded yt-dlp")
 		(error)->
-			console.error("Failed to download youtube-dl:", error)
+			console.error("Failed to download yt-dlp:", error)
 	)
 
-youtube_dl_wrap = new YoutubeDlWrap(youtube_dl_path)
+yt_dlp_wrap = new YTDlpWrap(yt_dlp_path)
 
 module.exports = (videoId, callback)->
-	youtube_dl_wrap.exec([
+	yt_dlp_wrap.exec([
 		"https://www.youtube.com/watch?v=#{videoId}"
 
 		"--format", "worst" # worst quality please! :)
@@ -47,12 +50,12 @@ module.exports = (videoId, callback)->
 		console.log(videoId, "#{progress.percent}%", progress.totalSize, progress.currentSpeed, progress.eta)
 	)
 	.on("error", (exitCode, processError, stderr) => 
-		message = "youtube-dl exited with code #{exitCode}, process error: #{JSON.stringify(processError)}, stderr:\n#{stderr}"
-		console.error("[YTDL] #{message}")
+		message = "yt-dlp exited with code #{exitCode}, process error: #{JSON.stringify(processError)}, stderr:\n#{stderr}"
+		console.error("[YT-DLP] #{message}")
 		callback(new Error(message))
 	)
 	.on("close", () =>
-		console.log("[YTDL] Downloaded video and subtitles")
+		console.log("[YT-DLP] Downloaded video and subtitles")
 		glob("#{videos_folder}/#{videoId}.*.vtt", (error, vtt_files)=>
 			if error
 				callback(error)
@@ -71,11 +74,11 @@ module.exports = (videoId, callback)->
 				vtt_to_json(vtt_content)
 				.then(
 					(subtitles)=>
-						# console.log("[YTDL] Subtitles:", JSON.stringify(subtitles))
+						# console.log("[YT-DLP] Subtitles:", JSON.stringify(subtitles))
 						# TODO: don't just assume mp4; maybe request transcoding to mp4
 						callback(null, "#{videos_folder}/#{videoId}.mp4")
 					(error)=>
-						console.log("[YTDL] Failed to parse subtitles:", subtitles)
+						console.log("[YT-DLP] Failed to parse subtitles:", subtitles)
 						callback(error)
 				)
 			)
