@@ -55,6 +55,7 @@
     "throttle": "^1.0.3",
     "vtt-to-json": "^0.1.1",
     "youtube-api-v3-search": "^1.2.1",
+    "yt-dlp-wrap-plus": "^2.3.18",
     "zoo": "^0.1.10"
   }
 }
