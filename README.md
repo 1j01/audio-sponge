@@ -94,6 +94,7 @@ Externalities for reproducibility:
   - [Content-addressable storage](https://en.wikipedia.org/wiki/Content-addressable_storage) would be better, but might not be practical
   - Caching media can work but it's a lot heavier than a list of search results; video can take up a lot of space
 - Random decisions can be made pseudorandom easily (with a seeded PRNG)
+  - That said, it will be specific to a version of the generation code, and so caching the output (song structure) may be helpful too
 
 ## Project Structure
 
@@ -144,18 +145,6 @@ FILESYSTEM_GLOB=C:\Users\Whomst\Videos\**\*.mp4
 ```
 It must be a full path. `%` or `$` variables are NOT supported.
 Uses [glob syntax](https://www.npmjs.com/package/glob#glob-primer).
-
-## Deployment Notes
-
-Deployed to Heroku automatically when pushing to master.
-
-Production env vars are configured in the Heroku UI.
-
-https://audio-sponge.herokuapp.com/
-
-```
-heroku logs --app audio-sponge --tail
-```
 
 <!--
 ## Are these songs?
