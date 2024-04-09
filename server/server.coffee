@@ -26,9 +26,11 @@ io.on "connection", (socket)->
 		console.log("user disconnected")
 
 	socket.on "sound-search", ({query, midi, query_id})->
+		console.log("searching for", query, midi)
 		sources = []
 		gather_sources {query, midi}, (new_source)->
 			sources.push(new_source)
+			console.log("got source", new_source.metadata)
 
 			if sources.length is (if midi then 1 else 5)
 				sources.forEach (source)->

@@ -72,6 +72,7 @@ sound_search = ({query, song_id, midi}, on_progress, callback)->
 	query_id = "#{if midi then "midi" else "sounds"}-for-#{song_id}"
 
 	metadatas_received = []
+	console.log "Searching for", {query, midi, query_id}
 	socket.emit "sound-search", {query, midi, query_id}
 	socket.on "sound-metadata:#{query_id}", (metadata)->
 		metadatas_received.push(metadata)
