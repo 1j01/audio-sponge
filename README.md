@@ -104,7 +104,7 @@ The code is split into [`server/`](server/) and [`client/`](client/).
 
 [`server/server.coffee`](server/server.coffee) is the main entry point for the server.
 
-[`server/gather-video.coffee`](server/gather-video.coffee) collects video sources, using several video providers located in [`server/video-providers/`](server/video-providers))
+[`server/gather-video.coffee`](server/gather-video.coffee) collects video sources, using several video providers located in [`server/video-providers/`](server/video-providers).
 
 [`client/app.coffee`](client/app.coffee) is the main entry point for the client app.
 
