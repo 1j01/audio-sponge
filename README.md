@@ -6,7 +6,7 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
 
 ## What it does
 
-* Accepts search terms in the UI (e.g. "acapella", "coin collect", "grass sound effect")
+* Accepts search terms in the UI (e.g. "a cappella", "coin collect", "grass sound effect")
 
 * Collects audio by searching SoundCloud, OpenGameArt, and/or the filesystem (TODO: more sources - maybe Napster, maybe Spotify, maybe general web search engines filtered to audio files (Bing and DuckDuckGo have `filetype:mp3` support but still need filtering to actual mp3 files).)
 
@@ -28,12 +28,12 @@ Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as suc
 I started this project with the goal of making an infinite everchanging generative audio station, inspired by [versificator](https://github.com/sebpiq/versificator). (I didn't find the repo for it then and may have just worked on / messed around with that if I had found it.)
 
 I managed to make something, but before getting to making it sound good, I ran into some problems:
-1. I couldn't deploy to heroku (or many other free services) and just have it stream an audio file like a radio station - heroku would cut off the response at [30s](https://devcenter.heroku.com/articles/request-timeout). I would have to use websockets or something to stream, or rearchetect it so it does the audio generation on the client.
-2. Streaming audio is not too difficult to get working, but harder to get scalable. The way I implemented it it could stream to multiple clients (cool), but if a client paused the stream, the server would indefinitely buffer audio for that client. You could litertally DOS it by pausing the stream and waiting. ShoutCast/IceCast would be better (but they would work better with discrete songs...)
+1. I couldn't deploy to heroku (or many other free services) and just have it stream an audio file like a radio station - heroku would cut off the response at [30s](https://devcenter.heroku.com/articles/request-timeout). I would have to use websockets or something to stream, or rearchitect it so it does the audio generation on the client.
+2. Streaming audio is not too difficult to get working, but harder to get scalable. The way I implemented it it could stream to multiple clients (cool), but if a client paused the stream, the server would indefinitely buffer audio for that client. You could literally DOS it by pausing the stream and waiting. ShoutCast/IceCast would be better (but they would work better with discrete songs...)
 3. Installing native dependencies is hard. I had gone with Node.js so I could use the somewhat familiar-to-me Web Audio API (also so I could possibly transition to doing it on the client)
 4. While listening to the stream, if I heard something I liked, I couldn't easily save it. I had to already have been recording the system audio and then pause and cut that.
 5. I wanted to do visualization on the client, but this would mean meticulously marshalling data between the server and client, and keeping it SYNCED with the audio stream. This would be a RIDICULOUSLY complicated way to approach this problem.
-6. I wanted to accept search terms on the client, but if it just fed into a public audio stream, trolling/modernation would be a concern. (Also if you *wanted* to try generating something you'd like to keep private, ~~there wouldn't be a space for that~~ you'd have to set up the whole dev environment.)
+6. I wanted to accept search terms on the client, but if it just fed into a public audio stream, trolling/moderation would be a concern. (Also if you *wanted* to try generating something you'd like to keep private, ~~there wouldn't be a space for that~~ you'd have to set up the whole dev environment.)
 
 So I decided to rewrite it to generate individual songs.  
 
@@ -92,7 +92,7 @@ Externalities for reproducibility:
   - Videos can be edited, which is likely to ruin timecodes
   - [Content-addressable storage](https://en.wikipedia.org/wiki/Content-addressable_storage) would be better, but might not be practical
   - Caching media can work but it's a lot heavier than a list of search results; video can take up a lot of space
-- (Random decsisions can be made pseudorandom easily)
+- (Random decisions can be made pseudorandom easily)
 
 ## Project Structure
 
@@ -161,8 +161,8 @@ no they just names:
 * The Sponge of Truth and Lies
 * In equal and opposite measure
 * Cathartic cacophony
-* Retched reverbertations
-* Spontanious sound shenanigans
+* Retched reverberations
+* Spontaneous sound shenanigans
 * Automatic chaotic euphony
 * Synthetic symphonic hodgepodge
 * Percussive pandemonium & rambunctious rhythm
@@ -175,6 +175,8 @@ no they just names:
 * Primary reality beta
 
 ## What if it doesn't work?
+
+spell-checker: disable
 
 * ERROR
 * ERROR ABOUT THERE BEING AN ERROR
@@ -191,6 +193,8 @@ no they just names:
 * OCCULT ERROR
 * WARNING
 * [VAGU](https://youtu.be/8d3SMxK40YQ)[**E**](https://www.reddit.com/r/EmboldenTheE/) [FEELING OF UNEASE](https://youtu.be/8d3SMxK40YQ)
+
+spell-checker: enable
 
 ### What was that, like some avant-garde poetry?
 
