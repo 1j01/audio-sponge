@@ -14,7 +14,7 @@ module.exports.glob = (glob_string, track_callback, done_callback)->
 		console.log "[FS] Found #{files.length} files:", files
 		async.eachLimit shuffle(files), 1,
 			(file_path, callback)=>
-				# NOTE: MUST not call callback herein syncronously!
+				# NOTE: MUST not call callback herein synchronously!
 				# An error in the callback would be caught by `async` and lead to confusion.
 				attribution = {
 					link: "file:///" + file_path

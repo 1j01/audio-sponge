@@ -1,0 +1,62 @@
+{
+	"files": [
+		"**/*"
+	],
+	"ignorePaths": [
+		"**/node_modules/**",
+		"**/bin/**",
+		"**/lib/**",
+		"**/.history/**",
+		"**/.git/**"
+	],
+	"enabledLanguageIds": [
+		"coffeescript",
+		"css",
+		"git-commit",
+		"html",
+		"javascript",
+		"json",
+		"markdown",
+		"jsonc",
+		"plaintext"
+	],
+	"words": [
+		"autoprefixer",
+		"avant",
+		"bandcamp",
+		"Bandcamp",
+		"bitmidi",
+		"concat",
+		"everchanging",
+		"filterui",
+		"globbing",
+		"Globbing",
+		"isnt",
+		"metadatas",
+		"Meyda",
+		"Moby",
+		"msite",
+		"Odhner",
+		"onclick",
+		"ondataavailable",
+		"onstop",
+		"onsubmit",
+		"opengameart",
+		"PRNG",
+		"querystring",
+		"rearchitect",
+		"REDOWNLOAD",
+		"shadertoy",
+		"soundcloud",
+		"substr",
+		"timecodes",
+		"tridiv",
+		"typeof",
+		"versificator",
+		"videoage",
+		"webm",
+		"websockets",
+		"Whomst",
+		"YTDL"
+	]
+}

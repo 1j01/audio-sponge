@@ -35,7 +35,7 @@
 	overflow: hidden;
 	transform-origin: 0 0;
 	backface-visibility: hidden;
-	/* hidden by default, prevent blinking and other weird rendering glitchs */
+	/* hidden by default, prevent blinking and other weird rendering glitches */
 }
 .face {
 	background-size: 100% 100%!important;

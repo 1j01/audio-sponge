@@ -58,7 +58,7 @@ module.exports.searchAndDownload = (query, track_callback, done_callback)->
 				(item, callback)=>
 					# console.log "[bing] Video:", item
 					console.log "[bing] Video: #{item.video_id} (#{item.link})"
-					# NOTE: MUST not call callback herein syncronously!
+					# NOTE: MUST not call callback herein synchronously!
 					# An error in the callback would be caught by `async` and lead to confusion.
 					attribution = {
 						link: "https://www.youtube.com/watch?v=#{item.video_id}"

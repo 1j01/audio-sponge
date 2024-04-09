@@ -79,7 +79,7 @@ module.exports = (query, track_callback, done_callback)->
 			shuffle(links_to_track_pages)
 			2 # at a time
 			(element, onwards)->
-				# NOTE: MUST not call callback herein syncronously!
+				# NOTE: MUST not call callback herein synchronously!
 				# An error in the callback would be caught by `async` and lead to confusion.
 
 				track_page_link_href = $(element).attr("href")

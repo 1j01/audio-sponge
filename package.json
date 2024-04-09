@@ -36,12 +36,14 @@
     "am"
   ],
   "scripts": {
-    "start": "zoo coffee server/server.coffee"
+    "start": "zoo coffee server/server.coffee",
+    "lint": "cspell-cli lint ."
   },
   "dependencies": {
     "async": "^3.2.0",
     "cheerio": "^1.0.0-rc.3",
     "coffeescript": "2.5.1",
+    "cspell-cli": "^8.6.1",
     "express": "^4.17.1",
     "fsu": "^2.0.2",
     "glob": "^7.1.6",
