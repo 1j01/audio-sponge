@@ -1,7 +1,5 @@
 # Procedural Song Generator
 
-[Try it out here.](https://audio-sponge.herokuapp.com/)
-
 Maybe it music!™ (...It's not *GOOD* music, but maybe you can define it as such, as music - that's up to you. That's up to you - that's your mission, if you choose to accept it: a quest to categorize a cacophony as candidly as you can as: music.)
 
 ## What it does
@@ -29,6 +27,7 @@ I started this project with the goal of making an infinite everchanging generati
 
 I managed to make something, but before getting to making it sound good, I ran into some problems:
 1. I couldn't deploy to heroku (or many other free services) and just have it stream an audio file like a radio station - heroku would cut off the response at [30s](https://devcenter.heroku.com/articles/request-timeout). I would have to use websockets or something to stream, or rearchitect it so it does the audio generation on the client.
+  (It's a bit of a moot point now, since Heroku is no longer free, and I'm not planning to put any money into this project. You'll have to run it locally.)
 2. Streaming audio is not too difficult to get working, but harder to get scalable. The way I implemented it it could stream to multiple clients (cool), but if a client paused the stream, the server would indefinitely buffer audio for that client. You could literally DOS it by pausing the stream and waiting. ShoutCast/IceCast would be better (but they would work better with discrete songs...)
 3. Installing native dependencies is hard. I had gone with Node.js so I could use the somewhat familiar-to-me Web Audio API (also so I could possibly transition to doing it on the client)
 4. While listening to the stream, if I heard something I liked, I couldn't easily save it. I had to already have been recording the system audio and then pause and cut that.
@@ -61,6 +60,7 @@ It's a bummer tho, and since this is a project for fun, well, I might just not w
 I do have ideas for a further rewrite tho.
 
 I think it would be a lot cooler to use **video** for the sources.
+Check out the `video` branch for a prototype of this.
 - Don't need as many audio providers. All the major search engines have Video as a search category.
   - So just crawl the web for videos right? Might actually need lots of code for scraping videos from various websites, idk.
     - Well, there's [youtube-dl](https://github.com/ytdl-org/youtube-dl/) which works with various sites actually; that would probably be a *huge* boon!
@@ -143,15 +143,7 @@ Uses [glob syntax](https://www.npmjs.com/package/glob#glob-primer).
 
 ## Deployment Notes
 
-Deployed to Heroku automatically when pushing to master.
-
-Production env vars are configured in the Heroku UI.
-
-https://audio-sponge.herokuapp.com/
-
-```
-heroku logs --app audio-sponge --tail
-```
+No longer deployed, as Heroku has removed their free tier.
 
 <!--
 ## Are these songs?
